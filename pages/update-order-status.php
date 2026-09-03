@@ -97,5 +97,18 @@ $stmt->execute([
    RETURN TO ADMIN DASHBOARD
 ===================================================== */
 
-header("Location: admin-dashboard.php");
+$customer_id = filter_input(
+    INPUT_POST,
+    "customer_id",
+    FILTER_VALIDATE_INT
+);
+
+if ($customer_id) {
+    header(
+        "Location: customer-orders.php?user_id=" . $customer_id
+    );
+} else {
+    header("Location: admin-dashboard.php");
+}
+
 exit;

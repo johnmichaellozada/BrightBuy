@@ -90,60 +90,14 @@ $products = $productStmt->fetchAll();
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     >
 
-    <style>
-
-        body {
-            background: #f5f7ff;
-            font-family: Arial, sans-serif;
-        }
-
-        .admin-header {
-            background: #073b9d;
-            color: white;
-            padding: 30px 0;
-        }
-
-        .product-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .product-row {
-            border-bottom: 1px solid #eee;
-            padding: 20px 0;
-        }
-
-        .product-row:last-child {
-            border-bottom: none;
-        }
-
-        .product-image {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-        }
-
-        .stock-input {
-            max-width: 100px;
-            text-align: center;
-        }
-
-        .stock-low {
-            color: #dc3545;
-            font-weight: 700;
-        }
-
-        .stock-good {
-            color: #198754;
-            font-weight: 700;
-        }
-
-    </style>
-
+    <link
+    rel="stylesheet"
+    href="../css/styles.css"
+    >
+    
 </head>
 
-<body>
+<body class="admin-inventory-page">
 
 
 <!-- =====================================================

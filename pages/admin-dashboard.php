@@ -106,6 +106,10 @@ $processingOrders = (int)($orderStats["processing_orders"] ?? 0);
         rel="stylesheet"
     >
 
+    <link
+    rel="stylesheet"
+    href="../css/styles.css"
+>
     <style>
 
         * {
@@ -361,7 +365,7 @@ $processingOrders = (int)($orderStats["processing_orders"] ?? 0);
 
 </head>
 
-<body>
+<body class="admin-dashboard-page">
 
 
 <!-- =========================

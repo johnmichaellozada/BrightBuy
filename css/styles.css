@@ -1,0 +1,6361 @@
+/* =========================================================
+   BRIGHTBUY
+   FIXED RESPONSIVE CANVAS
+   =========================================================
+
+   DESIGN SIZE:
+   1440px × flexible height
+
+   IMPORTANT:
+   The layout itself NEVER changes.
+   Desktop / Tablet / Mobile only SCALE the same design.
+
+========================================================= */
+
+
+/* =========================================================
+   1. ROOT VARIABLES
+========================================================= */
+
+:root {
+
+    --design-width: 1440px;
+
+    --blue-dark: #03185c;
+    --blue-deep: #02144e;
+    --blue: #06329a;
+    --blue-light: #0b4ecb;
+
+    --yellow: #ffc400;
+    --yellow-light: #ffd633;
+
+    --white: #ffffff;
+    --black: #111111;
+
+    --light-bg: #edf1ff;
+
+    --text-dark: #10245e;
+    --text-muted: #7d86a3;
+
+    --shadow:
+        0 8px 20px rgba(4, 24, 91, 0.18);
+
+}
+
+
+/* =========================================================
+   2. RESET
+========================================================= */
+
+*,
+*::before,
+*::after {
+
+    box-sizing: border-box;
+
+}
+
+
+html {
+
+    margin: 0;
+
+    padding: 0;
+
+    width: 100%;
+
+    min-height: 100%;
+
+    overflow-x: hidden;
+
+}
+
+
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    width: 100%;
+
+    min-height: 100%;
+
+    font-family: "Poppins", sans-serif;
+
+    background: var(--light-bg);
+
+    color: var(--text-dark);
+
+    overflow-x: hidden;
+
+}
+
+
+img {
+
+    display: block;
+
+    max-width: 100%;
+
+}
+
+
+a {
+
+    text-decoration: none;
+
+}
+
+
+button,
+input {
+
+    font-family: inherit;
+
+}
+
+
+/* =========================================================
+   FIXED CANVAS VIEWPORT - SCROLL FIX
+========================================================= */
+
+.brightbuy-viewport {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    margin: 0;
+
+    padding: 0;
+
+    overflow: visible;
+
+}
+
+
+/* =========================================================
+   MASTER 1440px CANVAS
+========================================================= */
+
+.brightbuy-canvas {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 50%;
+
+    width: 1440px;
+
+    min-width: 1440px;
+
+    margin-left: -720px;
+
+    padding: 0;
+
+    transform-origin: top center;
+
+}
+
+
+/* =========================================================
+   5. MAIN CONTAINER
+========================================================= */
+
+.bright-container {
+
+    width: 1340px !important;
+
+    min-width: 1340px !important;
+
+    max-width: 1340px !important;
+
+    margin-left: auto !important;
+
+    margin-right: auto !important;
+
+    padding-left: 0 !important;
+
+    padding-right: 0 !important;
+
+}
+
+
+/* =========================================================
+   6. BOOTSTRAP RESET
+
+   Bootstrap is still being used,
+   but its responsive breakpoints must NOT
+   change our master layout.
+========================================================= */
+
+.brightbuy-canvas .container,
+.brightbuy-canvas .container-fluid {
+
+    width: 1340px !important;
+
+    min-width: 1340px !important;
+
+    max-width: 1340px !important;
+
+    margin-left: auto !important;
+
+    margin-right: auto !important;
+
+    padding-left: 0 !important;
+
+    padding-right: 0 !important;
+
+}
+
+
+.brightbuy-canvas .row {
+
+    width: 1340px;
+
+    min-width: 1340px;
+
+    margin-left: 0 !important;
+
+    margin-right: 0 !important;
+
+}
+
+
+.brightbuy-canvas [class*="col-"] {
+
+    padding-left: 7px;
+
+    padding-right: 7px;
+
+}
+
+
+/* =========================================================
+   7. HEADER
+========================================================= */
+
+.site-header {
+
+    position: relative;
+
+    z-index: 100;
+
+    width: 1440px;
+
+    min-width: 1440px;
+
+    background: var(--blue-dark);
+
+}
+
+
+/* =========================================================
+   HEADER MAIN
+========================================================= */
+
+.header-main {
+
+    width: 1440px;
+
+    min-width: 1440px;
+
+    min-height: 70px;
+
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(23, 92, 220, 0.35),
+            transparent 30%
+        ),
+        linear-gradient(
+            90deg,
+            #03185c,
+            #062d85
+        );
+
+}
+
+
+/* =========================================================
+   HEADER ROW
+========================================================= */
+
+.header-row {
+
+    width: 1340px;
+
+    min-width: 1340px;
+
+    height: 70px;
+
+    min-height: 70px;
+
+    display: flex;
+
+    flex-wrap: nowrap;
+
+    align-items: center;
+
+    gap: 18px;
+
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.brand-logo {
+
+    width: 185px;
+
+    min-width: 185px;
+
+    max-width: 185px;
+
+    flex: 0 0 185px;
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+
+.brand-logo img {
+
+    width: 175px;
+
+    max-width: 175px;
+
+    height: auto;
+
+    object-fit: contain;
+
+}
+
+
+/* =========================================================
+   CATEGORY BUTTON
+========================================================= */
+
+.category-button {
+
+    width: 155px;
+
+    min-width: 155px;
+
+    max-width: 155px;
+
+    height: 38px;
+
+    min-height: 38px;
+
+    flex: 0 0 155px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0;
+
+    border-radius: 22px;
+
+    background: var(--yellow);
+
+    color: #111;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    transition: 0.2s ease;
+
+}
+
+
+.category-button:hover {
+
+    background: var(--yellow-light);
+
+    color: #111;
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-box {
+
+    width: 460px;
+
+    min-width: 460px;
+
+    max-width: 460px;
+
+    height: 38px;
+
+    min-height: 38px;
+
+    flex: 0 0 460px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    border-radius: 25px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    background: #082b70;
+
+}
+
+
+.search-box input {
+
+    width: 100%;
+
+    height: 100%;
+
+    padding: 0 16px;
+
+    border: 0;
+
+    outline: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 10px;
+
+}
+
+
+.search-box input::placeholder {
+
+    color: rgba(255,255,255,0.65);
+
+}
+
+
+.search-box button {
+
+    width: 45px;
+
+    height: 100%;
+
+    flex: 0 0 45px;
+
+    padding: 0;
+
+    border: 0;
+
+    outline: none;
+
+    background: transparent;
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   HEADER ACTIONS
+========================================================= */
+
+.header-actions {
+
+    width: 210px;
+
+    min-width: 210px;
+
+    max-width: 210px;
+
+    flex: 0 0 210px;
+
+    display: flex;
+
+    flex-wrap: nowrap;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 22px;
+
+}
+
+
+.header-action {
+
+    position: relative;
+
+    width: 48px;
+
+    min-width: 48px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 2px;
+
+    color: white;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+
+}
+
+
+.header-action i {
+
+    font-size: 16px;
+
+}
+
+
+.header-action:hover {
+
+    color: var(--yellow);
+
+}
+
+
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 50%;
+    background: #ffc107;
+    color: #073b9d;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================================
+   8. NAVIGATION
+========================================================= */
+
+.main-navigation {
+
+    width: 1440px;
+
+    min-width: 1440px;
+
+    height: 42px;
+
+    min-height: 42px;
+
+    border-top: 1px solid rgba(255,255,255,0.05);
+
+    background: var(--blue-dark);
+
+}
+
+
+.nav-menu {
+
+    width: 1340px;
+
+    min-width: 1340px;
+
+    height: 42px;
+
+    min-height: 42px;
+
+    margin: 0;
+
+    padding: 0;
+
+    display: flex;
+
+    flex-wrap: nowrap;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 70px;
+
+    list-style: none;
+
+}
+
+
+.nav-menu li {
+
+    flex: 0 0 auto;
+
+}
+
+
+.nav-menu a {
+
+    position: relative;
+
+    display: block;
+
+    padding: 12px 0;
+
+    color: white;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+}
+
+
+.nav-menu a::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 4px;
+
+    height: 2px;
+
+    border-radius: 5px;
+
+    background: var(--yellow);
+
+    transform: scaleX(0);
+
+    transition: transform 0.2s ease;
+
+}
+
+
+.nav-menu a:hover,
+.nav-menu a.active {
+
+    color: var(--yellow);
+
+}
+
+
+.nav-menu a:hover::after,
+.nav-menu a.active::after {
+
+    transform: scaleX(1);
+
+}
+
+
+/* =========================================================
+   9. HERO
+========================================================= */
+
+/* =========================================================
+   BRIGHTBUY HERO BACKGROUND
+   Dark Blue + Gradient + Dots + Shopping Patterns
+========================================================= */
+
+.hero-section {
+    position: relative;
+
+    width: 1440px;
+    min-width: 1440px;
+
+    height: 455px;
+    min-height: 455px;
+
+    overflow: hidden;
+
+    color: #ffffff;
+
+    /* Main dark blue gradient */
+    background:
+        linear-gradient(
+            115deg,
+            #062a91 0%,
+            #05227a 32%,
+            #03175d 65%,
+            #02134d 100%
+        );
+}
+
+
+/* =========================================================
+   BACKGROUND LIGHT GLOW
+========================================================= */
+
+.hero-section::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 750px;
+    height: 750px;
+
+    left: -300px;
+    bottom: -430px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(13, 78, 203, 0.75) 0%,
+            rgba(7, 53, 160, 0.35) 35%,
+            transparent 70%
+        );
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   RIGHT BLUE GLOW
+========================================================= */
+
+.hero-section::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 600px;
+    height: 600px;
+
+    right: -250px;
+    top: -180px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(9, 74, 190, 0.65) 0%,
+            rgba(5, 44, 130, 0.30) 40%,
+            transparent 72%
+        );
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   MAKE CONTENT STAY ABOVE BACKGROUND
+========================================================= */
+
+.hero-section > * {
+
+    position: relative;
+
+    z-index: 2;
+
+}
+
+
+/* =========================================================
+   DOT PATTERN
+========================================================= */
+
+.hero-section {
+
+    background-image:
+
+        /* Main gradient */
+        linear-gradient(
+            115deg,
+            #062a91 0%,
+            #05227a 32%,
+            #03175d 65%,
+            #02134d 100%
+        ),
+
+        /* Small dots */
+        radial-gradient(
+            circle,
+            rgba(24, 105, 220, 0.65) 1.5px,
+            transparent 1.7px
+        );
+
+    background-size:
+        100% 100%,
+        24px 24px;
+
+    background-position:
+        center,
+        right 25px top 15px;
+
+    background-repeat:
+        no-repeat,
+        repeat;
+
+}
+
+
+/* =========================================================
+   SUBTLE DIAGONAL SHAPE
+========================================================= */
+
+.hero-container::before {
+
+    content: "";
+
+    position: absolute;
+
+    z-index: -1;
+
+    left: -200px;
+    top: -100px;
+
+    width: 720px;
+    height: 620px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(12, 74, 190, 0.55),
+            rgba(4, 32, 110, 0.05)
+        );
+
+    clip-path:
+        polygon(
+            0 0,
+            100% 0,
+            55% 100%,
+            0 100%
+        );
+
+    opacity: 0.7;
+
+}
+
+
+/* =========================================================
+   BOTTOM LEFT DOT FIELD
+========================================================= */
+
+.hero-container::after {
+
+    content: "";
+
+    position: absolute;
+
+    z-index: -1;
+
+    left: -35px;
+    bottom: -30px;
+
+    width: 300px;
+    height: 190px;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(15, 117, 245, 0.75) 2px,
+            transparent 2.5px
+        );
+
+    background-size: 22px 22px;
+
+    opacity: 0.7;
+
+}
+
+
+/* =========================================================
+   OPTIONAL SHOPPING ICON PATTERN
+
+   Add these classes to empty decorative elements if needed.
+========================================================= */
+
+.hero-bg-icon {
+
+    position: absolute;
+
+    z-index: 1;
+
+    color: rgba(20, 100, 220, 0.22);
+
+    font-size: 55px;
+
+    pointer-events: none;
+
+}
+
+
+/* Shopping bag */
+
+.hero-bg-bag {
+
+    top: 35px;
+
+    left: 390px;
+
+    transform: rotate(-15deg);
+
+}
+
+
+/* Delivery truck */
+
+.hero-bg-truck {
+
+    top: 20px;
+
+    left: 760px;
+
+    transform: rotate(4deg);
+
+}
+
+
+/* Shopping bag right */
+
+.hero-bg-bag-right {
+
+    top: 80px;
+
+    right: 210px;
+
+    transform: rotate(12deg);
+
+}
+
+
+/* =========================================================
+   YELLOW CURVED ACCENT
+========================================================= */
+
+.hero-accent-line {
+
+    position: absolute;
+
+    z-index: 1;
+
+    left: -80px;
+
+    bottom: 45px;
+
+    width: 520px;
+
+    height: 190px;
+
+    border-top:
+        3px solid rgba(255, 196, 0, 0.95);
+
+    border-radius: 50%;
+
+    transform:
+        rotate(-20deg);
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   BLUE CURVED ACCENT
+========================================================= */
+
+.hero-blue-line {
+
+    position: absolute;
+
+    z-index: 1;
+
+    right: -120px;
+
+    top: 40px;
+
+    width: 480px;
+
+    height: 220px;
+
+    border:
+        2px solid rgba(10, 106, 235, 0.55);
+
+    border-left: 0;
+
+    border-bottom: 0;
+
+    border-radius: 50%;
+
+    transform:
+        rotate(-15deg);
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   SMALL STAR / SPARKLE
+========================================================= */
+
+.hero-sparkle {
+
+    position: absolute;
+
+    z-index: 3;
+
+    color: #ffc400;
+
+    font-size: 25px;
+
+    pointer-events: none;
+
+    animation:
+        sparkleFloat 4s ease-in-out infinite;
+
+}
+
+
+.hero-sparkle.one {
+
+    left: 675px;
+
+    top: 130px;
+
+}
+
+
+.hero-sparkle.two {
+
+    right: 285px;
+
+    bottom: 70px;
+
+    font-size: 18px;
+
+}
+
+
+/* =========================================================
+   SPARKLE ANIMATION
+========================================================= */
+
+@keyframes sparkleFloat {
+
+    0%,
+    100% {
+
+        transform:
+            translateY(0)
+            scale(1);
+
+        opacity: 0.75;
+
+    }
+
+    50% {
+
+        transform:
+            translateY(-6px)
+            scale(1.08);
+
+        opacity: 1;
+
+    }
+
+}
+
+
+.hero-pattern {
+
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0.22;
+
+    pointer-events: none;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,0.35) 1px,
+            transparent 1px
+        );
+
+    background-size: 23px 23px;
+
+}
+
+
+.hero-container {
+
+    position: relative;
+
+    width: 1340px !important;
+
+    min-width: 1340px !important;
+
+}
+
+
+.hero-container .row {
+
+    width: 1340px;
+
+    min-width: 1340px;
+
+    height: 340px;
+
+    display: flex;
+
+    flex-wrap: nowrap;
+
+}
+
+
+.hero-container .col-lg-6 {
+
+    width: 670px !important;
+
+    min-width: 670px !important;
+
+    max-width: 670px !important;
+
+    flex: 0 0 670px !important;
+
+}
+
+
+/* =========================================================
+   HERO CONTENT
+========================================================= */
+
+.hero-content {
+
+    width: 670px;
+
+    min-width: 670px;
+
+    padding-top: 55px;
+
+    padding-left: 40px;
+
+    padding-bottom: 20px;
+
+}
+
+
+.welcome-text {
+
+    margin-bottom: 9px;
+
+    color: var(--yellow);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+
+.hero-content h1 {
+
+    max-width: 600px;
+
+    margin: 0 0 12px;
+
+    font-size: 52px;
+
+    line-height: 1.02;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+}
+
+
+.hero-content h1 span {
+
+    display: block;
+
+    color: var(--yellow);
+
+}
+
+
+.hero-content p {
+
+    width: 470px;
+
+    max-width: 470px;
+
+    margin: 0 0 20px;
+
+    color: rgba(255,255,255,0.88);
+
+    font-size: 12px;
+
+    line-height: 1.55;
+
+}
+
+
+.hero-button {
+
+    width: 135px;
+
+    height: 39px;
+
+    padding: 0 12px 0 17px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-radius: 24px;
+
+    background: var(--yellow);
+
+    color: #111;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    transition: 0.2s ease;
+
+}
+
+
+.hero-button:hover {
+
+    color: #111;
+
+    background: var(--yellow-light);
+
+    transform: translateY(-2px);
+
+}
+
+
+.hero-button i {
+
+    width: 22px;
+
+    height: 22px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--blue-dark);
+
+    color: white;
+
+    font-size: 8px;
+
+}
+
+
+/* =========================================================
+   HERO IMAGE
+========================================================= */
+
+.hero-image-column {
+
+    width: 670px;
+
+    min-width: 670px;
+
+    height: 340px;
+
+    min-height: 340px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* =========================================================
+   HERO IMAGE - MINIMAL FLOATING ANIMATION
+========================================================= */
+
+
+/* =========================================================
+   HERO IMAGE WRAPPER
+========================================================= */
+
+.hero-image-wrapper {
+
+    width: 620px;
+
+    height: 330px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    animation:
+        brightBuyFloat
+        5s
+        ease-in-out
+        infinite;
+
+    will-change: transform;
+
+}
+
+
+/* =========================================================
+   HERO IMAGE
+========================================================= */
+
+.hero-image {
+
+    width: 620px;
+
+    max-width: 620px;
+
+    height: 330px;
+
+    max-height: 330px;
+
+    object-fit: contain;
+
+    filter:
+        drop-shadow(
+            0 18px 20px rgba(0,0,0,0.20)
+        );
+
+    animation:
+        brightBuyGlow
+        5s
+        ease-in-out
+        infinite;
+
+    will-change: filter;
+
+}
+
+
+/* =========================================================
+   FLOATING MOTION
+========================================================= */
+
+@keyframes brightBuyFloat {
+
+    0% {
+
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg);
+
+    }
+
+    25% {
+
+        transform:
+            translate3d(3px, -5px, 0)
+            rotate(0.3deg);
+
+    }
+
+    50% {
+
+        transform:
+            translate3d(0, -9px, 0)
+            rotate(0deg);
+
+    }
+
+    75% {
+
+        transform:
+            translate3d(-3px, -5px, 0)
+            rotate(-0.3deg);
+
+    }
+
+    100% {
+
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   SUBTLE LIGHT / SHADOW MOVEMENT
+========================================================= */
+
+@keyframes brightBuyGlow {
+
+    0% {
+
+        filter:
+            drop-shadow(
+                0 18px 20px rgba(0,0,0,0.20)
+            );
+
+    }
+
+    50% {
+
+        filter:
+            drop-shadow(
+                0 24px 25px rgba(0,0,0,0.28)
+            );
+
+    }
+
+    100% {
+
+        filter:
+            drop-shadow(
+                0 18px 20px rgba(0,0,0,0.20)
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   Respect users who prefer reduced motion.
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .hero-image-wrapper,
+    .hero-image {
+
+        animation: none;
+
+    }
+
+}
+
+
+/* =========================================================
+   HERO FEATURES
+========================================================= */
+
+/* =========================================================
+   HERO FEATURES
+   BIGGER + CLOSER TOGETHER
+========================================================= */
+
+.hero-features {
+
+    width: 1120px;
+    min-width: 1120px;
+
+    height: 92px;
+
+    margin-left: 110px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    column-gap: 5px;
+
+    align-items: center;
+
+}
+
+
+/* =========================================================
+   INDIVIDUAL FEATURE
+========================================================= */
+
+.hero-feature {
+
+    height: 65px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+}
+
+
+/* =========================================================
+   BIGGER ICON
+========================================================= */
+
+.hero-feature-icon {
+
+    width: 46px;
+
+    height: 46px;
+
+    min-width: 46px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 2px solid rgba(255,196,0,0.95);
+
+    border-radius: 50%;
+
+    color: var(--yellow);
+
+    font-size: 19px;
+
+}
+
+
+/* =========================================================
+   FEATURE TITLE
+========================================================= */
+
+.hero-feature strong {
+
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: white;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   FEATURE DESCRIPTION
+========================================================= */
+
+.hero-feature small {
+
+    display: block;
+
+    color: rgba(255,255,255,0.78);
+
+    font-size: 9px;
+
+    line-height: 1.25;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   CATEGORIES SECTION
+   Larger Images + Longer Cards
+========================================================= */
+
+.categories-section {
+
+    width: 1440px;
+    min-width: 1440px;
+
+    padding: 34px 0 30px;
+
+    background: #e9edff;
+
+}
+
+
+/* =========================================================
+   SECTION HEADING
+========================================================= */
+
+.section-heading-row {
+
+    width: 1340px;
+
+    height: 34px;
+
+    margin-bottom: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+.section-heading-row h2 {
+
+    margin: 0;
+
+    color: var(--text-dark);
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+}
+
+
+.view-all-link {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: var(--text-dark);
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   CATEGORY ROW
+
+   6 CARDS — ALWAYS ONE ROW
+========================================================= */
+
+/* =========================================================
+   CATEGORY CARDS
+   Bigger images + slightly taller cards
+========================================================= */
+
+.category-row {
+    width: 1340px !important;
+    min-width: 1340px !important;
+
+    height: 165px;
+
+    display: flex !important;
+    flex-wrap: nowrap !important;
+
+    gap: 14px;
+}
+
+
+/* Each category column */
+.category-row > div {
+    width: 214px !important;
+    min-width: 214px !important;
+    max-width: 214px !important;
+
+    height: 165px;
+
+    flex: 0 0 214px !important;
+
+    padding: 0 !important;
+}
+
+
+/* Category card */
+.category-card {
+    width: 214px;
+    height: 165px;
+
+    padding: 7px 8px 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: var(--text-dark);
+
+    box-shadow:
+        0 8px 18px rgba(22, 42, 101, 0.16);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* Hover */
+.category-card:hover {
+    color: var(--text-dark);
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 12px 25px rgba(22, 42, 101, 0.22);
+}
+
+
+/* =========================================================
+   BIGGER CATEGORY IMAGE
+========================================================= */
+
+.category-image-wrapper {
+    width: 145px;
+    height: 105px;
+
+    margin-bottom: 3px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.category-image {
+    width: 140px;
+    height: 100px;
+
+    max-width: 140px;
+    max-height: 100px;
+
+    object-fit: contain;
+
+    transition:
+        transform 0.25s ease;
+}
+
+
+/* Small hover animation */
+.category-card:hover .category-image {
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   CATEGORY NAME
+========================================================= */
+
+.category-card h3 {
+    width: 100%;
+
+    margin: 0;
+
+    text-align: center;
+
+    color: var(--text-dark);
+
+    font-size: 10px;
+
+    line-height: 1.2;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   ITEM COUNT
+========================================================= */
+
+.category-card span {
+    margin-top: 4px;
+
+    color: #7d86a3;
+
+    font-size: 8px;
+
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   FEATURED PRODUCTS - BIGGER + TALLER
+========================================================= */
+
+/* =========================================================
+   FEATURED PRODUCTS
+   BrightBuy Hero-Style Background
+========================================================= */
+
+.featured-section {
+    position: relative;
+
+    width: 1440px;
+    min-width: 1440px;
+
+    padding: 22px 0 18px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            115deg,
+            #062a91 0%,
+            #05227a 32%,
+            #03175d 65%,
+            #02134d 100%
+        ),
+        radial-gradient(
+            circle,
+            rgba(24, 105, 220, 0.65) 1.5px,
+            transparent 1.7px
+        );
+
+    background-size:
+        100% 100%,
+        24px 24px;
+
+    background-position:
+        center,
+        right 25px top 15px;
+
+    background-repeat:
+        no-repeat,
+        repeat;
+}
+
+
+/* LEFT GLOW */
+
+.featured-section::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 750px;
+    height: 750px;
+
+    left: -300px;
+    bottom: -430px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(13, 78, 203, 0.75) 0%,
+            rgba(7, 53, 160, 0.35) 35%,
+            transparent 70%
+        );
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+/* RIGHT GLOW */
+
+.featured-section::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 600px;
+    height: 600px;
+
+    right: -250px;
+    top: -180px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(9, 74, 190, 0.65) 0%,
+            rgba(5, 44, 130, 0.30) 40%,
+            transparent 72%
+        );
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+/* CONTENT ABOVE BACKGROUND */
+
+.featured-section > * {
+    position: relative;
+    z-index: 2;
+}
+/* =========================================================
+   BLUE FEATURED CONTAINER
+========================================================= */
+
+.featured-box {
+    position: relative;
+
+    width: 1340px;
+    min-width: 1340px;
+
+    padding: 16px 25px 25px;
+
+    border-radius: 24px;
+
+    background: #03185c;
+
+    overflow: visible;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.featured-heading {
+    width: 1290px;
+
+    height: 50px;
+
+    margin-bottom: 10px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+}
+
+
+.small-label {
+    color: #ffc400;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+}
+
+
+.featured-heading h2 {
+    margin: 3px 0 0;
+
+    color: #ffffff;
+
+    font-size: 26px;
+
+    line-height: 1.1;
+
+    font-weight: 800;
+}
+
+
+.view-products {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-bottom: 5px;
+
+    color: #ffffff;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   PRODUCT TRACK
+========================================================= */
+
+.products-track {
+    width: 1260px;
+    min-width: 1260px;
+
+    height: 225px;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+
+    gap: 16px;
+
+    overflow: visible;
+}
+
+/* =========================================================
+   PRODUCT CARD
+   TALL WHITE CARD
+========================================================= */
+
+.product-card {
+    position: relative;
+
+    width: 240px;
+    min-width: 240px;
+
+    height: 225px;
+    min-height: 225px;
+
+    padding: 9px 10px 10px;
+
+    display: flex !important;
+    flex-direction: column;
+
+    border-radius: 17px;
+
+    background: #ffffff;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =========================================================
+   DISCOUNT
+========================================================= */
+
+.discount-badge {
+    position: absolute;
+
+    top: 10px;
+    left: 10px;
+
+    z-index: 10;
+
+    min-width: 43px;
+
+    height: 27px;
+
+    padding: 0 8px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #ffc400;
+
+    color: #111111;
+
+    font-size: 9px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   WISHLIST
+========================================================= */
+
+.product-wishlist {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    z-index: 10;
+
+    width: 25px;
+    height: 25px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #9aa3ba;
+
+    font-size: 17px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE
+========================================================= */
+
+/* Image */
+.product-image-box {
+    width: 100%;
+
+    height: 115px;
+    min-height: 115px;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.product-image-box img {
+    width: 100%;
+    height: 115px;
+
+    object-fit: contain;
+}
+
+
+/* =========================================================
+   PRODUCT INFO
+========================================================= */
+
+/* Product info */
+.product-info {
+    width: 100%;
+
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   PRODUCT NAME
+========================================================= */
+
+.product-info h3 {
+    width: 100%;
+
+    height: 20px;
+
+    min-height: 20px;
+
+    margin: 0 0 3px;
+
+    overflow: hidden;
+
+    color: #09266e;
+
+    font-size: 10px;
+
+    line-height: 1.3;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   RATING
+========================================================= */
+
+.rating {
+    height: 15px;
+
+    min-height: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+}
+
+
+.stars {
+    color: #ffb800;
+
+    font-size: 9px;
+
+    letter-spacing: -1px;
+
+    white-space: nowrap;
+}
+
+
+.rating small {
+    color: #8992a9;
+
+    font-size: 7px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   PRODUCT BOTTOM
+   FIXED INSIDE CARD
+========================================================= */
+
+.product-bottom {
+    width: 100%;
+
+    height: 40px;
+    min-height: 40px;
+
+    margin-top: auto;
+
+    display: flex;
+
+    padding-bottom: 12px;
+
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+
+/* =========================================================
+   PRICE
+========================================================= */
+
+.product-bottom strong {
+    display: inline-block;
+
+    color: #073ba7;
+
+    font-size: 18px;
+
+    line-height: 1;
+
+    font-weight: 800;
+}
+
+
+.product-bottom del {
+    display: inline-block;
+
+    margin-left: 5px;
+
+    color: #9299a9;
+
+    font-size: 8px;
+
+    vertical-align: middle;
+}
+
+
+/* =========================================================
+   CART BUTTON
+   NOW FULLY VISIBLE
+========================================================= */
+
+.add-cart {
+    width: 39px;
+    height: 39px;
+
+    min-width: 39px;
+    min-height: 39px;
+
+    flex-shrink: 0;
+
+    display: flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+    z-index: 20;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 11px;
+
+    background: #063291;
+    color: white;
+
+    font-size: 17px;
+}
+
+
+.add-cart:hover {
+    background: #ffc400;
+
+    color: #111111;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   PRODUCT ARROWS
+========================================================= */
+
+.product-arrow {
+    position: absolute;
+
+    top: 50%;
+
+    z-index: 50;
+
+    width: 39px;
+
+    height: 39px;
+
+    margin-top: -19px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 1px solid rgba(255,255,255,0.35);
+
+    border-radius: 50%;
+
+    background: #0b4aa5;
+
+    color: #ffffff;
+
+    font-size: 17px;
+
+    cursor: pointer;
+}
+
+
+.product-arrow:hover {
+    background: #ffc400;
+
+    color: #111111;
+}
+
+
+.product-prev {
+    left: -19px;
+}
+
+
+.product-next {
+    right: -19px;
+}
+
+
+/* =========================================================
+   12. SPECIAL OFFER
+========================================================= */
+
+/* =========================================================
+   SPECIAL OFFER SECTION
+========================================================= */
+/* =========================================================
+   FEATURED + SPECIAL OFFER SHARED BACKGROUND
+   Same visual style as BrightBuy Hero
+========================================================= */
+
+.featured-offer-background {
+    position: relative;
+
+    width: 1440px;
+    min-width: 1440px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            115deg,
+            #062a91 0%,
+            #05227a 32%,
+            #03175d 65%,
+            #02134d 100%
+        ),
+        radial-gradient(
+            circle,
+            rgba(24, 105, 220, 0.65) 1.5px,
+            transparent 1.7px
+        );
+
+    background-size:
+        100% 100%,
+        24px 24px;
+
+    background-position:
+        center,
+        right 25px top 15px;
+
+    background-repeat:
+        no-repeat,
+        repeat;
+}
+
+
+/* LEFT BLUE GLOW */
+
+.featured-offer-background::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 750px;
+    height: 750px;
+
+    left: -300px;
+    bottom: -430px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(13, 78, 203, 0.75) 0%,
+            rgba(7, 53, 160, 0.35) 35%,
+            transparent 70%
+        );
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+/* RIGHT BLUE GLOW */
+
+.featured-offer-background::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 600px;
+    height: 600px;
+
+    right: -250px;
+    top: -180px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(9, 74, 190, 0.65) 0%,
+            rgba(5, 44, 130, 0.30) 40%,
+            transparent 72%
+        );
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+/* KEEP CONTENT ABOVE BACKGROUND */
+
+.featured-offer-background > section {
+    position: relative;
+    z-index: 2;
+}
+
+/* =========================================================
+   SPECIAL OFFER
+   Continue BrightBuy Hero-Style Background
+========================================================= */
+
+.offer-section {
+    position: relative;
+
+    width: 1440px;
+    min-width: 1440px;
+
+    padding: 12px 0 28px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            115deg,
+            #062a91 0%,
+            #05227a 32%,
+            #03175d 65%,
+            #02134d 100%
+        ),
+        radial-gradient(
+            circle,
+            rgba(24, 105, 220, 0.65) 1.5px,
+            transparent 1.7px
+        );
+
+    background-size:
+        100% 100%,
+        24px 24px;
+
+    background-position:
+        center,
+        right 25px top 15px;
+
+    background-repeat:
+        no-repeat,
+        repeat;
+}
+
+
+/* CONTENT ABOVE BACKGROUND */
+
+.offer-section > * {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   YELLOW OFFER BANNER
+========================================================= */
+
+.offer-banner {
+    position: relative;
+
+    width: 1340px;
+    min-width: 1340px;
+
+    height: 165px;
+    min-height: 165px;
+
+    margin: 0 auto;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    border-radius: 22px;
+
+    /* FULL YELLOW BACKGROUND */
+    background:
+        linear-gradient(
+            105deg,
+            #ffb900 0%,
+            #ffd75c 48%,
+            #ffb20b 100%
+        );
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================================
+   REMOVE OLD BLUE OVERLAY / BORDER
+========================================================= */
+
+.offer-banner::before,
+.offer-banner::after {
+    display: none !important;
+
+    content: none !important;
+}
+
+
+/* =========================================================
+   OFFER TEXT
+========================================================= */
+
+.offer-text {
+    position: relative;
+
+    z-index: 5;
+
+    width: 520px;
+
+    margin-left: 85px;
+}
+
+
+/* Small label */
+
+.offer-text > span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #07338a;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* Main heading */
+
+.offer-text h2 {
+    margin: 0 0 6px;
+
+    color: #07338a;
+
+    font-size: 30px;
+
+    line-height: 1.0;
+
+    font-weight: 800;
+}
+
+
+/* Description */
+
+.offer-text p {
+    margin: 0 0 10px;
+
+    color: #17366f;
+
+    font-size: 9px;
+
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   SHOP DEALS BUTTON
+========================================================= */
+
+.offer-button {
+    width: 125px;
+
+    height: 34px;
+
+    padding: 0 13px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border: none;
+
+    border-radius: 20px;
+
+    background: #03185c;
+
+    color: #ffffff;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.offer-button:hover {
+    background: #06399a;
+
+    color: #ffffff;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   SHOPPING BAG / OFFER IMAGE
+========================================================= */
+
+.offer-graphic {
+    position: absolute;
+
+    z-index: 6;
+
+    right: 55px;
+
+    top: 0;
+
+    width: 500px;
+
+    height: 165px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    pointer-events: none;
+}
+
+
+.offer-graphic img {
+    width: 480px;
+
+    height: 160px;
+
+    max-width: 480px;
+
+    max-height: 160px;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter:
+        drop-shadow(
+            0 12px 12px rgba(0, 0, 0, 0.20)
+        );
+}
+
+/* =========================================================
+   SPECIAL OFFER GRAPHIC
+   USING THE PROVIDED SHOPPING BAG IMAGE
+========================================================= */
+
+.offer-graphic {
+
+    position: absolute;
+
+    z-index: 6;
+
+    right: 65px;
+
+    top: 0;
+
+    width: 500px;
+
+    height: 165px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   PROVIDED CART/BAG IMAGE
+========================================================= */
+
+
+/* =========================================================
+   DECORATIVE BLUE CIRCLE
+========================================================= */
+
+.offer-banner .offer-circle {
+
+    position: absolute;
+
+    z-index: 3;
+
+    right: -40px;
+
+    top: -70px;
+
+    width: 170px;
+
+    height: 170px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid rgba(6,49,143,0.45);
+
+}
+
+/* =========================================================
+   WHY SHOP WITH US
+   SAME BACKGROUND AS FEATURED PRODUCTS + SPECIAL OFFER
+========================================================= */
+
+.why-section {
+    position: relative;
+    width: 1440px;
+    min-width: 1440px;
+
+    overflow: hidden;
+
+    background:
+        /* LIGHT BLUE GLOW */
+        radial-gradient(
+            circle at 15% 50%,
+            rgba(55, 135, 255, 0.45),
+            transparent 35%
+        ),
+
+        /* RIGHT BLUE GLOW */
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(40, 120, 255, 0.35),
+            transparent 35%
+        ),
+
+        /* MAIN BLUE */
+        linear-gradient(
+            120deg,
+            #1748ad 0%,
+            #103b99 35%,
+            #082d7d 65%,
+            #06245f 100%
+        ),
+
+        /* DOTS */
+        radial-gradient(
+            circle,
+            rgba(80, 160, 255, 0.45) 1.5px,
+            transparent 1.8px
+        );
+
+    background-size:
+        100% 100%,
+        100% 100%,
+        100% 100%,
+        24px 24px;
+
+    background-position:
+        center,
+        center,
+        center,
+        right 20px top 10px;
+
+    background-repeat:
+        no-repeat,
+        no-repeat,
+        no-repeat,
+        repeat;
+}
+
+
+/* =========================================================
+   REMOVE OLD WHY BACKGROUND
+========================================================= */
+
+.why-background {
+    display: none !important;
+}
+
+
+/* =========================================================
+   CENTER HEADING
+========================================================= */
+
+.center-heading {
+
+    position: relative;
+
+    width: 1340px;
+
+    text-align: center;
+
+    margin-bottom: 17px;
+
+}
+
+
+.center-heading > span {
+
+    color: var(--yellow);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+}
+
+
+.center-heading h2 {
+
+    margin: 3px 0 0;
+
+    color: white;
+
+    font-size: 20px;
+
+    line-height: 1.1;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   WHY ROW
+
+   FIVE ITEMS ALWAYS IN ONE ROW
+========================================================= */
+
+.why-row {
+
+    position: relative;
+
+    width: 1340px !important;
+
+    min-width: 1340px !important;
+
+    height: 82px;
+
+    display: flex !important;
+
+    flex-wrap: nowrap !important;
+
+    gap: 10px;
+
+}
+
+
+.why-row > div {
+
+    width: 260px !important;
+
+    min-width: 260px !important;
+
+    max-width: 260px !important;
+
+    flex: 0 0 260px !important;
+
+    padding: 0 !important;
+
+}
+
+
+/* =========================================================
+   WHY CARD
+========================================================= */
+
+.why-card {
+
+    width: 260px;
+
+    height: 82px;
+
+    padding: 11px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    border-radius: 11px;
+
+    background:
+        rgba(4, 47, 135, 0.9);
+
+    border:
+        1px solid rgba(255,255,255,0.06);
+
+}
+
+
+.why-icon {
+
+    width: 38px;
+
+    height: 38px;
+
+    min-width: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 1px solid rgba(255,196,0,0.6);
+
+    border-radius: 50%;
+
+    color: var(--yellow);
+
+    font-size: 16px;
+
+}
+
+
+.why-card h3 {
+
+    margin: 0 0 3px;
+
+    color: white;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+}
+
+
+.why-card p {
+
+    margin: 0;
+
+    color: rgba(255,255,255,0.72);
+
+    font-size: 6px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   14. TESTIMONIALS
+========================================================= */
+
+.testimonial-section {
+
+    position: relative;
+
+    width: 1440px;
+
+    min-width: 1440px;
+
+    padding: 24px 0 30px;
+
+    overflow: hidden;
+
+    background: #062879;
+
+}
+
+
+.testimonial-background {
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            circle at 10% 70%,
+            rgba(255,196,0,0.13),
+            transparent 18%
+        ),
+        radial-gradient(
+            circle at 90% 20%,
+            rgba(36,103,218,0.45),
+            transparent 30%
+        );
+
+}
+
+
+/* =========================================================
+   TESTIMONIAL HEADING
+========================================================= */
+
+.light-heading {
+
+    margin-bottom: 15px;
+
+}
+
+
+.heading-stars {
+
+    margin-top: 4px;
+
+    color: var(--yellow);
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* =========================================================
+   TESTIMONIAL ROW
+
+   THREE ITEMS ALWAYS IN ONE ROW
+========================================================= */
+
+.testimonial-row {
+
+    position: relative;
+
+    width: 1340px !important;
+
+    min-width: 1340px !important;
+
+    height: 130px;
+
+    display: flex !important;
+
+    flex-wrap: nowrap !important;
+
+    gap: 18px;
+
+}
+
+
+.testimonial-row > div {
+
+    width: 434px !important;
+
+    min-width: 434px !important;
+
+    max-width: 434px !important;
+
+    flex: 0 0 434px !important;
+
+    padding: 0 !important;
+
+}
+
+
+/* =========================================================
+   TESTIMONIAL CARD
+========================================================= */
+
+.testimonial-card {
+
+    position: relative;
+
+    width: 434px;
+
+    height: 130px;
+
+    padding: 18px;
+
+    border-radius: 12px;
+
+    background: white;
+
+    color: var(--text-dark);
+
+}
+
+
+.quote-mark {
+
+    position: absolute;
+
+    top: 5px;
+
+    left: 12px;
+
+    color: #cbd8f4;
+
+    font-size: 38px;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+}
+
+
+.testimonial-card p {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 395px;
+
+    height: 53px;
+
+    margin: 14px 0 10px;
+
+    overflow: hidden;
+
+    color: #59627c;
+
+    font-size: 8px;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   CUSTOMER
+========================================================= */
+
+.customer {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+.customer-avatar {
+
+    width: 31px;
+
+    height: 31px;
+
+    min-width: 31px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e8edf8;
+
+    color: var(--blue-dark);
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+}
+
+
+.customer strong {
+
+    display: block;
+
+    color: var(--text-dark);
+
+    font-size: 8px;
+
+}
+
+
+.customer small {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: #8790a7;
+
+    font-size: 6px;
+
+}
+
+
+/* =========================================================
+   TESTIMONIAL DOTS
+========================================================= */
+
+.testimonial-dots {
+
+    position: relative;
+
+    width: 1340px;
+
+    height: 15px;
+
+    margin-top: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+}
+
+
+.testimonial-dots span {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.45);
+
+}
+
+
+.testimonial-dots span.active {
+
+    width: 18px;
+
+    border-radius: 10px;
+
+    background: white;
+
+}
+
+
+/* =========================================================
+   15. FOOTER
+========================================================= */
+
+.site-footer {
+
+    width: 1440px;
+
+    min-width: 1440px;
+
+    background: #021752;
+
+    color: white;
+
+}
+
+
+/* =========================================================
+   FOOTER MAIN
+========================================================= */
+
+.footer-main {
+
+    width: 1340px;
+
+    min-width: 1340px;
+
+    min-height: 155px;
+
+    padding: 24px 0 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        1.4fr
+        0.8fr
+        1.1fr
+        1fr
+        1fr
+        1.2fr;
+
+    gap: 28px;
+
+}
+
+
+/* =========================================================
+   FOOTER BRAND
+========================================================= */
+
+.footer-brand img {
+
+    width: 145px;
+
+    max-width: 145px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.footer-brand p {
+
+    margin: 0;
+
+    color: rgba(255,255,255,0.68);
+
+    font-size: 7px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   SOCIAL
+========================================================= */
+
+.social-links {
+
+    display: flex;
+
+    gap: 6px;
+
+    margin-top: 10px;
+
+}
+
+
+.social-links a {
+
+    width: 21px;
+
+    height: 21px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 1px solid rgba(255,255,255,0.3);
+
+    border-radius: 50%;
+
+    color: white;
+
+    font-size: 9px;
+
+}
+
+
+.social-links a:hover {
+
+    background: var(--yellow);
+
+    border-color: var(--yellow);
+
+    color: #111;
+
+}
+
+
+/* =========================================================
+   FOOTER COLUMNS
+========================================================= */
+
+.footer-column {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+}
+
+
+.footer-column h3 {
+
+    margin: 0 0 8px;
+
+    color: white;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+}
+
+
+.footer-column a {
+
+    margin-bottom: 5px;
+
+    color: rgba(255,255,255,0.67);
+
+    font-size: 6.5px;
+
+    white-space: nowrap;
+
+}
+
+
+.footer-column a:hover {
+
+    color: var(--yellow);
+
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app-column p {
+
+    margin: 0 0 8px;
+
+    color: rgba(255,255,255,0.65);
+
+    font-size: 6.5px;
+
+    line-height: 1.4;
+
+}
+
+
+.app-buttons {
+
+    display: flex;
+
+    gap: 5px;
+
+}
+
+
+.app-button {
+
+    width: 80px;
+
+    min-width: 80px;
+
+    height: 29px;
+
+    padding: 4px 5px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    border: 1px solid rgba(255,255,255,0.28);
+
+    border-radius: 5px;
+
+    color: white !important;
+
+}
+
+
+.app-button i {
+
+    font-size: 14px;
+
+}
+
+
+.app-button span {
+
+    font-size: 6px;
+
+    line-height: 1.1;
+
+}
+
+
+.app-button small {
+
+    display: block;
+
+    font-size: 4px;
+
+}
+
+
+/* =========================================================
+   FOOTER BOTTOM
+========================================================= */
+
+.footer-bottom {
+
+    width: 1340px;
+
+    min-width: 1340px;
+
+    height: 42px;
+
+    min-height: 42px;
+
+    padding: 9px 0;
+
+    display: flex;
+
+    flex-wrap: nowrap;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    border-top:
+        1px solid rgba(255,255,255,0.1);
+
+    color: rgba(255,255,255,0.52);
+
+    font-size: 6px;
+
+}
+
+
+.footer-policies {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+}
+
+
+.footer-policies a {
+
+    margin: 0;
+
+    color: rgba(255,255,255,0.52);
+
+}
+
+
+.footer-policies a:hover {
+
+    color: white;
+
+}
+
+
+/* =========================================================
+   PAYMENT METHODS
+========================================================= */
+
+.payment-methods {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+}
+
+
+.payment-methods span {
+
+    padding: 3px 5px;
+
+    border-radius: 3px;
+
+    background: white;
+
+    color: #14235b;
+
+    font-size: 5px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   16. BACK TO TOP
+========================================================= */
+
+#backToTop {
+
+    position: fixed;
+
+    right: 20px;
+
+    bottom: 20px;
+
+    z-index: 9999;
+
+    width: 40px;
+
+    height: 40px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: var(--yellow);
+
+    color: #111;
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,0.2);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform: translateY(10px);
+
+    transition: 0.25s ease;
+
+    cursor: pointer;
+
+}
+
+
+#backToTop.show {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translateY(0);
+
+}
+
+
+#backToTop:hover {
+
+    background: white;
+
+}
+
+
+/* =========================================================
+   17. IMPORTANT BOOTSTRAP OVERRIDES
+========================================================= */
+
+/*
+   These rules stop Bootstrap from changing the
+   desktop mockup into tablet/mobile columns.
+*/
+
+
+.brightbuy-canvas .col-1,
+.brightbuy-canvas .col-2,
+.brightbuy-canvas .col-3,
+.brightbuy-canvas .col-4,
+.brightbuy-canvas .col-5,
+.brightbuy-canvas .col-6,
+.brightbuy-canvas .col-7,
+.brightbuy-canvas .col-8,
+.brightbuy-canvas .col-9,
+.brightbuy-canvas .col-10,
+.brightbuy-canvas .col-11,
+.brightbuy-canvas .col-12,
+.brightbuy-canvas .col-sm-1,
+.brightbuy-canvas .col-sm-2,
+.brightbuy-canvas .col-sm-3,
+.brightbuy-canvas .col-sm-4,
+.brightbuy-canvas .col-sm-5,
+.brightbuy-canvas .col-sm-6,
+.brightbuy-canvas .col-sm-7,
+.brightbuy-canvas .col-sm-8,
+.brightbuy-canvas .col-sm-9,
+.brightbuy-canvas .col-sm-10,
+.brightbuy-canvas .col-sm-11,
+.brightbuy-canvas .col-sm-12,
+.brightbuy-canvas .col-md,
+.brightbuy-canvas .col-md-1,
+.brightbuy-canvas .col-md-2,
+.brightbuy-canvas .col-md-3,
+.brightbuy-canvas .col-md-4,
+.brightbuy-canvas .col-md-5,
+.brightbuy-canvas .col-md-6,
+.brightbuy-canvas .col-md-7,
+.brightbuy-canvas .col-md-8,
+.brightbuy-canvas .col-md-9,
+.brightbuy-canvas .col-md-10,
+.brightbuy-canvas .col-md-11,
+.brightbuy-canvas .col-md-12,
+.brightbuy-canvas .col-lg-1,
+.brightbuy-canvas .col-lg-2,
+.brightbuy-canvas .col-lg-3,
+.brightbuy-canvas .col-lg-4,
+.brightbuy-canvas .col-lg-5,
+.brightbuy-canvas .col-lg-6,
+.brightbuy-canvas .col-lg-7,
+.brightbuy-canvas .col-lg-8,
+.brightbuy-canvas .col-lg-9,
+.brightbuy-canvas .col-lg-10,
+.brightbuy-canvas .col-lg-11,
+.brightbuy-canvas .col-lg-12 {
+
+    position: relative;
+
+}
+
+
+/* =========================================================
+   18. NO RESPONSIVE MEDIA QUERIES
+========================================================= */
+
+/*
+
+   DO NOT ADD MEDIA QUERIES HERE.
+
+   The website is intentionally using one
+   1440px master design.
+
+   Desktop:
+       1440px → 100%
+
+   Tablet:
+       1024px → approximately 71%
+
+   Small tablet:
+        768px → approximately 53%
+
+   Mobile:
+        480px → approximately 33%
+
+   The layout does NOT rearrange.
+   The complete design scales.
+
+*/
+
+/* =========================================================
+   BRIGHTBUY FINAL SECTION DESIGN
+   Featured → Offer → Why Shop → Testimonials
+
+   ONE CLEAN BLUE + DOT BACKGROUND
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   SHARED BACKGROUND
+--------------------------------------------------------- */
+
+.featured-section,
+.offer-section,
+.why-section,
+.testimonial-section {
+
+    position: relative;
+
+    width: 1440px;
+    min-width: 1440px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 8% 45%,
+            rgba(45, 130, 255, 0.32),
+            transparent 32%
+        ),
+        linear-gradient(
+            120deg,
+            #174ca8 0%,
+            #0d3b91 42%,
+            #06245f 100%
+        ),
+        radial-gradient(
+            circle,
+            rgba(80, 160, 255, 0.42) 1.4px,
+            transparent 1.8px
+        );
+
+    background-size:
+        100% 100%,
+        100% 100%,
+        24px 24px;
+
+    background-position:
+        center,
+        center,
+        center;
+
+    background-repeat:
+        no-repeat,
+        no-repeat,
+        repeat;
+}
+
+
+/* ---------------------------------------------------------
+   REMOVE OLD BACKGROUND LAYERS
+--------------------------------------------------------- */
+
+.why-background,
+.testimonial-background {
+    display: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   KEEP CONTENT ABOVE BACKGROUND
+--------------------------------------------------------- */
+
+.featured-section > *,
+.offer-section > *,
+.why-section > *,
+.testimonial-section > * {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   FEATURED PRODUCTS
+========================================================= */
+
+.featured-section {
+    padding: 22px 0 18px;
+}
+
+
+/* Product container */
+
+.featured-box {
+    position: relative;
+    z-index: 3;
+}
+
+
+/* =========================================================
+   SPECIAL OFFER
+========================================================= */
+
+.offer-section {
+    padding: 12px 0 28px;
+}
+
+
+/* Yellow offer banner stays yellow */
+
+.offer-banner {
+    position: relative;
+    z-index: 3;
+
+    background:
+        linear-gradient(
+            105deg,
+            #ffb900 0%,
+            #ffd75c 48%,
+            #ffb20b 100%
+        );
+}
+
+
+/* =========================================================
+   WHY SHOP WITH US
+========================================================= */
+
+.why-section {
+    padding: 35px 0 40px;
+}
+
+
+/* Heading */
+
+.why-section .center-heading {
+    position: relative;
+    z-index: 3;
+
+    margin-bottom: 25px;
+}
+
+.why-section .center-heading > span {
+    color: #ffc400 !important;
+}
+
+.why-section .center-heading h2 {
+    color: #ffffff !important;
+
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Why cards */
+
+.why-card {
+
+    position: relative;
+    z-index: 3;
+
+    background:
+        linear-gradient(
+            145deg,
+            #12489f,
+            #082f78
+        ) !important;
+
+    border: 1px solid rgba(100, 170, 255, 0.35);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 7px 18px rgba(0, 20, 70, 0.20);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* Why card hover */
+
+.why-card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 12px 24px rgba(0, 20, 70, 0.28);
+}
+
+
+/* Icons */
+
+.why-icon {
+
+    color: #ffc400 !important;
+
+    border-color: #ffc400 !important;
+}
+
+
+/* Titles */
+
+.why-card h3 {
+    color: #ffffff !important;
+}
+
+
+/* Descriptions */
+
+.why-card p {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+
+/* =========================================================
+   TRUSTED BY THOUSANDS
+========================================================= */
+
+.testimonial-section {
+    padding: 24px 0 30px;
+}
+
+
+/* Heading */
+
+.testimonial-section .light-heading {
+    position: relative;
+    z-index: 3;
+}
+
+.testimonial-section .light-heading span {
+    color: #ffc400 !important;
+}
+
+.testimonial-section .light-heading h2 {
+    color: #ffffff !important;
+
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Stars */
+
+.testimonial-section .heading-stars {
+    color: #ffc400 !important;
+}
+
+
+/* Testimonial cards */
+
+.testimonial-card {
+
+    position: relative;
+    z-index: 3;
+
+    background: #ffffff !important;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 7px 18px rgba(0, 20, 70, 0.18);
+}
+
+
+/* Testimonial text */
+
+.testimonial-card p {
+    color: #59627c;
+}
+
+
+/* =========================================================
+   SUBTLE DOT OVERLAY
+   Gives the whole area the BrightBuy pattern
+========================================================= */
+
+.featured-section::before,
+.offer-section::before,
+.why-section::before,
+.testimonial-section::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 1;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(90, 170, 255, 0.35) 1.3px,
+            transparent 1.8px
+        );
+
+    background-size: 24px 24px;
+
+    background-position: center;
+
+    opacity: 0.55;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   REMOVE EXTRA GLOW LAYERS
+   Prevents overlapping backgrounds
+========================================================= */
+
+.featured-section::after,
+.offer-section::after,
+.why-section::after,
+.testimonial-section::after {
+
+    display: none !important;
+}
+
+
+/* =========================================================
+   MAKE SURE CARDS STAY ABOVE DOTS
+========================================================= */
+
+.featured-box,
+.offer-banner,
+.why-row,
+.testimonial-row {
+
+    position: relative;
+
+    z-index: 3;
+}
+
+/* =========================================================
+   WHY SHOP WITH US
+   MODERN DESIGN
+   SAME BLUE + DOT BACKGROUND
+========================================================= */
+
+.why-section {
+
+    position: relative;
+
+    width: 1440px;
+    min-width: 1440px;
+
+    padding: 42px 0 48px;
+
+    overflow: hidden;
+
+    /* SAME BACKGROUND STYLE */
+    background:
+        radial-gradient(
+            circle at 8% 45%,
+            rgba(45, 130, 255, 0.32),
+            transparent 32%
+        ),
+        linear-gradient(
+            120deg,
+            #174ca8 0%,
+            #0d3b91 42%,
+            #06245f 100%
+        );
+}
+
+
+/* =========================================================
+   DOTS
+========================================================= */
+
+.why-section::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(90, 170, 255, 0.35) 1.3px,
+            transparent 1.8px
+        );
+
+    background-size: 24px 24px;
+
+    opacity: 0.55;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.why-container {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 1340px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.why-heading {
+
+    text-align: center;
+
+    margin-bottom: 34px;
+}
+
+
+.why-heading span {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #ffc400;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+.why-heading h2 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 34px;
+
+    font-weight: 900;
+
+    line-height: 1.1;
+
+    text-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Yellow underline */
+
+.why-heading-line {
+
+    width: 85px;
+
+    height: 4px;
+
+    margin: 13px auto 0;
+
+    border-radius: 10px;
+
+    background: #ffc400;
+}
+
+
+/* =========================================================
+   BENEFIT CARDS
+========================================================= */
+
+.why-benefits {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.why-benefit-card {
+
+    min-height: 128px;
+
+    padding: 20px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18, 73, 160, 0.96),
+            rgba(7, 43, 105, 0.96)
+        );
+
+    border: 1px solid
+        rgba(92, 169, 255, 0.40);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 8px 22px
+        rgba(0, 18, 65, 0.25);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* =========================================================
+   CARD HOVER
+========================================================= */
+
+.why-benefit-card:hover {
+
+    transform: translateY(-6px);
+
+    border-color: #ffc400;
+
+    box-shadow:
+        0 14px 28px
+        rgba(0, 15, 60, 0.32);
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.why-benefit-icon {
+
+    width: 62px;
+
+    height: 62px;
+
+    min-width: 62px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 2px solid #ffc400;
+
+    border-radius: 50%;
+
+    color: #ffc400;
+
+    background:
+        rgba(3, 27, 75, 0.45);
+
+    font-size: 25px;
+
+    box-shadow:
+        0 0 0 5px
+        rgba(255, 196, 0, 0.05);
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.why-benefit-content {
+
+    min-width: 0;
+}
+
+
+.why-benefit-content h3 {
+
+    margin: 0 0 7px;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    white-space: nowrap;
+}
+
+
+.why-benefit-content p {
+
+    margin: 0;
+
+    color:
+        rgba(255, 255, 255, 0.88);
+
+    font-size: 11px;
+
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   REMOVE OLD WHY ELEMENTS
+========================================================= */
+
+
+/* =========================================================
+   RESPONSIVE SAFETY
+========================================================= */
+
+
+/* =========================================================
+   TRUSTED BY THOUSANDS
+   LARGE MODERN TESTIMONIAL SECTION
+========================================================= */
+
+.testimonial-section {
+
+    position: relative;
+
+    width: 1440px;
+    min-width: 1440px;
+
+    padding: 55px 0 50px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            120deg,
+            #174ca8 0%,
+            #0d3b91 45%,
+            #06245f 100%
+        );
+}
+
+
+/* =========================================================
+   DOT BACKGROUND
+========================================================= */
+
+.testimonial-section::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image:
+
+        radial-gradient(
+            circle,
+            rgba(90, 170, 255, 0.38) 1.5px,
+            transparent 1.8px
+        );
+
+    background-size: 24px 24px;
+
+    opacity: 0.65;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.testimonial-container {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 1340px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.testimonial-heading {
+
+    text-align: center;
+
+    margin-bottom: 38px;
+}
+
+
+.testimonial-heading span {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #ffc400;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+}
+
+
+.testimonial-heading h2 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 38px;
+
+    font-weight: 900;
+
+    line-height: 1.15;
+
+    text-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================================================
+   STARS
+========================================================= */
+
+.testimonial-stars {
+
+    margin-top: 12px;
+
+    color: #ffc400;
+
+    font-size: 21px;
+
+    letter-spacing: 4px;
+}
+
+
+/* =========================================================
+   TESTIMONIAL CARDS
+========================================================= */
+
+.testimonial-row {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 28px;
+
+    align-items: stretch;
+}
+
+
+.testimonial-card {
+
+    position: relative;
+
+    min-height: 330px;
+
+    padding: 30px 32px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    background: #ffffff !important;
+
+    border-radius: 18px;
+
+    border: 1px solid
+        rgba(255, 255, 255, 0.9);
+
+    box-shadow:
+        0 12px 30px
+        rgba(0, 20, 70, 0.20);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* =========================================================
+   CARD HOVER
+========================================================= */
+
+.testimonial-card:hover {
+
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 18px 35px
+        rgba(0, 20, 70, 0.28);
+}
+
+
+/* =========================================================
+   QUOTE ICON
+========================================================= */
+
+.quote-icon {
+
+    width: 55px;
+
+    height: 45px;
+
+    color: #9bb7ed;
+
+    font-family: Georgia, serif;
+
+    font-size: 70px;
+
+    font-weight: 900;
+
+    line-height: 65px;
+
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   REVIEW TEXT
+========================================================= */
+
+.testimonial-message {
+
+    margin: 0;
+
+    color: #25365d;
+
+    font-size: 16px;
+
+    font-weight: 500;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   CUSTOMER AREA
+========================================================= */
+
+.customer-info {
+
+    margin-top: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   PERSON ICON
+========================================================= */
+
+.customer-avatar {
+
+    width: 68px;
+
+    height: 68px;
+
+    min-width: 68px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e6ecfa;
+
+    color: #0b398f;
+
+    font-size: 34px;
+
+    border: 1px solid
+        rgba(10, 55, 140, 0.08);
+}
+
+
+/* =========================================================
+   CUSTOMER NAME
+========================================================= */
+
+.customer-details h3 {
+
+    margin: 0 0 5px;
+
+    color: #0b398f;
+
+    font-size: 18px;
+
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   VERIFIED BUYER
+========================================================= */
+
+.customer-details span {
+
+    color: #71809e;
+
+    font-size: 12px;
+
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   CAROUSEL DOTS
+========================================================= */
+
+.testimonial-dots {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-top: 28px;
+}
+
+
+.testimonial-dots span {
+
+    width: 9px;
+
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.45);
+}
+
+
+.testimonial-dots span.active {
+
+    width: 25px;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   REMOVE OLD TESTIMONIAL BACKGROUND
+========================================================= */
+
+.testimonial-background {
+
+    display: none !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+
+/* =========================================================
+   FIX TRUSTED BY THOUSANDS / TESTIMONIAL SECTION
+   Prevent footer from covering the testimonial cards
+========================================================= */
+
+.testimonial-section {
+    position: relative !important;
+
+    width: 1440px !important;
+    min-width: 1440px !important;
+
+    min-height: 570px !important;
+
+    padding: 55px 0 65px !important;
+
+    overflow: hidden !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* Keep testimonial content visible */
+
+.testimonial-container {
+    position: relative !important;
+
+    width: 1340px !important;
+
+    margin: 0 auto !important;
+
+    z-index: 5 !important;
+}
+
+
+/* =========================================================
+   TESTIMONIAL CARDS
+========================================================= */
+
+.testimonial-row {
+    position: relative !important;
+
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(3, 1fr) !important;
+
+    gap: 28px !important;
+
+    width: 100% !important;
+
+    z-index: 5 !important;
+}
+
+
+.testimonial-card {
+    position: relative !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    min-height: 330px !important;
+
+    height: 330px !important;
+
+    padding: 30px 32px !important;
+
+    box-sizing: border-box !important;
+
+    background: #ffffff !important;
+
+    border-radius: 18px !important;
+
+    overflow: visible !important;
+
+    z-index: 6 !important;
+}
+
+
+/* =========================================================
+   TESTIMONIAL HEADING
+========================================================= */
+
+.testimonial-heading {
+    position: relative !important;
+
+    z-index: 6 !important;
+
+    text-align: center !important;
+
+    margin-bottom: 38px !important;
+}
+
+
+.testimonial-heading span {
+    color: #ffc400 !important;
+
+    font-size: 12px !important;
+
+    font-weight: 900 !important;
+}
+
+
+.testimonial-heading h2 {
+    color: #ffffff !important;
+
+    font-size: 38px !important;
+
+    font-weight: 900 !important;
+
+    margin: 6px 0 0 !important;
+}
+
+
+/* =========================================================
+   REVIEW TEXT
+========================================================= */
+
+.testimonial-message {
+    color: #25365d !important;
+
+    font-size: 15px !important;
+
+    line-height: 1.6 !important;
+
+    margin: 10px 0 20px !important;
+}
+
+
+/* =========================================================
+   CUSTOMER INFORMATION
+========================================================= */
+
+.customer-info {
+    margin-top: auto !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    gap: 15px !important;
+}
+
+
+.customer-avatar {
+    width: 62px !important;
+
+    height: 62px !important;
+
+    min-width: 62px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    border-radius: 50% !important;
+
+    background: #e7edf9 !important;
+
+    color: #0b398f !important;
+
+    font-size: 30px !important;
+}
+
+
+.customer-details h3 {
+    color: #0b398f !important;
+
+    font-size: 17px !important;
+
+    margin: 0 0 4px !important;
+}
+
+
+.customer-details span {
+    color: #71809e !important;
+
+    font-size: 11px !important;
+}
+
+
+/* =========================================================
+   CAROUSEL DOTS
+========================================================= */
+
+.testimonial-dots {
+    position: relative !important;
+
+    z-index: 6 !important;
+
+    display: flex !important;
+
+    justify-content: center !important;
+
+    align-items: center !important;
+
+    gap: 7px !important;
+
+    margin-top: 28px !important;
+}
+
+
+/* =========================================================
+   PREVENT FOOTER FROM MOVING UP
+========================================================= */
+
+.testimonial-section + footer,
+.testimonial-section ~ footer {
+    position: relative !important;
+
+    clear: both !important;
+
+    margin-top: 0 !important;
+
+    z-index: 10 !important;
+}
+
+
+/* =========================================================
+   REMOVE ANY NEGATIVE FOOTER POSITIONING
+========================================================= */
+
+footer {
+    transform: none !important;
+}
+
+
+/* =========================================================
+   IMPORTANT:
+   Don't allow testimonial content to be clipped
+========================================================= */
+
+.testimonial-section,
+.testimonial-container,
+.testimonial-row {
+    overflow: visible !important;
+}
+
+/* =========================================================
+   BRIGHTBUY FOOTER
+   LARGER TEXT + ICONS + LOGO
+========================================================= */
+
+
+/* =========================================================
+   FOOTER SIZE
+========================================================= */
+
+.site-footer {
+    position: relative;
+
+    width: 1440px;
+    min-width: 1440px;
+
+    padding: 38px 0 22px !important;
+
+    background: #031b55 !important;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   FOOTER CONTAINER
+========================================================= */
+
+.site-footer .footer-container {
+    width: 1340px !important;
+
+    margin: 0 auto !important;
+}
+
+
+/* =========================================================
+   FOOTER COLUMNS
+========================================================= */
+
+.site-footer .footer-grid {
+    display: grid !important;
+
+    grid-template-columns:
+        1.3fr
+        1fr
+        1.2fr
+        1fr
+        1.4fr !important;
+
+    column-gap: 55px !important;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   FOOTER LOGO
+========================================================= */
+
+.site-footer .footer-logo img {
+
+    width: 180px !important;
+
+    max-width: 180px !important;
+
+    height: auto !important;
+}
+
+
+/* =========================================================
+   FOOTER DESCRIPTION
+========================================================= */
+
+.site-footer .footer-description {
+
+    margin-top: 12px !important;
+
+    max-width: 190px !important;
+
+    color: rgba(255,255,255,0.80) !important;
+
+    font-size: 13px !important;
+
+    line-height: 1.55 !important;
+}
+
+
+/* =========================================================
+   FOOTER COLUMN TITLES
+========================================================= */
+
+.site-footer h3,
+.site-footer h4 {
+
+    color: #ffffff !important;
+
+    font-size: 16px !important;
+
+    font-weight: 800 !important;
+
+    margin-bottom: 13px !important;
+}
+
+
+/* =========================================================
+   FOOTER LINKS
+========================================================= */
+
+.site-footer a {
+
+    color: rgba(255,255,255,0.82) !important;
+
+    font-size: 12px !important;
+
+    line-height: 1.7 !important;
+
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease;
+}
+
+
+.site-footer a:hover {
+
+    color: #ffc400 !important;
+}
+
+
+/* =========================================================
+   SOCIAL MEDIA ICONS
+========================================================= */
+
+.site-footer .social-links {
+
+    display: flex !important;
+
+    align-items: center;
+
+    gap: 10px !important;
+
+    margin-top: 17px !important;
+}
+
+
+.site-footer .social-links a {
+
+    width: 36px !important;
+
+    height: 36px !important;
+
+    min-width: 36px !important;
+
+    display: flex !important;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 1px solid
+        rgba(255,255,255,0.40) !important;
+
+    border-radius: 50% !important;
+
+    color: #ffffff !important;
+
+    font-size: 16px !important;
+
+    line-height: 1 !important;
+}
+
+
+.site-footer .social-links a:hover {
+
+    color: #ffc400 !important;
+
+    border-color: #ffc400 !important;
+}
+
+
+/* =========================================================
+   APP STORE BUTTONS
+========================================================= */
+
+.site-footer .app-buttons {
+
+    display: flex !important;
+
+    gap: 10px !important;
+
+    margin-top: 12px !important;
+}
+
+
+.site-footer .app-buttons img {
+
+    width: 105px !important;
+
+    height: auto !important;
+}
+
+
+/* =========================================================
+   FOOTER BOTTOM
+========================================================= */
+
+.site-footer .footer-bottom {
+
+    margin-top: 30px !important;
+
+    padding-top: 18px !important;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,0.20) !important;
+}
+
+
+/* =========================================================
+   COPYRIGHT
+========================================================= */
+
+.site-footer .copyright {
+
+    color: rgba(255,255,255,0.70) !important;
+
+    font-size: 11px !important;
+}
+
+
+/* =========================================================
+   POLICY LINKS
+========================================================= */
+
+.site-footer .footer-policies a {
+
+    font-size: 11px !important;
+
+    margin-left: 18px !important;
+
+    color: rgba(255,255,255,0.70) !important;
+}
+
+
+/* =========================================================
+   PAYMENT ICONS
+========================================================= */
+
+.site-footer .payment-methods {
+
+    display: flex !important;
+
+    align-items: center;
+
+    gap: 7px !important;
+}
+
+
+.site-footer .payment-methods img {
+
+    height: 24px !important;
+
+    width: auto !important;
+}
+
+
+/* =========================================================
+   FOOTER ICONS
+========================================================= */
+
+.site-footer i {
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   MAKE SMALL TEXT MORE READABLE
+========================================================= */
+
+.site-footer small {
+
+    font-size: 11px !important;
+
+    line-height: 1.5 !important;
+}
+
+
+/* =========================================================
+   MOBILE SAFETY
+========================================================= */
+
+
+/* =========================================================
+   FIX APP STORE / GOOGLE PLAY BUTTONS
+========================================================= */
+
+.site-footer .app-buttons {
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    align-items: center !important;
+
+    justify-content: flex-start !important;
+
+    gap: 12px !important;
+
+    width: 100% !important;
+
+    max-width: 300px !important;
+
+    flex-wrap: nowrap !important;
+}
+
+
+/* Individual buttons */
+
+.site-footer .app-buttons .app-button {
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: flex-start !important;
+
+    gap: 8px !important;
+
+    width: 135px !important;
+
+    min-width: 135px !important;
+
+    max-width: 135px !important;
+
+    height: 46px !important;
+
+    padding: 6px 10px !important;
+
+    box-sizing: border-box !important;
+
+    border: 1px solid
+        rgba(255,255,255,0.35) !important;
+
+    border-radius: 7px !important;
+
+    text-decoration: none !important;
+
+    overflow: hidden !important;
+
+    white-space: nowrap !important;
+}
+
+
+/* Apple / Google icons */
+
+.site-footer .app-buttons .app-button i {
+
+    flex: 0 0 auto !important;
+
+    font-size: 22px !important;
+
+    line-height: 1 !important;
+
+    color: #ffffff !important;
+}
+
+
+/* Text inside buttons */
+
+.site-footer .app-buttons .app-button span {
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    justify-content: center !important;
+
+    line-height: 1.05 !important;
+
+    min-width: 0 !important;
+}
+
+
+/* Small "GET IT ON" / "Download on the" */
+
+.site-footer .app-buttons .app-button small {
+
+    display: block !important;
+
+    margin: 0 0 3px !important;
+
+    font-size: 7px !important;
+
+    line-height: 1 !important;
+
+    color: #ffffff !important;
+}
+
+
+/* App Store / Google Play text */
+
+.site-footer .app-buttons .app-button span {
+
+    color: #ffffff !important;
+
+    font-size: 11px !important;
+
+    font-weight: 500 !important;
+}
+
+
+/* Hover */
+
+.site-footer .app-buttons .app-button:hover {
+
+    border-color: #ffc400 !important;
+
+    transform: translateY(-2px);
+
+    transition: 0.2s ease;
+}
+
+/* =========================================================
+   SPECIAL OFFER AUTOMATIC SLIDER
+========================================================= */
+
+.offer-slider {
+    position: relative;
+    width: 1340px;
+    min-width: 1340px;
+    height: 190px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   SLIDES
+========================================================= */
+
+.offer-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 1340px;
+    height: 165px;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.6s ease,
+        visibility 0.6s ease;
+
+    pointer-events: none;
+}
+
+
+/* Active slide */
+
+.offer-slide.active {
+    opacity: 1;
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   OFFER BANNER
+========================================================= */
+
+.offer-slide .offer-banner {
+    width: 1340px;
+    min-width: 1340px;
+
+    height: 165px;
+    min-height: 165px;
+
+    margin: 0;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    overflow: hidden;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            105deg,
+            #ffb900 0%,
+            #ffd75c 48%,
+            #ffb20b 100%
+        );
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================================
+   OFFER TEXT
+========================================================= */
+
+.offer-slide .offer-text {
+    position: relative;
+
+    z-index: 5;
+
+    width: 520px;
+
+    margin-left: 85px;
+}
+
+
+/* Small label */
+
+.offer-slide .offer-text > span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #07338a;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* Heading */
+
+.offer-slide .offer-text h2 {
+    margin: 0 0 6px;
+
+    color: #07338a;
+
+    font-size: 30px;
+
+    line-height: 1;
+
+    font-weight: 800;
+}
+
+
+/* Description */
+
+.offer-slide .offer-text p {
+    margin: 0 0 10px;
+
+    color: #17366f;
+
+    font-size: 9px;
+
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   OFFER BUTTON
+========================================================= */
+
+.offer-slide .offer-button {
+    width: 125px;
+
+    height: 34px;
+
+    padding: 0 13px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border: none;
+
+    border-radius: 20px;
+
+    background: #03185c;
+
+    color: #ffffff;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.offer-slide .offer-button:hover {
+    background: #06399a;
+
+    color: #ffffff;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   OFFER IMAGE
+========================================================= */
+
+.offer-slide .offer-graphic {
+    position: absolute;
+
+    z-index: 6;
+
+    right: 65px;
+
+    top: 0;
+
+    width: 500px;
+
+    height: 165px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    pointer-events: none;
+}
+
+
+.offer-slide .offer-graphic img {
+    width: 480px;
+
+    height: 160px;
+
+    max-width: 480px;
+
+    max-height: 160px;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter:
+        drop-shadow(
+            0 12px 12px rgba(0, 0, 0, 0.20)
+        );
+}
+
+
+/* =========================================================
+   SLIDER DOTS
+========================================================= */
+
+.offer-dots {
+    position: absolute;
+
+    left: 0;
+
+    bottom: 5px;
+
+    width: 100%;
+
+    height: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    z-index: 20;
+}
+
+
+.offer-dot {
+    width: 8px;
+
+    height: 8px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.45);
+
+    cursor: pointer;
+
+    transition:
+        width 0.25s ease,
+        background 0.25s ease;
+}
+
+
+.offer-dot.active {
+    width: 22px;
+
+    border-radius: 10px;
+
+    background: #ffc400;
+}
+
+
+.offer-dot:hover {
+    background: #ffc400;
+}
+
+/* =========================================================
+   BRIGHTBUY SPECIAL OFFER SLIDER - FINAL FIX
+========================================================= */
+
+.offer-section {
+    position: relative;
+    overflow: hidden;
+}
+
+
+.offer-slider {
+    position: relative;
+
+    width: 1340px;
+    min-width: 1340px;
+
+    height: 190px;
+
+    margin: 0 auto;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   SLIDES
+========================================================= */
+
+.offer-slide {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 1340px;
+    height: 165px;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateX(40px);
+
+    transition:
+        opacity 0.6s ease,
+        transform 0.6s ease,
+        visibility 0.6s ease;
+
+    pointer-events: none;
+}
+
+
+.offer-slide.active {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translateX(0);
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   BANNER
+========================================================= */
+
+.offer-slide .offer-banner {
+
+    position: relative;
+
+    width: 1340px;
+    min-width: 1340px;
+
+    height: 165px;
+    min-height: 165px;
+
+    margin: 0;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            105deg,
+            #ffb900 0%,
+            #ffd75c 48%,
+            #ffb20b 100%
+        );
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.10);
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.offer-slide .offer-text {
+
+    position: relative;
+
+    z-index: 10;
+
+    width: 520px;
+
+    margin-left: 85px;
+}
+
+
+.offer-slide .offer-text > span {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #07338a;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+.offer-slide .offer-text h2 {
+
+    margin: 0 0 6px;
+
+    color: #07338a;
+
+    font-size: 30px;
+
+    line-height: 1;
+
+    font-weight: 800;
+}
+
+
+.offer-slide .offer-text p {
+
+    margin: 0 0 10px;
+
+    color: #17366f;
+
+    font-size: 9px;
+
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.offer-slide .offer-button {
+
+    width: 125px;
+
+    height: 34px;
+
+    padding: 0 13px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border: none;
+
+    border-radius: 20px;
+
+    background: #03185c;
+
+    color: white;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+
+.offer-slide .offer-button:hover {
+
+    background: #06399a;
+
+    color: white;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.offer-slide .offer-graphic {
+
+    position: absolute;
+
+    z-index: 10;
+
+    right: 65px;
+
+    top: 0;
+
+    width: 500px;
+
+    height: 165px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    pointer-events: none;
+}
+
+
+.offer-slide .offer-graphic img {
+
+    width: 480px;
+
+    height: 160px;
+
+    max-width: 480px;
+
+    max-height: 160px;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter:
+        drop-shadow(
+            0 12px 12px rgba(0,0,0,0.20)
+        );
+}
+
+
+/* =========================================================
+   DOTS
+========================================================= */
+
+.offer-dots {
+
+    position: absolute;
+
+    left: 0;
+
+    bottom: 5px;
+
+    width: 100%;
+
+    height: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    z-index: 100;
+}
+
+
+.offer-dot {
+
+    width: 8px;
+
+    height: 8px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.45);
+
+    cursor: pointer;
+
+    transition:
+        width 0.25s ease,
+        background 0.25s ease;
+}
+
+
+.offer-dot.active {
+
+    width: 22px;
+
+    border-radius: 10px;
+
+    background: #ffc400;
+}
+
+
+.offer-dot:hover {
+
+    background: #ffc400;
+}
+
+.offer-section {
+    height: 230px !important;
+}
+
+.offer-slider {
+    height: 210px !important;
+}
+
+.offer-slide {
+    height: 210px !important;
+}
+
+.offer-banner {
+    height: 210px !important;
+    min-height: 210px !important;
+    box-sizing: border-box !important;
+    padding: 28px 40px 32px 50px !important;
+}
+
+.offer-text {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.offer-text span {
+    display: block;
+    margin-bottom: 6px !important;
+}
+
+.offer-text h2 {
+    margin-top: 0 !important;
+    margin-bottom: 7px !important;
+}
+
+.offer-text p {
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+}
+
+.offer-button {
+    margin-top: 0 !important;
+}
+
+.testimonial-container {
+    width: calc(100% - 120px) !important;
+    max-width: 1340px !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+}
+
+.testimonial-row {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 28px !important;
+    align-items: stretch !important;
+}
+
+.testimonial-row > div {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    flex: none !important;
+    padding: 0 !important;
+}
+
+.testimonial-card {
+    width: 100% !important;
+    height: 330px !important;
+    min-height: 330px !important;
+    padding: 32px 32px 24px 48px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.testimonial-card .quote-icon {
+    margin: 0 0 25px 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.testimonial-card .testimonial-message {
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+}
+
+.testimonial-card .customer-info {
+    margin-top: auto !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+}
+
+.testimonial-card .customer-avatar {
+    width: 62px !important;
+    height: 62px !important;
+    min-width: 62px !important;
+}
+
+.testimonial-card .testimonial-message {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 25px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+}
+
+.wishlist-form {
+    margin: 0;
+    padding: 0;
+}
+
+.product-wishlist.active {
+    color: #ff1744;
+}
+
+.product-wishlist.active i {
+    color: #ff1744;
+}
+
+.wishlist-action {
+    position: relative;
+}
+
+.wishlist-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 50%;
+    background: #ffc107;
+    color: #073b9d;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-cart-form {
+    margin: 0;
+    padding: 0;
+}
+
+.cart-quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.cart-quantity form {
+    margin: 0;
+}
+
+.quantity-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #0d47a1;
+    border-radius: 6px;
+    background: white;
+    color: #0d47a1;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.quantity-btn:hover {
+    background: #0d47a1;
+    color: white;
+}
+
+.quantity-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #f1f1f1;
+    color: #999;
+    border-color: #ccc;
+}
+
+.quantity-btn:disabled:hover {
+    background: #f1f1f1;
+    color: #999;
+}
+
+.quantity-number {
+    min-width: 25px;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* =====================================================
+   PRODUCT STOCK
+===================================================== */
+
+.product-stock {
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stock-available {
+    color: #198754;
+}
+
+.stock-low {
+    color: #e67e22;
+}
+
+.stock-out {
+    color: #dc3545;
+}
+

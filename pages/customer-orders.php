@@ -618,16 +618,13 @@ if (!empty($orders)) {
 
 
                     <a
-                        href="track-order.php?order_id=<?= (int)$order["order_id"] ?>"
-                        class="track-btn"
-                        target="_blank"
-                    >
-
-                        <i class="bi bi-eye"></i>
-
-                        View Tracking
-
-                    </a>
+    href="admin-track-order.php?order_id=<?= (int)$order["order_id"] ?>"
+    class="track-btn"
+    target="_blank"
+>
+    <i class="bi bi-eye"></i>
+    View Tracking
+</a>
 
 
                 </div>

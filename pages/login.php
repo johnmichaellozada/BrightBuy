@@ -32,11 +32,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($errors)) {
 
         $stmt = $pdo->prepare(
-            "SELECT user_id, first_name, last_name, email, password
-             FROM users
-             WHERE email = ?
-             LIMIT 1"
-        );
+    "SELECT user_id, first_name, last_name, email, password, phone, role
+     FROM users
+     WHERE email = ?
+     LIMIT 1"
+);
 
         $stmt->execute([$email]);
 
@@ -44,22 +44,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if ($user && password_verify($password, $user["password"])) {
 
-            session_regenerate_id(true);
+    // CUSTOMER LOGIN ONLY
+    if ($user["role"] !== "customer") {
 
-            $_SESSION["user_id"] = $user["user_id"];
-            $_SESSION["first_name"] = $user["first_name"];
-            $_SESSION["last_name"] = $user["last_name"];
-            $_SESSION["email"] = $user["email"];
-            $_SESSION["logged_in"] = true;
+        $errors[] = "This login is for customers only. Please use Admin Login.";
 
-            header("Location: ../index.php");
-            exit;
+    } else {
 
-        } else {
+        session_regenerate_id(true);
 
-            $errors[] = "Invalid email or password.";
+        $_SESSION["user_id"] = $user["user_id"];
+        $_SESSION["first_name"] = $user["first_name"];
+        $_SESSION["last_name"] = $user["last_name"];
+        $_SESSION["email"] = $user["email"];
+        $_SESSION["phone"] = $user["phone"];
+        $_SESSION["role"] = $user["role"];
+        $_SESSION["logged_in"] = true;
 
-        }
+        header("Location: ../index.php");
+        exit;
+    }
+
+} else {
+
+    $errors[] = "Invalid email or password.";
+
+}
     }
 }
 

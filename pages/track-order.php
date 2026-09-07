@@ -1,7 +1,13 @@
 <?php
 
 session_start();
+
 require_once "../db.php";
+
+
+/* =====================================================
+   CUSTOMER LOGIN CHECK
+===================================================== */
 
 if (
     !isset($_SESSION["logged_in"]) ||
@@ -11,7 +17,12 @@ if (
     exit;
 }
 
-$user_id = $_SESSION["user_id"];
+
+/* =====================================================
+   USER ID
+===================================================== */
+
+$user_id = (int)$_SESSION["user_id"];
 
 
 /* =====================================================
@@ -26,11 +37,61 @@ $order_id = filter_input(
 
 
 /* =====================================================
+   WISHLIST COUNT
+===================================================== */
+
+$wishlistCount = 0;
+
+$wishlistProductIds = [];
+
+
+$wishlistStmt = $pdo->prepare("
+    SELECT product_id
+    FROM wishlist
+    WHERE user_id = ?
+");
+
+$wishlistStmt->execute([
+    $user_id
+]);
+
+$wishlistProductIds = $wishlistStmt->fetchAll(
+    PDO::FETCH_COLUMN
+);
+
+$wishlistCount = count($wishlistProductIds);
+
+
+/* =====================================================
+   CART COUNT
+===================================================== */
+
+$cartCount = 0;
+
+
+$cartStmt = $pdo->prepare("
+    SELECT COALESCE(SUM(ci.quantity), 0)
+    FROM cart_items ci
+    INNER JOIN cart c
+        ON ci.cart_id = c.cart_id
+    WHERE c.user_id = ?
+");
+
+$cartStmt->execute([
+    $user_id
+]);
+
+$cartCount = (int)$cartStmt->fetchColumn();
+
+
+/* =====================================================
    GET ORDER
 ===================================================== */
 
 $order = null;
+
 $orderItems = [];
+
 
 if ($order_id) {
 
@@ -40,6 +101,7 @@ if ($order_id) {
             o.total_amount,
             o.status,
             o.created_at,
+
             a.recipient_name,
             a.phone,
             a.address_line,
@@ -47,18 +109,24 @@ if ($order_id) {
             a.city,
             a.province,
             a.postal_code
+
         FROM orders o
+
         LEFT JOIN addresses a
             ON o.address_id = a.address_id
+
         WHERE o.order_id = ?
           AND o.user_id = ?
+
         LIMIT 1
     ");
+
 
     $orderStmt->execute([
         $order_id,
         $user_id
     ]);
+
 
     $order = $orderStmt->fetch();
 
@@ -74,25 +142,33 @@ if ($order_id) {
                 oi.quantity,
                 oi.price,
                 oi.subtotal,
+
                 p.product_name,
                 p.image
+
             FROM order_items oi
+
             INNER JOIN products p
                 ON oi.product_id = p.product_id
+
             WHERE oi.order_id = ?
         ");
+
 
         $itemsStmt->execute([
             $order_id
         ]);
 
+
         $orderItems = $itemsStmt->fetchAll();
+
     }
+
 }
 
 
 /* =====================================================
-   STATUS
+   ORDER STATUS
 ===================================================== */
 
 $status = $order
@@ -102,6 +178,7 @@ $status = $order
 ?>
 
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -113,188 +190,619 @@ $status = $order
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Track Order - BrightBuy</title>
+    <title>
+        Track Order - BrightBuy
+    </title>
+
+
+    <!-- =================================================
+         BOOTSTRAP
+    ================================================== -->
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
+
+    <!-- =================================================
+         BOOTSTRAP ICONS
+    ================================================== -->
+
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     >
 
-    <style>
 
-        body {
-            background: #f5f7ff;
-            font-family: Arial, sans-serif;
-        }
+    <!-- =================================================
+         POPPINS
+    ================================================== -->
 
-        .tracking-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-        .tracking-icon {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            background: #e9f0ff;
-            color: #073b9d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            margin: auto;
-        }
 
-        .tracking-step {
-            text-align: center;
-            position: relative;
-        }
+    <!-- =================================================
+         BRIGHTBUY CSS
+    ================================================== -->
 
-        .tracking-step.active .tracking-icon {
-            background: #073b9d;
-            color: white;
-        }
-
-        .tracking-step.completed .tracking-icon {
-            background: #198754;
-            color: white;
-        }
-
-        .tracking-line {
-            height: 4px;
-            background: #dee2e6;
-            flex: 1;
-            margin: 0 10px;
-            margin-top: -32px;
-        }
-
-        .tracking-line.completed {
-            background: #198754;
-        }
-
-        .product-image {
-            width: 70px;
-            height: 70px;
-            object-fit: contain;
-        }
-
-    </style>
+    <link
+        rel="stylesheet"
+        href="../css/styles.css"
+    >
 
 </head>
 
-<body>
 
-<div class="container py-5">
+<body class="track-order-page">
 
-    <!-- =================================================
-         PAGE HEADER
-    ================================================== -->
 
-    <div class="text-center mb-5">
+<!-- =====================================================
+     BRIGHTBUY VIEWPORT
+===================================================== -->
 
-        <h1 class="fw-bold">
+<div class="brightbuy-viewport">
 
-            <i class="bi bi-box-seam"></i>
+    <div class="brightbuy-canvas">
 
-            Track My Order
 
-        </h1>
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
-        <p class="text-muted">
-            Check the current status of your BrightBuy order.
-        </p>
+<header class="site-header">
+
+    <div class="header-main">
+
+        <div class="bright-container">
+
+            <div class="header-row">
+
+
+                <!-- LOGO -->
+
+                <a
+                    href="../index.php"
+                    class="brand-logo"
+                >
+
+                    <img
+                        src="../images/logo.png"
+                        alt="BrightBuy Logo"
+                    >
+
+                </a>
+
+
+                <!-- ALL CATEGORIES -->
+
+                <a
+                    href="shop.php"
+                    class="category-button"
+                >
+
+                    <i class="bi bi-grid-fill"></i>
+
+                    <span>
+                        All Categories
+                    </span>
+
+                </a>
+
+
+                <!-- SEARCH -->
+
+                <form
+                    action="shop.php"
+                    method="GET"
+                    class="search-box"
+                >
+
+                    <input
+                        type="text"
+                        name="search"
+                        placeholder="Search for products..."
+                        aria-label="Search for products"
+                    >
+
+                    <button type="submit">
+
+                        <i class="bi bi-search"></i>
+
+                    </button>
+
+                </form>
+
+
+                <!-- HEADER ACTIONS -->
+
+                <div class="header-actions">
+
+
+                    <?php if (
+                        isset($_SESSION["logged_in"]) &&
+                        $_SESSION["logged_in"] === true
+                    ): ?>
+
+                        <div
+                            class="d-flex align-items-center gap-2"
+                        >
+
+                            <a
+                                href="account.php"
+                                class="header-action"
+                            >
+
+                                <i class="bi bi-person"></i>
+
+                                <span>
+                                    <?= htmlspecialchars(
+                                        $_SESSION["first_name"]
+                                    ) ?>
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="logout.php"
+                                class="header-action"
+                            >
+
+                                <i class="bi bi-box-arrow-right"></i>
+
+                                <span>
+                                    Logout
+                                </span>
+
+                            </a>
+
+                        </div>
+
+                    <?php else: ?>
+
+                        <a
+                            href="login.php"
+                            class="header-action"
+                        >
+
+                            <i class="bi bi-person"></i>
+
+                            <span>
+                                Account
+                            </span>
+
+                        </a>
+
+                    <?php endif; ?>
+
+
+                    <!-- WISHLIST -->
+
+                    <a
+                        href="wishlist.php"
+                        class="header-action wishlist-action"
+                    >
+
+                        <i class="bi bi-heart"></i>
+
+                        <span>
+                            Wishlist
+                        </span>
+
+                        <?php if ($wishlistCount > 0): ?>
+
+                            <b class="wishlist-count">
+                                <?= $wishlistCount ?>
+                            </b>
+
+                        <?php endif; ?>
+
+                    </a>
+
+
+                    <!-- CART -->
+
+                    <a
+                        href="cart.php"
+                        class="header-action cart-action"
+                    >
+
+                        <i class="bi bi-cart3"></i>
+
+                        <span>
+                            Cart
+                        </span>
+
+                        <?php if ($cartCount > 0): ?>
+
+                            <b class="cart-count">
+                                <?= $cartCount ?>
+                            </b>
+
+                        <?php endif; ?>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
 
-    <?php if (!$order): ?>
+    <!-- =================================================
+         NAVIGATION
+    ================================================== -->
 
-        <!-- =================================================
-             NO ORDER SELECTED
-        ================================================== -->
+    <nav class="main-navigation">
 
-        <div class="card tracking-card">
+        <div class="bright-container">
 
-            <div class="card-body text-center p-5">
+            <ul class="nav-menu">
 
-                <i
-                    class="bi bi-search"
-                    style="font-size: 60px;"
-                ></i>
 
-                <h3 class="fw-bold mt-3">
-                    Select an Order
+                <li>
+
+                    <a href="../index.php">
+                        Home
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="shop.php">
+                        Shop
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="deals.php">
+                        Deals
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="new-arrivals.php">
+                        New Arrivals
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a
+                        href="track-order.php"
+                        class="active"
+                    >
+                        Track Order
+                    </a>
+
+                </li>
+
+
+                <li>
+
+                    <a href="help.php">
+                        Help Center
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+        </div>
+
+    </nav>
+
+</header>
+
+
+<!-- =====================================================
+     TRACK ORDER HERO
+===================================================== -->
+
+<section class="track-hero">
+
+    <div class="track-hero-content">
+
+        <div class="track-hero-label">
+            TRACKING
+        </div>
+
+        <h1>
+            Track <span>Your Order</span>
+        </h1>
+
+        <p>
+            Check the current status of your BrightBuy order
+            and stay updated every step of the way.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     TRACK ORDER CONTENT
+===================================================== -->
+
+<main class="track-content">
+
+
+<?php if (!$order): ?>
+
+
+    <!-- =================================================
+         NO ORDER SELECTED
+    ================================================== -->
+
+    <div class="tracking-card">
+
+        <div class="track-empty">
+
+            <div class="track-empty-icon">
+
+                <i class="bi bi-search"></i>
+
+            </div>
+
+
+            <h3>
+                Select an Order
+            </h3>
+
+
+            <p>
+                Go to My Orders and select an order to track.
+            </p>
+
+
+            <a
+                href="my-orders.php"
+                class="track-primary-btn"
+            >
+
+                <i class="bi bi-bag-check"></i>
+
+                My Orders
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+<?php else: ?>
+
+
+    <!-- =================================================
+         ORDER INFORMATION
+    ================================================== -->
+
+    <div class="tracking-card order-summary-card">
+
+        <div class="order-summary">
+
+
+            <div>
+
+                <span class="track-small-label">
+                    ORDER NUMBER
+                </span>
+
+                <h3>
+                    Order #<?= (int)$order["order_id"] ?>
                 </h3>
 
-                <p class="text-muted">
-                    Go to My Orders and select an order to track.
+                <p>
+
+                    <?= date(
+                        "F d, Y h:i A",
+                        strtotime($order["created_at"])
+                    ) ?>
+
                 </p>
 
-                <a
-                    href="my-orders.php"
-                    class="btn btn-primary px-4"
-                >
-
-                    <i class="bi bi-bag-check"></i>
-
-                    My Orders
-
-                </a>
-
             </div>
+
+
+            <span class="track-status-badge">
+
+                <?= htmlspecialchars(
+                    $order["status"]
+                ) ?>
+
+            </span>
+
 
         </div>
 
+    </div>
 
-    <?php else: ?>
+
+    <!-- =================================================
+         ORDER STATUS
+    ================================================== -->
+
+    <div class="tracking-card status-card">
+
+        <div class="tracking-card-body">
+
+            <h3 class="tracking-section-title">
+                Order Status
+            </h3>
 
 
-        <!-- =================================================
-             ORDER INFORMATION
-        ================================================== -->
+            <div class="tracking-progress">
 
-        <div class="card tracking-card mb-4">
 
-            <div class="card-body p-4">
+                <!-- PENDING -->
 
                 <div
-                    class="d-flex justify-content-between
-                    align-items-center flex-wrap"
+                    class="tracking-step
+                    <?= in_array(
+                        $status,
+                        [
+                            "pending",
+                            "processing",
+                            "shipped",
+                            "delivered"
+                        ]
+                    )
+                        ? "completed"
+                        : ""
+                    ?>"
                 >
 
-                    <div>
+                    <div class="tracking-icon">
 
-                        <h4 class="fw-bold mb-1">
-
-                            Order #<?= (int)$order["order_id"] ?>
-
-                        </h4>
-
-                        <small class="text-muted">
-
-                            <?= date(
-                                "F d, Y h:i A",
-                                strtotime($order["created_at"])
-                            ) ?>
-
-                        </small>
+                        <i class="bi bi-clock"></i>
 
                     </div>
 
+                    <h6>
+                        Pending
+                    </h6>
 
-                    <span class="badge bg-warning text-dark">
+                </div>
 
-                        <?= htmlspecialchars(
-                            $order["status"]
-                        ) ?>
 
-                    </span>
+                <div
+                    class="tracking-line
+                    <?= in_array(
+                        $status,
+                        [
+                            "processing",
+                            "shipped",
+                            "delivered"
+                        ]
+                    )
+                        ? "completed"
+                        : ""
+                    ?>"
+                ></div>
+
+
+                <!-- PROCESSING -->
+
+                <div
+                    class="tracking-step
+                    <?= in_array(
+                        $status,
+                        [
+                            "processing",
+                            "shipped",
+                            "delivered"
+                        ]
+                    )
+                        ? "completed"
+                        : ""
+                    ?>"
+                >
+
+                    <div class="tracking-icon">
+
+                        <i class="bi bi-gear"></i>
+
+                    </div>
+
+                    <h6>
+                        Processing
+                    </h6>
+
+                </div>
+
+
+                <div
+                    class="tracking-line
+                    <?= in_array(
+                        $status,
+                        [
+                            "shipped",
+                            "delivered"
+                        ]
+                    )
+                        ? "completed"
+                        : ""
+                    ?>"
+                ></div>
+
+
+                <!-- SHIPPED -->
+
+                <div
+                    class="tracking-step
+                    <?= in_array(
+                        $status,
+                        [
+                            "shipped",
+                            "delivered"
+                        ]
+                    )
+                        ? "completed"
+                        : ""
+                    ?>"
+                >
+
+                    <div class="tracking-icon">
+
+                        <i class="bi bi-truck"></i>
+
+                    </div>
+
+                    <h6>
+                        Shipped
+                    </h6>
+
+                </div>
+
+
+                <div
+                    class="tracking-line
+                    <?= $status === "delivered"
+                        ? "completed"
+                        : ""
+                    ?>"
+                ></div>
+
+
+                <!-- DELIVERED -->
+
+                <div
+                    class="tracking-step
+                    <?= $status === "delivered"
+                        ? "completed"
+                        : ""
+                    ?>"
+                >
+
+                    <div class="tracking-icon">
+
+                        <i class="bi bi-check-circle"></i>
+
+                    </div>
+
+                    <h6>
+                        Delivered
+                    </h6>
 
                 </div>
 
@@ -302,235 +810,68 @@ $status = $order
 
         </div>
 
-
-        <!-- =================================================
-             ORDER STATUS
-        ================================================== -->
-
-        <div class="card tracking-card mb-4">
-
-            <div class="card-body p-5">
-
-                <h4 class="fw-bold text-center mb-5">
-                    Order Status
-                </h4>
+    </div>
 
 
-                <div class="d-flex align-items-start">
+    <!-- =================================================
+         ORDERED ITEMS
+    ================================================== -->
+
+    <div class="tracking-card">
+
+        <div class="tracking-card-body">
+
+            <h3 class="tracking-section-title">
+                Ordered Items
+            </h3>
 
 
-                    <!-- Pending -->
-
-                    <div
-                        class="tracking-step
-                        <?= in_array(
-                            $status,
-                            [
-                                "pending",
-                                "processing",
-                                "shipped",
-                                "delivered"
-                            ]
-                        )
-                            ? "completed"
-                            : ""
-                        ?>"
-                    >
-
-                        <div class="tracking-icon">
-
-                            <i class="bi bi-clock"></i>
-
-                        </div>
-
-                        <h6 class="fw-bold mt-3">
-                            Pending
-                        </h6>
-
-                    </div>
-
-
-                    <div
-                        class="tracking-line
-                        <?= in_array(
-                            $status,
-                            [
-                                "processing",
-                                "shipped",
-                                "delivered"
-                            ]
-                        )
-                            ? "completed"
-                            : ""
-                        ?>"
-                    ></div>
-
-
-                    <!-- Processing -->
-
-                    <div
-                        class="tracking-step
-                        <?= in_array(
-                            $status,
-                            [
-                                "processing",
-                                "shipped",
-                                "delivered"
-                            ]
-                        )
-                            ? "completed"
-                            : ""
-                        ?>"
-                    >
-
-                        <div class="tracking-icon">
-
-                            <i class="bi bi-gear"></i>
-
-                        </div>
-
-                        <h6 class="fw-bold mt-3">
-                            Processing
-                        </h6>
-
-                    </div>
-
-
-                    <div
-                        class="tracking-line
-                        <?= in_array(
-                            $status,
-                            [
-                                "shipped",
-                                "delivered"
-                            ]
-                        )
-                            ? "completed"
-                            : ""
-                        ?>"
-                    ></div>
-
-
-                    <!-- Shipped -->
-
-                    <div
-                        class="tracking-step
-                        <?= in_array(
-                            $status,
-                            [
-                                "shipped",
-                                "delivered"
-                            ]
-                        )
-                            ? "completed"
-                            : ""
-                        ?>"
-                    >
-
-                        <div class="tracking-icon">
-
-                            <i class="bi bi-truck"></i>
-
-                        </div>
-
-                        <h6 class="fw-bold mt-3">
-                            Shipped
-                        </h6>
-
-                    </div>
-
-
-                    <div
-                        class="tracking-line
-                        <?= $status === "delivered"
-                            ? "completed"
-                            : ""
-                        ?>"
-                    ></div>
-
-
-                    <!-- Delivered -->
-
-                    <div
-                        class="tracking-step
-                        <?= $status === "delivered"
-                            ? "completed"
-                            : ""
-                        ?>"
-                    >
-
-                        <div class="tracking-icon">
-
-                            <i class="bi bi-check-circle"></i>
-
-                        </div>
-
-                        <h6 class="fw-bold mt-3">
-                            Delivered
-                        </h6>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUCTS
-        ================================================== -->
-
-        <div class="card tracking-card mb-4">
-
-            <div class="card-body p-4">
-
-                <h4 class="fw-bold mb-4">
-                    Ordered Items
-                </h4>
+            <div class="ordered-items">
 
 
                 <?php foreach ($orderItems as $item): ?>
 
-                    <div
-                        class="d-flex align-items-center
-                        border-bottom py-3"
-                    >
-
-                        <img
-                            src="../<?= htmlspecialchars(
-                                $item["image"]
-                            ) ?>"
-                            alt="<?= htmlspecialchars(
-                                $item["product_name"]
-                            ) ?>"
-                            class="product-image me-3"
-                        >
+                    <div class="ordered-item">
 
 
-                        <div class="flex-grow-1">
+                        <div class="ordered-product">
 
-                            <h6 class="fw-bold mb-1">
 
-                                <?= htmlspecialchars(
+                            <img
+                                src="../<?= htmlspecialchars(
+                                    $item["image"]
+                                ) ?>"
+                                alt="<?= htmlspecialchars(
                                     $item["product_name"]
-                                ) ?>
+                                ) ?>"
+                            >
 
-                            </h6>
 
-                            <small class="text-muted">
+                            <div>
 
-                                ₱<?= number_format(
-                                    $item["price"],
-                                    2
-                                ) ?>
+                                <h6>
 
-                                ×
+                                    <?= htmlspecialchars(
+                                        $item["product_name"]
+                                    ) ?>
 
-                                <?= (int)$item["quantity"] ?>
+                                </h6>
 
-                            </small>
+
+                                <p>
+
+                                    ₱<?= number_format(
+                                        $item["price"],
+                                        2
+                                    ) ?>
+
+                                    ×
+
+                                    <?= (int)$item["quantity"] ?>
+
+                                </p>
+
+                            </div>
 
                         </div>
 
@@ -544,54 +885,60 @@ $status = $order
 
                         </strong>
 
+
                     </div>
 
                 <?php endforeach; ?>
 
 
-                <div
-                    class="d-flex justify-content-between
-                    pt-3"
-                >
+            </div>
 
-                    <strong>
-                        Order Total
-                    </strong>
 
-                    <strong class="text-primary fs-5">
+            <!-- ORDER TOTAL -->
 
-                        ₱<?= number_format(
-                            $order["total_amount"],
-                            2
-                        ) ?>
+            <div class="order-total">
 
-                    </strong>
+                <strong>
+                    Order Total
+                </strong>
 
-                </div>
+                <strong>
+
+                    ₱<?= number_format(
+                        $order["total_amount"],
+                        2
+                    ) ?>
+
+                </strong>
 
             </div>
 
         </div>
 
-
-        <!-- =================================================
-             DELIVERY ADDRESS
-        ================================================== -->
-
-        <div class="card tracking-card mb-4">
-
-            <div class="card-body p-4">
-
-                <h4 class="fw-bold mb-3">
-
-                    <i class="bi bi-geo-alt"></i>
-
-                    Delivery Address
-
-                </h4>
+    </div>
 
 
-                <p class="mb-1 fw-bold">
+    <!-- =================================================
+         DELIVERY ADDRESS
+    ================================================== -->
+
+    <div class="tracking-card">
+
+        <div class="tracking-card-body">
+
+            <h3 class="tracking-section-title">
+
+                <i class="bi bi-geo-alt"></i>
+
+                Delivery Address
+
+            </h3>
+
+
+            <div class="delivery-address">
+
+
+                <p class="address-name">
 
                     <?= htmlspecialchars(
                         $order["recipient_name"] ?? ""
@@ -600,7 +947,7 @@ $status = $order
                 </p>
 
 
-                <p class="mb-1">
+                <p>
 
                     <?= htmlspecialchars(
                         $order["phone"] ?? ""
@@ -609,7 +956,7 @@ $status = $order
                 </p>
 
 
-                <p class="mb-1">
+                <p>
 
                     <?= htmlspecialchars(
                         $order["address_line"] ?? ""
@@ -618,7 +965,7 @@ $status = $order
                 </p>
 
 
-                <p class="mb-1">
+                <p>
 
                     <?= htmlspecialchars(
                         $order["barangay"] ?? ""
@@ -631,13 +978,15 @@ $status = $order
                 </p>
 
 
-                <p class="mb-0">
+                <p>
 
                     <?= htmlspecialchars(
                         $order["province"] ?? ""
                     ) ?>
 
-                    <?php if (!empty($order["postal_code"])): ?>
+                    <?php if (
+                        !empty($order["postal_code"])
+                    ): ?>
 
                         <?= htmlspecialchars(
                             $order["postal_code"]
@@ -647,46 +996,319 @@ $status = $order
 
                 </p>
 
+
             </div>
 
         </div>
 
-
-    <?php endif; ?>
-
-
-    <!-- =================================================
-         NAVIGATION
-    ================================================== -->
-
-    <div class="text-center mt-4">
-
-        <a
-            href="my-orders.php"
-            class="btn btn-outline-primary px-4 me-2"
-        >
-
-            <i class="bi bi-bag-check"></i>
-
-            My Orders
-
-        </a>
+    </div>
 
 
-        <a
-            href="../index.php"
-            class="btn btn-primary px-4"
-        >
+<?php endif; ?>
 
-            <i class="bi bi-house"></i>
 
-            Back to Home
+</main>
 
-        </a>
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="site-footer">
+
+    <div class="bright-container">
+
+        <div class="footer-main">
+
+
+            <!-- BRAND -->
+
+            <div class="footer-brand">
+
+                <a href="../index.php">
+
+                    <img
+                        src="../images/logo.png"
+                        alt="BrightBuy"
+                    >
+
+                </a>
+
+                <p>
+                    Smart Shopping,<br>
+                    Brighter Living.
+                </p>
+
+
+                <div class="social-links">
+
+                    <a href="#">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="bi bi-twitter-x"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="bi bi-youtube"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- SHOP -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Shop
+                </h3>
+
+                <a href="shop.php">
+                    All Categories
+                </a>
+
+                <a href="deals.php">
+                    Deals
+                </a>
+
+                <a href="new-arrivals.php">
+                    New Arrivals
+                </a>
+
+                <a href="shop.php">
+                    Best Sellers
+                </a>
+
+            </div>
+
+
+            <!-- CUSTOMER SERVICES -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Customer Services
+                </h3>
+
+                <a href="help.php">
+                    Help Center
+                </a>
+
+                <a href="track-order.php">
+                    Track Order
+                </a>
+
+                <a href="#">
+                    Returns & Refunds
+                </a>
+
+                <a href="#">
+                    Shipping Info
+                </a>
+
+            </div>
+
+
+            <!-- ABOUT -->
+
+            <div class="footer-column">
+
+                <h3>
+                    About us
+                </h3>
+
+                <a href="#">
+                    About BrightBuy
+                </a>
+
+                <a href="#">
+                    Careers
+                </a>
+
+                <a href="#">
+                    Press & Media
+                </a>
+
+                <a href="#">
+                    Contact Us
+                </a>
+
+            </div>
+
+
+            <!-- ACCOUNT -->
+
+            <div class="footer-column">
+
+                <h3>
+                    My Account
+                </h3>
+
+                <a href="my-orders.php">
+                    My Orders
+                </a>
+
+                <a href="wishlist.php">
+                    Wishlist
+                </a>
+
+                <a href="account.php">
+                    Account Settings
+                </a>
+
+            </div>
+
+
+            <!-- APP -->
+
+            <div class="footer-column app-column">
+
+                <h3>
+                    Download Our App
+                </h3>
+
+                <p>
+                    Get the app for better
+                    shopping experience.
+                </p>
+
+
+                <div class="app-buttons">
+
+
+                    <a
+                        href="#"
+                        class="app-button"
+                    >
+
+                        <i class="bi bi-apple"></i>
+
+                        <span>
+
+                            <small>
+                                Download on the
+                            </small>
+
+                            App Store
+
+                        </span>
+
+                    </a>
+
+
+                    <a
+                        href="#"
+                        class="app-button"
+                    >
+
+                        <i class="bi bi-google-play"></i>
+
+                        <span>
+
+                            <small>
+                                GET IT ON
+                            </small>
+
+                            Google Play
+
+                        </span>
+
+                    </a>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER BOTTOM
+        ================================================== -->
+
+        <div class="footer-bottom">
+
+
+            <span>
+                © 2026 BrightBuy. All rights reserved
+            </span>
+
+
+            <div class="footer-policies">
+
+                <a href="#">
+                    Privacy Policy
+                </a>
+
+                <a href="#">
+                    Terms of Service
+                </a>
+
+                <a href="#">
+                    Refund Policy
+                </a>
+
+            </div>
+
+
+            <div class="payment-methods">
+
+                <span>
+                    VISA
+                </span>
+
+                <span>
+                    ●●
+                </span>
+
+                <span>
+                    PayPal
+                </span>
+
+                <span>
+                    GPay
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</footer>
+
 
     </div>
 
 </div>
+
+
+<!-- =====================================================
+     BOOTSTRAP JS
+===================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+
+<!-- =====================================================
+     BRIGHTBUY JS
+===================================================== -->
+
+<script src="../js/script.js"></script>
+
 
 </body>
 

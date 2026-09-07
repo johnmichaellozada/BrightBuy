@@ -56,76 +56,10 @@ $wishlist_items = $stmt->fetchAll();
         rel="stylesheet"
     >
 
-    <style>
-
-        body {
-            background: #f5f7ff;
-            font-family: Arial, sans-serif;
-        }
-
-        .wishlist-header {
-            background: #073b9d;
-            color: white;
-            padding: 35px 0;
-        }
-
-        .wishlist-card {
-            background: white;
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            height: 100%;
-        }
-
-        .wishlist-image {
-            width: 100%;
-            height: 220px;
-            object-fit: contain;
-            padding: 20px;
-        }
-
-        .wishlist-card-body {
-            padding: 20px;
-        }
-
-        .product-name {
-            font-weight: 600;
-            color: #172b4d;
-            min-height: 48px;
-        }
-
-        .product-price {
-            color: #073b9d;
-            font-size: 21px;
-            font-weight: 700;
-        }
-
-        .remove-btn {
-            border: 1px solid #dc3545;
-            color: #dc3545;
-            background: white;
-        }
-
-        .remove-btn:hover {
-            background: #dc3545;
-            color: white;
-        }
-
-        .empty-wishlist {
-            background: white;
-            border-radius: 15px;
-            padding: 70px 20px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .empty-wishlist i {
-            font-size: 60px;
-            color: #073b9d;
-        }
-
-    </style>
+    <link
+    rel="stylesheet"
+    href="../css/styles.css"
+>
 
 </head>
 
@@ -152,6 +86,8 @@ $wishlist_items = $stmt->fetchAll();
 
 
     <!-- Wishlist -->
+    <div class="wishlist-page-container">
+
     <div class="container py-5">
 
         <?php if (empty($wishlist_items)): ?>
@@ -180,7 +116,7 @@ $wishlist_items = $stmt->fetchAll();
 
         <?php else: ?>
 
-            <div class="row g-4">
+            <div class="row g-4 wishlist-products-row">
 
                 <?php foreach ($wishlist_items as $item): ?>
 
@@ -275,9 +211,9 @@ $wishlist_items = $stmt->fetchAll();
         <div class="text-center mt-5">
 
             <a
-                href="../index.php"
-                class="btn btn-outline-primary px-4"
-            >
+    href="../index.php"
+    class="btn wishlist-back-btn"
+>
                 <i class="bi bi-house"></i>
                 Back to BrightBuy
             </a>
@@ -285,7 +221,7 @@ $wishlist_items = $stmt->fetchAll();
         </div>
 
     </div>
-
+                                </div>                                   
 </body>
 
 </html>

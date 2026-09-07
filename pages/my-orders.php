@@ -5,13 +5,16 @@ require_once "../db.php";
 
 if (
     !isset($_SESSION["logged_in"]) ||
-    $_SESSION["logged_in"] !== true
+    $_SESSION["logged_in"] !== true ||
+    !isset($_SESSION["user_id"]) ||
+    ($_SESSION["role"] ?? "") !== "customer"
 ) {
     header("Location: login.php");
     exit;
 }
 
 $user_id = $_SESSION["user_id"];
+
 
 /* =====================================================
    GET USER ORDERS
@@ -83,39 +86,61 @@ if ($orders) {
 
     <title>My Orders - BrightBuy</title>
 
+    <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
+    <!-- Bootstrap Icons -->
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     >
 
+    <!-- BrightBuy Main CSS -->
+    <link
+        rel="stylesheet"
+        href="../css/styles.css"
+    >
+
 </head>
 
-<body>
+<body class="my-orders-page">
 
-<div class="container py-5">
 
-    <!-- =================================================
-         PAGE HEADER
-    ================================================== -->
+<!-- =====================================================
+     PAGE HEADER
+===================================================== -->
 
-    <div class="text-center mb-5">
+<section class="orders-header">
 
-        <h1 class="fw-bold">
-            <i class="bi bi-bag-check"></i>
+    <div class="orders-header-content">
+
+        <div class="orders-icon">
+
+            <i class="bi bi-bag-check-fill"></i>
+
+        </div>
+
+        <h1>
             My Orders
         </h1>
 
-        <p class="text-muted">
-            View your previous BrightBuy orders.
+        <p>
+            View and track your BrightBuy orders
         </p>
 
     </div>
 
+</section>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main class="orders-container">
 
     <?php if (!$orders): ?>
 
@@ -123,24 +148,26 @@ if ($orders) {
              EMPTY ORDERS
         ================================================== -->
 
-        <div class="text-center py-5">
+        <div class="orders-empty">
 
-            <i
-                class="bi bi-bag-x"
-                style="font-size: 70px;"
-            ></i>
+            <div class="orders-empty-icon">
 
-            <h3 class="fw-bold mt-3">
+                <i class="bi bi-bag-x"></i>
+
+            </div>
+
+            <h2>
                 No Orders Yet
-            </h3>
+            </h2>
 
-            <p class="text-muted">
+            <p>
                 You haven't placed any orders yet.
+                Start shopping and your orders will appear here.
             </p>
 
             <a
                 href="../index.php"
-                class="btn btn-primary px-4"
+                class="orders-primary-btn"
             >
                 <i class="bi bi-shop"></i>
                 Start Shopping
@@ -148,7 +175,39 @@ if ($orders) {
 
         </div>
 
+
     <?php else: ?>
+
+
+        <!-- =================================================
+             ORDER SUMMARY
+        ================================================== -->
+
+        <div class="orders-title-row">
+
+            <div>
+
+                <span class="orders-eyebrow">
+                    YOUR PURCHASES
+                </span>
+
+                <h2>
+                    Order History
+                </h2>
+
+            </div>
+
+            <div class="orders-count">
+
+                <i class="bi bi-bag-check"></i>
+
+                <?= count($orders) ?>
+
+                <?= count($orders) === 1 ? "Order" : "Orders" ?>
+
+            </div>
+
+        </div>
 
 
         <!-- =================================================
@@ -157,95 +216,145 @@ if ($orders) {
 
         <?php foreach ($orders as $order): ?>
 
-            <div class="card shadow-sm border-0 mb-4">
+            <?php
 
-                <div class="card-body p-4">
+            $status = strtolower(
+                trim($order["status"])
+            );
 
+            $statusClass = "status-pending";
 
-                    <!-- ORDER HEADER -->
+            if ($status === "processing") {
+                $statusClass = "status-processing";
+            } elseif ($status === "shipped") {
+                $statusClass = "status-shipped";
+            } elseif ($status === "delivered") {
+                $statusClass = "status-delivered";
+            } elseif ($status === "cancelled") {
+                $statusClass = "status-cancelled";
+            }
 
-                    <div
-                        class="d-flex justify-content-between
-                        align-items-center flex-wrap mb-3"
-                    >
+            $currentOrderItems =
+                $orderItems[$order["order_id"]] ?? [];
 
-                        <div>
+            ?>
 
-                            <h5 class="fw-bold mb-1">
-
-    <a
-        href="track-order.php?order_id=<?= (int)$order["order_id"] ?>"
-        class="text-decoration-none"
-    >
-        Order #<?= (int)$order["order_id"] ?>
-    </a>
-
-</h5>
-
-                            <small class="text-muted">
-
-                                <?= date(
-                                    "F d, Y h:i A",
-                                    strtotime($order["created_at"])
-                                ) ?>
-
-                            </small>
-
-                        </div>
+            <article class="order-card">
 
 
-                        <!-- STATUS -->
+                <!-- =================================================
+                     ORDER TOP
+                ================================================== -->
 
-                        <span class="badge bg-warning text-dark">
+                <div class="order-card-header">
 
-                            <?= htmlspecialchars(
-                                $order["status"]
+                    <div class="order-information">
+
+                        <a
+                            href="track-order.php?order_id=<?= (int)$order["order_id"] ?>"
+                            class="order-number"
+                        >
+                            Order #<?= (int)$order["order_id"] ?>
+                        </a>
+
+                        <div class="order-date">
+
+                            <i class="bi bi-calendar3"></i>
+
+                            <?= date(
+                                "F d, Y h:i A",
+                                strtotime($order["created_at"])
                             ) ?>
 
-                        </span>
+                        </div>
 
                     </div>
 
 
-                    <!-- ORDER ITEMS -->
+                    <div class="order-status <?= $statusClass ?>">
 
-                    <?php
-                    $currentOrderItems =
-                        $orderItems[$order["order_id"]] ?? [];
-                    ?>
+                        <?php if ($status === "pending"): ?>
+
+                            <i class="bi bi-clock-fill"></i>
+
+                        <?php elseif ($status === "processing"): ?>
+
+                            <i class="bi bi-arrow-repeat"></i>
+
+                        <?php elseif ($status === "shipped"): ?>
+
+                            <i class="bi bi-truck"></i>
+
+                        <?php elseif ($status === "delivered"): ?>
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                        <?php elseif ($status === "cancelled"): ?>
+
+                            <i class="bi bi-x-circle-fill"></i>
+
+                        <?php else: ?>
+
+                            <i class="bi bi-info-circle-fill"></i>
+
+                        <?php endif; ?>
+
+                        <?= htmlspecialchars($order["status"]) ?>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     PRODUCTS
+                ================================================== -->
+
+                <div class="order-products">
+
+                    <div class="order-products-title">
+
+                        <i class="bi bi-box-seam"></i>
+
+                        Products
+
+                    </div>
+
 
                     <?php foreach ($currentOrderItems as $item): ?>
 
-                        <div
-                            class="d-flex align-items-center
-                            border-top py-3"
-                        >
+                        <div class="order-product">
 
-                            <img
-                                src="../<?= htmlspecialchars(
-                                    $item["image"]
-                                ) ?>"
-                                alt="<?= htmlspecialchars(
-                                    $item["product_name"]
-                                ) ?>"
-                                width="70"
-                                height="70"
-                                style="object-fit: contain;"
-                                class="me-3"
-                            >
+                            <div class="order-product-image">
+
+                                <?php if (!empty($item["image"])): ?>
+
+                                    <img
+                                        src="../<?= htmlspecialchars($item["image"]) ?>"
+                                        alt="<?= htmlspecialchars($item["product_name"]) ?>"
+                                    >
+
+                                <?php else: ?>
+
+                                    <img
+                                        src="../images/placeholder.png"
+                                        alt="Product image"
+                                    >
+
+                                <?php endif; ?>
+
+                            </div>
 
 
-                            <div class="flex-grow-1">
+                            <div class="order-product-info">
 
-                                <h6 class="fw-bold mb-1">
-
+                                <h3>
                                     <?= htmlspecialchars(
                                         $item["product_name"]
                                     ) ?>
+                                </h3>
 
-                                </h6>
-
-                                <small class="text-muted">
+                                <p>
 
                                     ₱<?= number_format(
                                         $item["price"],
@@ -256,67 +365,90 @@ if ($orders) {
 
                                     <?= (int)$item["quantity"] ?>
 
-                                </small>
+                                </p>
 
                             </div>
 
 
-                            <strong>
+                            <div class="order-product-subtotal">
 
                                 ₱<?= number_format(
                                     $item["subtotal"],
                                     2
                                 ) ?>
 
-                            </strong>
+                            </div>
 
                         </div>
 
                     <?php endforeach; ?>
 
+                </div>
 
-                    <!-- ORDER TOTAL -->
 
-                    <div
-                        class="d-flex justify-content-between
-                        border-top pt-3 mt-2"
-                    >
+                <!-- =================================================
+                     ORDER BOTTOM
+                ================================================== -->
 
-                        <span class="fw-bold">
+                <div class="order-card-footer">
+
+                    <div class="order-total">
+
+                        <span>
                             Order Total
                         </span>
 
-                        <span
-                            class="fw-bold fs-5 text-primary"
-                        >
-
+                        <strong>
                             ₱<?= number_format(
                                 $order["total_amount"],
                                 2
                             ) ?>
-
-                        </span>
+                        </strong>
 
                     </div>
 
-                    <div class="text-end mt-3">
+
+                    <div class="order-action-buttons">
 
     <a
         href="track-order.php?order_id=<?= (int)$order["order_id"] ?>"
-        class="btn btn-outline-primary"
+        class="track-order-btn"
     >
-
-        <i class="bi bi-box-seam"></i>
-
+        <i class="bi bi-eye"></i>
         Track Order
-
     </a>
 
-</div>
 
+    <?php if ($order["status"] === "Pending"): ?>
+
+        <form
+            method="POST"
+            action="cancel-order.php"
+            onsubmit="return confirm('Are you sure you want to cancel this order?');"
+        >
+
+            <input
+                type="hidden"
+                name="order_id"
+                value="<?= (int)$order["order_id"] ?>"
+            >
+
+            <button
+                type="submit"
+                class="cancel-order-btn"
+            >
+                <i class="bi bi-x-circle"></i>
+                Cancel Order
+            </button>
+
+        </form>
+
+    <?php endif; ?>
+
+</div>
                 </div>
 
-            </div>
+            </article>
 
         <?php endforeach; ?>
 
@@ -325,14 +457,14 @@ if ($orders) {
 
 
     <!-- =================================================
-         NAVIGATION<h5 class="fw-bold mb-1">
+         NAVIGATION
     ================================================== -->
 
-    <div class="text-center mt-4">
+    <div class="orders-navigation">
 
         <a
             href="account.php"
-            class="btn btn-outline-primary px-4 me-2"
+            class="orders-outline-btn"
         >
             <i class="bi bi-person"></i>
             My Account
@@ -340,15 +472,16 @@ if ($orders) {
 
         <a
             href="../index.php"
-            class="btn btn-primary px-4"
+            class="orders-primary-btn"
         >
             <i class="bi bi-house"></i>
-            Back to Home
+            Back to BrightBuy
         </a>
 
     </div>
 
-</div>
+</main>
+
 
 </body>
 

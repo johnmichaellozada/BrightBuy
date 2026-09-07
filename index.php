@@ -91,26 +91,6 @@ $categories = [
 
 /*
 |--------------------------------------------------------------------------
-| Automatically load product images
-|--------------------------------------------------------------------------
-*/
-
-$productImages = [];
-
-$productFolder = __DIR__ . '/images/products';
-
-if (is_dir($productFolder)) {
-    $files = glob($productFolder . '/*.{png,jpg,jpeg,webp}', GLOB_BRACE);
-
-    if ($files !== false) {
-        foreach ($files as $file) {
-            $productImages[] = 'images/products/' . basename($file);
-        }
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
 | Product information
 |--------------------------------------------------------------------------
 */
@@ -206,22 +186,7 @@ foreach ($products as &$product) {
 
 unset($product);
 
-$defaultProductImages = [
-    'images/placeholder.png',
-    'images/placeholder.png',
-    'images/placeholder.png',
-    'images/placeholder.png',
-    'images/placeholder.png'
-];
 
-foreach ($products as $index => &$product) {
-    if (isset($productImages[$index])) {
-        $product['image'] = $productImages[$index];
-    } else {
-        $product['image'] = $defaultProductImages[$index];
-    }
-}
-unset($product);
 
 $testimonials = [
     [

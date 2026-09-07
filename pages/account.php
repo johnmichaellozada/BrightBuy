@@ -36,89 +36,11 @@ $role = $_SESSION["role"] ?? "customer";
         rel="stylesheet"
     >
 
-    <style>
-
-        body {
-            background: #f5f7ff;
-            font-family: Arial, sans-serif;
-        }
-
-        .account-header {
-            background: #073b9d;
-            color: white;
-            padding: 35px 0;
-        }
-
-        .account-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #ffc107;
-            color: #073b9d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 38px;
-            margin: 0 auto 15px;
-        }
-
-        .account-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .account-info {
-            border-bottom: 1px solid #eee;
-            padding: 15px 0;
-        }
-
-        .account-info:last-child {
-            border-bottom: none;
-        }
-
-        .account-label {
-            color: #777;
-            font-size: 14px;
-        }
-
-        .account-value {
-            font-weight: 600;
-            color: #172b4d;
-        }
-
-        .account-menu a {
-            text-decoration: none;
-            color: #172b4d;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .account-menu a:hover {
-            background: #f5f7ff;
-        }
-
-        .account-menu i {
-            font-size: 20px;
-            color: #073b9d;
-        }
-
-        .logout-link {
-            color: #dc3545 !important;
-        }
-
-        .logout-link i {
-            color: #dc3545;
-        }
-
-    </style>
+    <link rel="stylesheet" href="../css/styles.css">
 
 </head>
 
-<body>
+<body class="account-page">
 
     <!-- Account Header -->
     <section class="account-header">

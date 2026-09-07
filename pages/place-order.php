@@ -3,6 +3,42 @@
 session_start();
 require_once "../db.php";
 
+/* =====================================================
+   CUSTOMER ACCESS CHECK
+   CHECK ROLE DIRECTLY FROM DATABASE
+===================================================== */
+
+if (
+    !isset($_SESSION["logged_in"]) ||
+    $_SESSION["logged_in"] !== true
+) {
+    header("Location: login.php");
+    exit;
+}
+
+$userRoleStmt = $pdo->prepare("
+    SELECT role
+    FROM users
+    WHERE user_id = ?
+    LIMIT 1
+");
+
+$userRoleStmt->execute([
+    $_SESSION["user_id"]
+]);
+
+$currentUser = $userRoleStmt->fetch();
+
+if (!$currentUser || $currentUser["role"] !== "customer") {
+    header("Location: ../index.php");
+    exit;
+}
+
+
+/* =====================================================
+   LOGIN CHECK
+===================================================== */
+
 if (
     !isset($_SESSION["logged_in"]) ||
     $_SESSION["logged_in"] !== true
@@ -15,33 +51,46 @@ $user_id = $_SESSION["user_id"];
 
 
 /* =====================================================
-   GET CHECKOUT FORM DATA
+   GET CHECKOUT DATA
 ===================================================== */
 
-$recipient_name = trim($_POST["recipient_name"] ?? "");
-$phone          = trim($_POST["phone"] ?? "");
-$address_line   = trim($_POST["address_line"] ?? "");
-$barangay       = trim($_POST["barangay"] ?? "");
-$city           = trim($_POST["city"] ?? "");
-$province       = trim($_POST["province"] ?? "");
-$postal_code    = trim($_POST["postal_code"] ?? "");
-$payment_method = trim($_POST["payment_method"] ?? "");
+$address_option =
+    trim($_POST["address_option"] ?? "");
 
+$address_id =
+    filter_input(
+        INPUT_POST,
+        "address_id",
+        FILTER_VALIDATE_INT
+    );
 
-/* =====================================================
-   VALIDATE DELIVERY INFORMATION
-===================================================== */
+$recipient_name =
+    trim($_POST["recipient_name"] ?? "");
 
-if (
-    $recipient_name === "" ||
-    $phone === "" ||
-    $address_line === "" ||
-    $barangay === "" ||
-    $city === "" ||
-    $province === ""
-) {
-    die("Please complete all required delivery information.");
-}
+$phone =
+    trim($_POST["phone"] ?? "");
+
+$address_line =
+    trim($_POST["address_line"] ?? "");
+
+$barangay =
+    trim($_POST["barangay"] ?? "");
+
+$city =
+    trim($_POST["city"] ?? "");
+
+$province =
+    trim($_POST["province"] ?? "");
+
+$postal_code =
+    trim($_POST["postal_code"] ?? "");
+
+$payment_method =
+    trim($_POST["payment_method"] ?? "");
+
+$save_as_default =
+    isset($_POST["save_as_default"]) &&
+    $_POST["save_as_default"] === "1";
 
 
 /* =====================================================
@@ -53,7 +102,13 @@ $allowed_payment_methods = [
     "gcash"
 ];
 
-if (!in_array($payment_method, $allowed_payment_methods, true)) {
+if (
+    !in_array(
+        $payment_method,
+        $allowed_payment_methods,
+        true
+    )
+) {
     die("Please select a valid payment method.");
 }
 
@@ -122,10 +177,251 @@ try {
 
 
     /* =================================================
+       HANDLE DELIVERY ADDRESS
+    ================================================= */
+
+
+    /*
+       OPTION 1:
+       USE SAVED ADDRESS
+    */
+
+    if (
+        $address_option === "saved" &&
+        $address_id
+    ) {
+
+        $savedAddressStmt = $pdo->prepare("
+            SELECT
+                address_id,
+                user_id,
+                recipient_name,
+                phone,
+                address_line,
+                barangay,
+                city,
+                province,
+                postal_code
+            FROM addresses
+            WHERE address_id = ?
+              AND user_id = ?
+            LIMIT 1
+        ");
+
+        $savedAddressStmt->execute([
+            $address_id,
+            $user_id
+        ]);
+
+        $savedAddress =
+            $savedAddressStmt->fetch();
+
+
+        /*
+           SECURITY CHECK:
+           Make sure the address belongs
+           to the currently logged-in user.
+        */
+
+        if (!$savedAddress) {
+
+            throw new Exception(
+                "The selected delivery address is invalid."
+            );
+        }
+
+
+        /*
+           Use the existing address.
+           NO new address is created.
+        */
+
+        $address_id =
+            (int)$savedAddress["address_id"];
+
+
+    } else {
+
+
+        /*
+           OPTION 2:
+           CREATE / REUSE NEW ADDRESS
+        */
+
+        if (
+            $recipient_name === "" ||
+            $phone === "" ||
+            $address_line === "" ||
+            $barangay === "" ||
+            $city === "" ||
+            $province === ""
+        ) {
+
+            throw new Exception(
+                "Please complete all required delivery information."
+            );
+        }
+
+
+        /* ---------------------------------------------
+           CHECK IF EXACT SAME ADDRESS ALREADY EXISTS
+        --------------------------------------------- */
+
+        $duplicateAddressStmt = $pdo->prepare("
+            SELECT
+                address_id
+            FROM addresses
+            WHERE user_id = ?
+              AND recipient_name = ?
+              AND phone = ?
+              AND address_line = ?
+              AND barangay = ?
+              AND city = ?
+              AND province = ?
+              AND (
+                    postal_code = ?
+                    OR (
+                        postal_code IS NULL
+                        AND ? = ''
+                    )
+                  )
+            ORDER BY address_id DESC
+            LIMIT 1
+        ");
+
+        $duplicateAddressStmt->execute([
+            $user_id,
+            $recipient_name,
+            $phone,
+            $address_line,
+            $barangay,
+            $city,
+            $province,
+            $postal_code !== ""
+                ? $postal_code
+                : null,
+            $postal_code
+        ]);
+
+        $existingAddress =
+            $duplicateAddressStmt->fetch();
+
+
+        if ($existingAddress) {
+
+            /*
+               Exact same address already exists.
+               Reuse it instead of creating another
+               duplicate address.
+            */
+
+            $address_id =
+                (int)$existingAddress["address_id"];
+
+        } else {
+
+
+            /*
+               If customer wants this to be
+               the default address, remove
+               default status from other addresses.
+            */
+
+            if ($save_as_default) {
+
+                $removeDefaultStmt = $pdo->prepare("
+                    UPDATE addresses
+                    SET is_default = 0
+                    WHERE user_id = ?
+                ");
+
+                $removeDefaultStmt->execute([
+                    $user_id
+                ]);
+            }
+
+
+            /*
+               Create new address.
+            */
+
+            $addressStmt = $pdo->prepare("
+                INSERT INTO addresses
+                (
+                    user_id,
+                    recipient_name,
+                    phone,
+                    address_line,
+                    barangay,
+                    city,
+                    province,
+                    postal_code,
+                    is_default
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+
+            $addressStmt->execute([
+                $user_id,
+                $recipient_name,
+                $phone,
+                $address_line,
+                $barangay,
+                $city,
+                $province,
+                $postal_code !== ""
+                    ? $postal_code
+                    : null,
+                $save_as_default ? 1 : 0
+            ]);
+
+            $address_id =
+                (int)$pdo->lastInsertId();
+
+
+            /*
+               If this is the customer's first
+               address, automatically make it default.
+            */
+
+            $addressCountStmt = $pdo->prepare("
+                SELECT COUNT(*)
+                FROM addresses
+                WHERE user_id = ?
+            ");
+
+            $addressCountStmt->execute([
+                $user_id
+            ]);
+
+            $addressCount =
+                (int)$addressCountStmt->fetchColumn();
+
+
+            if ($addressCount === 1) {
+
+                $makeDefaultStmt = $pdo->prepare("
+                    UPDATE addresses
+                    SET is_default = 1
+                    WHERE address_id = ?
+                      AND user_id = ?
+                ");
+
+                $makeDefaultStmt->execute([
+                    $address_id,
+                    $user_id
+                ]);
+            }
+        }
+    }
+
+
+    /* =================================================
        CHECK STOCK
     ================================================= */
 
     $total_amount = 0;
+
 
     foreach ($items as $item) {
 
@@ -147,6 +443,7 @@ try {
 
         $product = $productStmt->fetch();
 
+
         if (!$product) {
 
             throw new Exception(
@@ -159,7 +456,9 @@ try {
            CHECK PRODUCT STATUS
         --------------------------------------------- */
 
-        if ($product["status"] !== "active") {
+        if (
+            $product["status"] !== "active"
+        ) {
 
             throw new Exception(
                 $product["product_name"] .
@@ -197,42 +496,6 @@ try {
 
 
     /* =================================================
-       CREATE DELIVERY ADDRESS
-    ================================================= */
-
-    $addressStmt = $pdo->prepare("
-        INSERT INTO addresses
-        (
-            user_id,
-            recipient_name,
-            phone,
-            address_line,
-            barangay,
-            city,
-            province,
-            postal_code,
-            is_default
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
-    ");
-
-    $addressStmt->execute([
-        $user_id,
-        $recipient_name,
-        $phone,
-        $address_line,
-        $barangay,
-        $city,
-        $province,
-        $postal_code !== ""
-            ? $postal_code
-            : null
-    ]);
-
-    $address_id = $pdo->lastInsertId();
-
-
-    /* =================================================
        CREATE ORDER
     ================================================= */
 
@@ -253,7 +516,8 @@ try {
         $total_amount
     ]);
 
-    $order_id = $pdo->lastInsertId();
+    $order_id =
+        $pdo->lastInsertId();
 
 
     /* =================================================
@@ -280,6 +544,7 @@ try {
 
         $product = $productStmt->fetch();
 
+
         if (!$product) {
 
             throw new Exception(
@@ -288,11 +553,14 @@ try {
         }
 
 
-        $quantity = (int)$item["quantity"];
+        $quantity =
+            (int)$item["quantity"];
 
-        $price = (float)$product["price"];
+        $price =
+            (float)$product["price"];
 
-        $subtotal = $price * $quantity;
+        $subtotal =
+            $price * $quantity;
 
 
         /* ---------------------------------------------
@@ -338,7 +606,9 @@ try {
         ]);
 
 
-        if ($stockStmt->rowCount() !== 1) {
+        if (
+            $stockStmt->rowCount() !== 1
+        ) {
 
             throw new Exception(
                 "Unable to update stock for " .
@@ -413,6 +683,8 @@ try {
 
     die(
         "Order could not be completed: " .
-        htmlspecialchars($e->getMessage())
+        htmlspecialchars(
+            $e->getMessage()
+        )
     );
 }

@@ -4,17 +4,27 @@ session_start();
 
 require_once "../db.php";
 
+/* =====================================================
+   LOGIN STATUS
+===================================================== */
+
+$isLoggedIn =
+    isset($_SESSION["logged_in"]) &&
+    $_SESSION["logged_in"] === true;
+
+$userId = $isLoggedIn
+    ? (int) $_SESSION["user_id"]
+    : 0;
+
 
 /* =====================================================
    WISHLIST
 ===================================================== */
 
 $wishlistProductIds = [];
+$wishlistCount = 0;
 
-if (
-    isset($_SESSION["logged_in"]) &&
-    $_SESSION["logged_in"] === true
-) {
+if ($isLoggedIn) {
 
     $wishlistStmt = $pdo->prepare("
         SELECT product_id
@@ -23,11 +33,16 @@ if (
     ");
 
     $wishlistStmt->execute([
-        $_SESSION["user_id"]
+        $userId
     ]);
 
     $wishlistProductIds = $wishlistStmt->fetchAll(
         PDO::FETCH_COLUMN
+    );
+
+    $wishlistProductIds = array_map(
+        "intval",
+        $wishlistProductIds
     );
 
     $wishlistCount = count($wishlistProductIds);
@@ -40,10 +55,7 @@ if (
 
 $cartCount = 0;
 
-if (
-    isset($_SESSION["logged_in"]) &&
-    $_SESSION["logged_in"] === true
-) {
+if ($isLoggedIn) {
 
     $cartCountStmt = $pdo->prepare("
         SELECT COALESCE(SUM(ci.quantity), 0)
@@ -54,10 +66,10 @@ if (
     ");
 
     $cartCountStmt->execute([
-        $_SESSION["user_id"]
+        $userId
     ]);
 
-    $cartCount = (int)$cartCountStmt->fetchColumn();
+    $cartCount = (int) $cartCountStmt->fetchColumn();
 }
 
 
@@ -65,14 +77,18 @@ if (
    SEARCH
 ===================================================== */
 
-$search = trim($_GET["search"] ?? "");
+$search = trim(
+    $_GET["search"] ?? ""
+);
 
 
 /* =====================================================
    CATEGORY
 ===================================================== */
 
-$category = trim($_GET["category"] ?? "");
+$category = trim(
+    $_GET["category"] ?? ""
+);
 
 
 /* =====================================================
@@ -95,10 +111,10 @@ $categoryMap = [
 
 ];
 
-
-$categoryFilter = $categoryMap[
-    strtolower($category)
-] ?? $category;
+$categoryFilter =
+    $categoryMap[
+        strtolower($category)
+    ] ?? $category;
 
 
 /* =====================================================
@@ -140,7 +156,9 @@ $sql = "
 $params = [];
 
 
-/* SEARCH FILTER */
+/* =====================================================
+   SEARCH FILTER
+===================================================== */
 
 if ($search !== "") {
 
@@ -158,7 +176,9 @@ if ($search !== "") {
 }
 
 
-/* CATEGORY FILTER */
+/* =====================================================
+   CATEGORY FILTER
+===================================================== */
 
 if ($categoryFilter !== "") {
 
@@ -169,6 +189,10 @@ if ($categoryFilter !== "") {
     $params[] = $categoryFilter;
 }
 
+
+/* =====================================================
+   ORDER PRODUCTS
+===================================================== */
 
 $sql .= "
     ORDER BY p.product_id ASC
@@ -188,13 +212,15 @@ $products = $productStmt->fetchAll();
 
 if ($search !== "") {
 
-    $pageTitle = "Search Results for \"" .
+    $pageTitle =
+        'Search Results for "' .
         htmlspecialchars($search) .
-        "\"";
+        '"';
 
 } elseif ($categoryFilter !== "") {
 
-    $pageTitle = htmlspecialchars($categoryFilter);
+    $pageTitle =
+        htmlspecialchars($categoryFilter);
 
 } else {
 
@@ -204,6 +230,7 @@ if ($search !== "") {
 ?>
 
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -215,9 +242,7 @@ if ($search !== "") {
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        BrightBuy | Shop
-    </title>
+    <title>BrightBuy | Shop</title>
 
 
     <!-- BOOTSTRAP -->
@@ -256,17 +281,19 @@ if ($search !== "") {
 
 <body class="shop-page">
 
-<!-- =====================================================
-     BRIGHTBUY HEADER
-===================================================== -->
 
-<!-- =========================================================
-     BRIGHTBUY HEADER - SAME AS HOME
-========================================================= -->
+<!-- =====================================================
+     BRIGHTBUY VIEWPORT
+===================================================== -->
 
 <div class="brightbuy-viewport">
 
     <div class="brightbuy-canvas">
+
+
+        <!-- =====================================================
+             HEADER
+        ===================================================== -->
 
         <header class="site-header">
 
@@ -338,10 +365,7 @@ if ($search !== "") {
                         <div class="header-actions">
 
 
-                            <?php if (
-                                isset($_SESSION["logged_in"]) &&
-                                $_SESSION["logged_in"] === true
-                            ): ?>
+                            <?php if ($isLoggedIn): ?>
 
                                 <!-- LOGGED-IN ACCOUNT -->
 
@@ -356,7 +380,7 @@ if ($search !== "") {
 
                                         <span>
                                             <?= htmlspecialchars(
-                                                $_SESSION["first_name"]
+                                                $_SESSION["first_name"] ?? "Account"
                                             ) ?>
                                         </span>
 
@@ -381,7 +405,6 @@ if ($search !== "") {
 
                             <?php else: ?>
 
-
                                 <!-- LOGGED-OUT ACCOUNT -->
 
                                 <a
@@ -396,7 +419,6 @@ if ($search !== "") {
                                     </span>
 
                                 </a>
-
 
                             <?php endif; ?>
 
@@ -418,13 +440,10 @@ if ($search !== "") {
                                 <?php if ($wishlistCount > 0): ?>
 
                                     <b class="wishlist-count">
-
                                         <?= $wishlistCount ?>
-
                                     </b>
 
                                 <?php endif; ?>
-
 
                             </a>
 
@@ -446,19 +465,15 @@ if ($search !== "") {
                                 <?php if ($cartCount > 0): ?>
 
                                     <b class="cart-count">
-
                                         <?= $cartCount ?>
-
                                     </b>
 
                                 <?php endif; ?>
-
 
                             </a>
 
 
                         </div>
-
 
                     </div>
 
@@ -481,9 +496,7 @@ if ($search !== "") {
                         <li>
 
                             <a href="../index.php">
-
                                 Home
-
                             </a>
 
                         </li>
@@ -497,9 +510,7 @@ if ($search !== "") {
                                 href="shop.php"
                                 class="active"
                             >
-
                                 Shop
-
                             </a>
 
                         </li>
@@ -510,9 +521,7 @@ if ($search !== "") {
                         <li>
 
                             <a href="deals.php">
-
                                 Deals
-
                             </a>
 
                         </li>
@@ -523,9 +532,7 @@ if ($search !== "") {
                         <li>
 
                             <a href="new-arrivals.php">
-
                                 New Arrivals
-
                             </a>
 
                         </li>
@@ -536,9 +543,7 @@ if ($search !== "") {
                         <li>
 
                             <a href="track-order.php">
-
                                 Track Order
-
                             </a>
 
                         </li>
@@ -549,9 +554,7 @@ if ($search !== "") {
                         <li>
 
                             <a href="help.php">
-
                                 Help Center
-
                             </a>
 
                         </li>
@@ -563,670 +566,846 @@ if ($search !== "") {
 
             </nav>
 
-
         </header>
 
 
-<!-- =====================================================
-     SHOP HERO
-===================================================== -->
+        <!-- =====================================================
+             SHOP HERO
+        ===================================================== -->
 
-<section class="shop-hero">
+        <section class="shop-hero">
 
-    <div class="shop-hero-content">
+            <div class="shop-hero-content">
 
-        <h1>
-            Shop <span>BrightBuy</span>
-        </h1>
+                <h1>
+                    Shop <span>BrightBuy</span>
+                </h1>
 
-        <p>
-            Discover quality products at prices you'll love.
-        </p>
+                <p>
+                    Discover quality products at prices you'll love.
+                </p>
 
-    </div>
+            </div>
 
-</section>
-
-
-<!-- =====================================================
-     SHOP CONTENT
-===================================================== -->
-
-<main class="shop-container">
+        </section>
 
 
-    <!-- FILTER BAR -->
+        <!-- =====================================================
+             SHOP CONTENT
+        ===================================================== -->
 
-    <div class="shop-filter-bar">
-
-        <form
-            method="GET"
-            action="shop.php"
-            class="shop-search"
-        >
-
-            <input
-                type="text"
-                name="search"
-                value="<?= htmlspecialchars($search) ?>"
-                placeholder="Search for products..."
-            >
-
-            <button type="submit">
-
-                <i class="bi bi-search"></i>
-
-            </button>
-
-        </form>
+        <main class="shop-container">
 
 
-        <!-- CATEGORY FILTER -->
+            <!-- FILTER BAR -->
 
-        <div class="category-filter">
-
-            <a
-                href="shop.php"
-                class="<?= $category === "" ? "active" : "" ?>"
-            >
-                <i class="bi bi-grid-fill"></i>
-                All Products
-            </a>
+            <div class="shop-filter-bar">
 
 
-            <?php foreach ($categories as $cat): ?>
+                <!-- SEARCH -->
 
-                <?php
-
-                    $categorySlug =
-                        strtolower(
-                            trim(
-                                $cat["category_name"]
-                            )
-                        );
-
-                ?>
-
-                <a
-                    href="shop.php?category=<?= urlencode($cat["category_name"]) ?>"
-                    class="<?= strtolower($category) === $categorySlug ? "active" : "" ?>"
+                <form
+                    method="GET"
+                    action="shop.php"
+                    class="shop-search"
                 >
 
-                    <i class="bi bi-tag"></i>
+                    <input
+                        type="text"
+                        name="search"
+                        value="<?= htmlspecialchars($search) ?>"
+                        placeholder="Search for products..."
+                    >
 
-                    <?= htmlspecialchars($cat["category_name"]) ?>
+                    <button type="submit">
 
-                </a>
+                        <i class="bi bi-search"></i>
 
-            <?php endforeach; ?>
+                    </button>
 
-        </div>
-
-    </div>
-
-
-    <!-- RESULTS HEADER -->
-
-    <div class="shop-results-header">
-
-        <div>
-
-            <h2>
-                <?= $pageTitle ?>
-            </h2>
-
-        </div>
+                </form>
 
 
-        <div class="product-count">
+                <!-- CATEGORY FILTER -->
 
-            <?= count($products) ?>
-            product<?= count($products) !== 1 ? "s" : "" ?>
-
-        </div>
-
-    </div>
+                <div class="category-filter">
 
 
-    <!-- =================================================
-         PRODUCTS
-    ================================================= -->
+                    <!-- ALL PRODUCTS -->
 
-    <?php if (!empty($products)): ?>
+                    <a
+                        href="shop.php"
+                        class="<?= $category === "" ? "active" : "" ?>"
+                    >
 
-        <div class="shop-product-grid">
+                        <i class="bi bi-grid-fill"></i>
 
+                        All Products
 
-            <?php foreach ($products as $product): ?>
-
-                <?php
-
-                    $productId =
-                        (int)$product["product_id"];
-
-                    $stock =
-                        (int)$product["stock"];
-
-                    $image =
-                        !empty($product["image"])
-                            ? "../" . ltrim(
-                                $product["image"],
-                                "/"
-                            )
-                            : "../images/placeholder.png";
-
-                    $inWishlist =
-                        in_array(
-                            $productId,
-                            array_map(
-                                "intval",
-                                $wishlistProductIds
-                            ),
-                            true
-                        );
-
-                ?>
+                    </a>
 
 
-                <article class="shop-product-card">
+                    <?php foreach ($categories as $cat): ?>
 
+                        <?php
 
-                    <!-- PRODUCT IMAGE -->
+                        $categorySlug =
+                            strtolower(
+                                trim(
+                                    $cat["category_name"]
+                                )
+                            );
 
-                    <div class="shop-product-image">
+                        ?>
 
-
-                        <?php if ($stock <= 0): ?>
-
-                            <span class="discount-badge">
-                                OUT OF STOCK
-                            </span>
-
-                        <?php endif; ?>
-
-
-                        <img
-                            src="<?= htmlspecialchars($image) ?>"
-                            alt="<?= htmlspecialchars($product["product_name"]) ?>"
+                        <a
+                            href="shop.php?category=<?= urlencode($cat["category_name"]) ?>"
+                            class="<?= strtolower($category) === $categorySlug ? "active" : "" ?>"
                         >
 
-
-                        <!-- WISHLIST -->
-
-                        <button
-                            type="button"
-                            class="wishlist-button <?= $inWishlist ? "active" : "" ?>"
-                            data-product-id="<?= $productId ?>"
-                            aria-label="Add to wishlist"
-                        >
-
-                            <i
-                                class="bi <?= $inWishlist ? "bi-heart-fill" : "bi-heart" ?>"
-                            ></i>
-
-                        </button>
-
-
-                    </div>
-
-
-                    <!-- PRODUCT INFORMATION -->
-
-                    <div class="shop-product-info">
-
-
-                        <?php if (!empty($product["category_name"])): ?>
-
-                            <div class="shop-category">
-
-                                <?= htmlspecialchars(
-                                    $product["category_name"]
-                                ) ?>
-
-                            </div>
-
-                        <?php endif; ?>
-
-
-                        <div class="shop-product-name">
+                            <i class="bi bi-tag"></i>
 
                             <?= htmlspecialchars(
-                                $product["product_name"]
+                                $cat["category_name"]
                             ) ?>
 
-                        </div>
+                        </a>
+
+                    <?php endforeach; ?>
 
 
-                        <!-- RATING -->
+                </div>
 
-                        <div class="shop-rating">
-
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-half"></i>
-
-                            <span>
-                                4.8
-                            </span>
-
-                        </div>
+            </div>
 
 
-                        <!-- PRICE -->
+            <!-- RESULTS HEADER -->
 
-                        <div class="shop-price-row">
+            <div class="shop-results-header">
 
-                            <div class="shop-price">
+                <div>
 
-                                ₱<?= number_format(
-                                    (float)$product["price"],
-                                    2
-                                ) ?>
+                    <h2>
+                        <?= $pageTitle ?>
+                    </h2>
 
-                            </div>
-
-                        </div>
+                </div>
 
 
-                        <!-- STOCK -->
+                <div class="product-count">
 
-                        <?php if ($stock > 10): ?>
+                    <?= count($products) ?>
 
-                            <div class="shop-stock available">
+                    product<?= count($products) !== 1 ? "s" : "" ?>
 
-                                <i class="bi bi-check-circle-fill"></i>
+                </div>
 
-                                <?= $stock ?>
-                                items left
-
-                            </div>
-
-                        <?php elseif ($stock > 0): ?>
-
-                            <div class="shop-stock low">
-
-                                <i class="bi bi-exclamation-circle-fill"></i>
-
-                                Only <?= $stock ?>
-                                left
-
-                            </div>
-
-                        <?php else: ?>
-
-                            <div class="shop-stock out">
-
-                                <i class="bi bi-x-circle-fill"></i>
-
-                                Out of Stock
-
-                            </div>
-
-                        <?php endif; ?>
+            </div>
 
 
-                        <!-- ADD TO CART -->
+            <!-- =================================================
+                 PRODUCTS
+            ================================================= -->
 
-                        <?php if ($stock > 0): ?>
+            <?php if (!empty($products)): ?>
 
-                            <form
-                                method="POST"
-                                action="add-to-cart.php"
-                                class="shop-cart-form"
-                            >
+                <div class="shop-product-grid">
 
-                                <input
-                                    type="hidden"
-                                    name="product_id"
-                                    value="<?= $productId ?>"
+
+                    <?php foreach ($products as $product): ?>
+
+                        <?php
+
+                        $productId =
+                            (int) $product["product_id"];
+
+                        $stock =
+                            (int) $product["stock"];
+
+                        $image =
+                            !empty($product["image"])
+                                ? "../" . ltrim(
+                                    $product["image"],
+                                    "/"
+                                )
+                                : "../images/placeholder.png";
+
+                        $inWishlist =
+                            in_array(
+                                $productId,
+                                $wishlistProductIds,
+                                true
+                            );
+
+                        ?>
+
+
+                        <article class="shop-product-card">
+
+
+                            <!-- PRODUCT IMAGE -->
+
+                            <div class="shop-product-image">
+
+
+                                <?php if ($stock <= 0): ?>
+
+                                    <span class="discount-badge">
+                                        OUT OF STOCK
+                                    </span>
+
+                                <?php endif; ?>
+
+
+                                <img
+                                    src="<?= htmlspecialchars($image) ?>"
+                                    alt="<?= htmlspecialchars(
+                                        $product["product_name"]
+                                    ) ?>"
                                 >
+
+
+                                <!-- WISHLIST -->
 
                                 <button
-                                    type="submit"
-                                    class="shop-cart-button"
+                                    type="button"
+                                    class="wishlist-button <?= $inWishlist ? "active" : "" ?>"
+                                    data-product-id="<?= $productId ?>"
+                                    aria-label="Add to wishlist"
                                 >
 
-                                    <i class="bi bi-cart-plus"></i>
-
-                                    Add to Cart
+                                    <i
+                                        class="bi <?= $inWishlist
+                                            ? "bi-heart-fill"
+                                            : "bi-heart" ?>"
+                                    ></i>
 
                                 </button>
 
-                            </form>
 
-                        <?php else: ?>
+                            </div>
 
-                            <button
-                                type="button"
-                                class="shop-cart-button"
-                                disabled
+
+                            <!-- PRODUCT INFORMATION -->
+
+                            <div class="shop-product-info">
+
+
+                                <!-- CATEGORY -->
+
+                                <?php if (!empty($product["category_name"])): ?>
+
+                                    <div class="shop-category">
+
+                                        <?= htmlspecialchars(
+                                            $product["category_name"]
+                                        ) ?>
+
+                                    </div>
+
+                                <?php endif; ?>
+
+
+                                <!-- PRODUCT NAME -->
+
+                                <div class="shop-product-name">
+
+                                    <?= htmlspecialchars(
+                                        $product["product_name"]
+                                    ) ?>
+
+                                </div>
+
+
+                                <!-- RATING -->
+
+                                <div class="shop-rating">
+
+                                    <i class="bi bi-star-fill"></i>
+
+                                    <i class="bi bi-star-fill"></i>
+
+                                    <i class="bi bi-star-fill"></i>
+
+                                    <i class="bi bi-star-fill"></i>
+
+                                    <i class="bi bi-star-half"></i>
+
+                                    <span>
+                                        4.8
+                                    </span>
+
+                                </div>
+
+
+                                <!-- PRICE -->
+
+                                <div class="shop-price-row">
+
+                                    <div class="shop-price">
+
+                                        ₱<?= number_format(
+                                            (float) $product["price"],
+                                            2
+                                        ) ?>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- STOCK -->
+
+                                <?php if ($stock > 10): ?>
+
+                                    <div class="shop-stock available">
+
+                                        <i class="bi bi-check-circle-fill"></i>
+
+                                        <?= $stock ?>
+                                        items left
+
+                                    </div>
+
+
+                                <?php elseif ($stock > 0): ?>
+
+                                    <div class="shop-stock low">
+
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+
+                                        Only
+                                        <?= $stock ?>
+                                        left
+
+                                    </div>
+
+
+                                <?php else: ?>
+
+                                    <div class="shop-stock out">
+
+                                        <i class="bi bi-x-circle-fill"></i>
+
+                                        Out of Stock
+
+                                    </div>
+
+                                <?php endif; ?>
+
+
+                                <!-- =================================================
+                                     ADD TO CART
+                                ================================================= -->
+
+                                <?php if ($stock > 0): ?>
+
+                                    <form
+                                        method="POST"
+                                        action="../actions/cart.php"
+                                        class="shop-cart-form"
+                                    >
+
+                                        <!-- IMPORTANT -->
+                                        <!-- THIS WAS MISSING -->
+
+                                        <input
+                                            type="hidden"
+                                            name="action"
+                                            value="add"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="product_id"
+                                            value="<?= $productId ?>"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="quantity"
+                                            value="1"
+                                        >
+
+
+                                        <button
+                                            type="submit"
+                                            class="shop-cart-button"
+                                        >
+
+                                            <i class="bi bi-cart-plus"></i>
+
+                                            Add to Cart
+
+                                        </button>
+
+                                    </form>
+
+
+                                <?php else: ?>
+
+                                    <button
+                                        type="button"
+                                        class="shop-cart-button"
+                                        disabled
+                                    >
+
+                                        <i class="bi bi-x-circle"></i>
+
+                                        Out of Stock
+
+                                    </button>
+
+                                <?php endif; ?>
+
+
+                            </div>
+
+                        </article>
+
+                    <?php endforeach; ?>
+
+
+                </div>
+
+
+            <?php else: ?>
+
+
+                <!-- EMPTY RESULT -->
+
+                <div class="empty-shop">
+
+                    <i class="bi bi-search"></i>
+
+                    <h3>
+                        No products found
+                    </h3>
+
+                    <p>
+                        We couldn't find any products matching your search.
+                    </p>
+
+                    <a
+                        href="shop.php"
+                        class="clear-search"
+                    >
+                        View All Products
+                    </a>
+
+                </div>
+
+            <?php endif; ?>
+
+
+        </main>
+
+
+        <!-- =====================================================
+             WISHLIST SCRIPT
+        ===================================================== -->
+
+        <script>
+
+        document
+            .querySelectorAll(".wishlist-button")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const productId =
+                            this.dataset.productId;
+
+
+                        fetch(
+                            "toggle-wishlist.php",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/x-www-form-urlencoded"
+                                },
+
+                                body:
+                                    "product_id=" +
+                                    encodeURIComponent(productId)
+                            }
+                        )
+
+                        .then(response => response.json())
+
+                        .then(data => {
+
+                            if (data.logged_in === false) {
+
+                                window.location.href =
+                                    "login.php";
+
+                                return;
+                            }
+
+
+                            if (data.success) {
+
+                                const icon =
+                                    this.querySelector("i");
+
+
+                                if (data.in_wishlist) {
+
+                                    this.classList.add("active");
+
+                                    icon.className =
+                                        "bi bi-heart-fill";
+
+                                } else {
+
+                                    this.classList.remove("active");
+
+                                    icon.className =
+                                        "bi bi-heart";
+
+                                }
+
+                            }
+
+                        })
+
+                        .catch(error => {
+
+                            console.error(
+                                "Wishlist error:",
+                                error
+                            );
+
+                        });
+
+                    }
+                );
+
+            });
+
+        </script>
+
+
+        <!-- =====================================================
+             FOOTER
+        ===================================================== -->
+
+        <footer class="site-footer">
+
+            <div class="container-fluid bright-container">
+
+                <div class="footer-main">
+
+
+                    <!-- BRAND -->
+
+                    <div class="footer-brand">
+
+                        <a href="../index.php">
+
+                            <img
+                                src="../images/logo.png"
+                                alt="BrightBuy"
                             >
 
-                                <i class="bi bi-x-circle"></i>
+                        </a>
 
-                                Out of Stock
+                        <p>
+                            Smart Shopping,<br>
+                            Brighter Living.
+                        </p>
 
-                            </button>
 
-                        <?php endif; ?>
+                        <div class="social-links">
 
+                            <a
+                                href="#"
+                                aria-label="Facebook"
+                            >
+                                <i class="bi bi-facebook"></i>
+                            </a>
+
+                            <a
+                                href="#"
+                                aria-label="Instagram"
+                            >
+                                <i class="bi bi-instagram"></i>
+                            </a>
+
+                            <a
+                                href="#"
+                                aria-label="Twitter"
+                            >
+                                <i class="bi bi-twitter-x"></i>
+                            </a>
+
+                            <a
+                                href="#"
+                                aria-label="YouTube"
+                            >
+                                <i class="bi bi-youtube"></i>
+                            </a>
+
+                        </div>
 
                     </div>
 
-                </article>
 
-            <?php endforeach; ?>
+                    <!-- SHOP -->
 
+                    <div class="footer-column">
 
-        </div>
+                        <h3>
+                            Shop
+                        </h3>
 
-    <?php else: ?>
+                        <a href="shop.php">
+                            All Categories
+                        </a>
 
+                        <a href="deals.php">
+                            Deals
+                        </a>
 
-        <!-- EMPTY RESULT -->
+                        <a href="new-arrivals.php">
+                            New Arrivals
+                        </a>
 
-        <div class="empty-shop">
+                        <a href="shop.php">
+                            Best Sellers
+                        </a>
 
-            <i class="bi bi-search"></i>
-
-            <h3>
-                No products found
-            </h3>
-
-            <p>
-                We couldn't find any products matching your search.
-            </p>
-
-            <a
-                href="shop.php"
-                class="clear-search"
-            >
-                View All Products
-            </a>
-
-        </div>
-
-    <?php endif; ?>
+                    </div>
 
 
-</main>
+                    <!-- CUSTOMER SERVICES -->
+
+                    <div class="footer-column">
+
+                        <h3>
+                            Customer Services
+                        </h3>
+
+                        <a href="help.php">
+                            Help Center
+                        </a>
+
+                        <a href="track-order.php">
+                            Track Order
+                        </a>
+
+                        <a href="#">
+                            Returns & Refunds
+                        </a>
+
+                        <a href="#">
+                            Shipping Info
+                        </a>
+
+                    </div>
 
 
-<!-- =====================================================
-     WISHLIST SCRIPT
-===================================================== -->
+                    <!-- ABOUT -->
 
-<script>
+                    <div class="footer-column">
 
-document.querySelectorAll(".wishlist-button").forEach(button => {
+                        <h3>
+                            About us
+                        </h3>
 
-    button.addEventListener("click", function () {
+                        <a href="#">
+                            About BrightBuy
+                        </a>
 
-        const productId =
-            this.dataset.productId;
+                        <a href="#">
+                            Careers
+                        </a>
 
-        fetch("toggle-wishlist.php", {
+                        <a href="#">
+                            Press & Media
+                        </a>
 
-            method: "POST",
+                        <a href="#">
+                            Contact Us
+                        </a>
 
-            headers: {
-                "Content-Type":
-                    "application/x-www-form-urlencoded"
-            },
-
-            body:
-                "product_id=" +
-                encodeURIComponent(productId)
-
-        })
-
-        .then(response => response.json())
-
-        .then(data => {
-
-            if (data.logged_in === false) {
-
-                window.location.href =
-                    "login.php";
-
-                return;
-            }
+                    </div>
 
 
-            if (data.success) {
+                    <!-- ACCOUNT -->
 
-                const icon =
-                    this.querySelector("i");
+                    <div class="footer-column">
 
+                        <h3>
+                            My Account
+                        </h3>
 
-                if (data.in_wishlist) {
+                        <a href="my-orders.php">
+                            My Orders
+                        </a>
 
-                    this.classList.add("active");
+                        <a href="wishlist.php">
+                            Wishlist
+                        </a>
 
-                    icon.className =
-                        "bi bi-heart-fill";
+                        <a href="account.php">
+                            Account Settings
+                        </a>
 
-                } else {
-
-                    this.classList.remove("active");
-
-                    icon.className =
-                        "bi bi-heart";
-
-                }
-
-            }
-
-        })
-
-        .catch(error => {
-
-            console.error(
-                "Wishlist error:",
-                error
-            );
-
-        });
-
-    });
-
-});
-
-</script>
+                    </div>
 
 
-<!-- =========================================================
-     FOOTER
-========================================================= -->
+                    <!-- APP -->
 
-<footer class="site-footer">
+                    <div class="footer-column app-column">
 
-    <div class="container-fluid bright-container">
+                        <h3>
+                            Download Our App
+                        </h3>
 
-        <div class="footer-main">
+                        <p>
+                            Get the app for better
+                            shopping experience.
+                        </p>
 
-            <!-- BRAND -->
-            <div class="footer-brand">
 
-                <a href="../index.php">
-                    <img
-                        src="../images/logo.png"
-                        alt="BrightBuy"
-                    >
-                </a>
+                        <div class="app-buttons">
 
-                <p>
-                    Smart Shopping,<br>
-                    Brighter Living.
-                </p>
+                            <a
+                                href="#"
+                                class="app-button"
+                            >
 
-                <div class="social-links">
+                                <i class="bi bi-apple"></i>
 
-                    <a href="#" aria-label="Facebook">
-                        <i class="bi bi-facebook"></i>
-                    </a>
+                                <span>
 
-                    <a href="#" aria-label="Instagram">
-                        <i class="bi bi-instagram"></i>
-                    </a>
+                                    <small>
+                                        Download on the
+                                    </small>
 
-                    <a href="#" aria-label="Twitter">
-                        <i class="bi bi-twitter-x"></i>
-                    </a>
+                                    App Store
 
-                    <a href="#" aria-label="YouTube">
-                        <i class="bi bi-youtube"></i>
-                    </a>
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="#"
+                                class="app-button"
+                            >
+
+                                <i class="bi bi-google-play"></i>
+
+                                <span>
+
+                                    <small>
+                                        GET IT ON
+                                    </small>
+
+                                    Google Play
+
+                                </span>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
 
                 </div>
 
-            </div>
+
+                <!-- FOOTER BOTTOM -->
+
+                <div class="footer-bottom">
+
+                    <span>
+                        © 2026 BrightBuy. All rights reserved
+                    </span>
 
 
-            <!-- SHOP -->
-            <div class="footer-column">
+                    <div class="footer-policies">
 
-                <h3>Shop</h3>
+                        <a href="#">
+                            Privacy Policy
+                        </a>
 
-                <a href="shop.php">All Categories</a>
-                <a href="deals.php">Deals</a>
-                <a href="new-arrivals.php">New Arrivals</a>
-                <a href="shop.php">Best Sellers</a>
+                        <a href="#">
+                            Terms of Service
+                        </a>
 
-            </div>
+                        <a href="#">
+                            Refund Policy
+                        </a>
 
-
-            <!-- CUSTOMER SERVICES -->
-            <div class="footer-column">
-
-                <h3>Customer Services</h3>
-
-                <a href="help.php">Help Center</a>
-                <a href="track-order.php">Track Order</a>
-                <a href="#">Returns & Refunds</a>
-                <a href="#">Shipping Info</a>
-
-            </div>
+                    </div>
 
 
-            <!-- ABOUT -->
-            <div class="footer-column">
+                    <div class="payment-methods">
 
-                <h3>About us</h3>
-
-                <a href="#">About BrightBuy</a>
-                <a href="#">Careers</a>
-                <a href="#">Press & Media</a>
-                <a href="#">Contact Us</a>
-
-            </div>
-
-
-            <!-- ACCOUNT -->
-            <div class="footer-column">
-
-                <h3>My Account</h3>
-
-                <a href="my-orders.php">My Orders</a>
-                <a href="wishlist.php">Wishlist</a>
-                <a href="account.php">Account Settings</a>
-
-            </div>
-
-
-            <!-- APP -->
-            <div class="footer-column app-column">
-
-                <h3>Download Our App</h3>
-
-                <p>
-                    Get the app for better
-                    shopping experience.
-                </p>
-
-                <div class="app-buttons">
-
-                    <a href="#" class="app-button">
-                        <i class="bi bi-apple"></i>
                         <span>
-                            <small>Download on the</small>
-                            App Store
+                            VISA
                         </span>
-                    </a>
 
-                    <a href="#" class="app-button">
-                        <i class="bi bi-google-play"></i>
                         <span>
-                            <small>GET IT ON</small>
-                            Google Play
+                            ●●
                         </span>
-                    </a>
+
+                        <span>
+                            PayPal
+                        </span>
+
+                        <span>
+                            GPay
+                        </span>
+
+                    </div>
 
                 </div>
 
-            </div>
-
-        </div>
-
-
-        <!-- FOOTER BOTTOM -->
-
-        <div class="footer-bottom">
-
-            <span>
-                © 2026 BrightBuy. All rights reserved
-            </span>
-
-            <div class="footer-policies">
-
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Refund Policy</a>
 
             </div>
 
-            <div class="payment-methods">
+        </footer>
 
-                <span>VISA</span>
-                <span>●●</span>
-                <span>PayPal</span>
-                <span>GPay</span>
-
-            </div>
-
-        </div>
 
     </div>
 
-</footer>
-
-
-    </div>
 </div>
 
 
-<!-- =========================================================
+<!-- =====================================================
      BACK TO TOP
-========================================================= -->
+===================================================== -->
 
 <button
     type="button"
     id="backToTop"
     aria-label="Back to top"
 >
+
     <i class="bi bi-arrow-up"></i>
+
 </button>
 
 
-<!-- Bootstrap JS -->
+<!-- BOOTSTRAP JS -->
+
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
 
 
-<!-- BrightBuy JS -->
+<!-- BRIGHTBUY JS -->
+
 <script src="../js/script.js"></script>
 
 

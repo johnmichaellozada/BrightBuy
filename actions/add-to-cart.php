@@ -1,14 +1,57 @@
 <?php
 
+/**
+ * BrightBuy - Add Product to Cart
+ *
+ * Customer-side CREATE operation.
+ */
+
 session_start();
+
 require_once "../db.php";
 
-if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) {
-    header("Location: login.php");
+
+/* =========================================================
+   CHECK LOGIN
+========================================================= */
+
+if (
+    !isset($_SESSION["logged_in"]) ||
+    $_SESSION["logged_in"] !== true
+) {
+
+    header("Location: ../pages/login.php");
     exit;
 }
 
-$user_id = $_SESSION["user_id"];
+
+/* =========================================================
+   GET USER ID
+========================================================= */
+
+$user_id = (int)($_SESSION["user_id"] ?? 0);
+
+if ($user_id <= 0) {
+
+    header("Location: ../pages/login.php");
+    exit;
+}
+
+
+/* =========================================================
+   ONLY ALLOW POST
+========================================================= */
+
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+
+    header("Location: ../pages/shop.php");
+    exit;
+}
+
+
+/* =========================================================
+   GET PRODUCT ID
+========================================================= */
 
 $product_id = filter_input(
     INPUT_POST,
@@ -16,19 +59,33 @@ $product_id = filter_input(
     FILTER_VALIDATE_INT
 );
 
-if (!$product_id) {
-    header("Location: ../index.php");
+
+/* =========================================================
+   VALIDATE PRODUCT ID
+========================================================= */
+
+if (!$product_id || $product_id <= 0) {
+
+    $_SESSION["cart_error"] = "Invalid product ID.";
+
+    header("Location: ../pages/shop.php");
     exit;
 }
+
+
+/* =========================================================
+   CHECK PRODUCT
+========================================================= */
 
 $productStmt = $pdo->prepare("
     SELECT
         product_id,
         product_name,
-        stock
+        price,
+        stock,
+        status
     FROM products
     WHERE product_id = ?
-      AND status = 'active'
     LIMIT 1
 ");
 
@@ -38,21 +95,53 @@ $productStmt->execute([
 
 $product = $productStmt->fetch();
 
+
 if (!$product) {
-    header("Location: ../index.php");
+
+    $_SESSION["cart_error"] = "Product not found.";
+
+    header("Location: ../pages/shop.php");
     exit;
 }
 
-if ((int)$product["stock"] <= 0) {
 
-    die(
-        htmlspecialchars(
-            $product["product_name"]
-        ) . " is currently out of stock."
-    );
+/* =========================================================
+   CHECK PRODUCT STATUS
+========================================================= */
+
+if (
+    isset($product["status"]) &&
+    strtolower($product["status"]) !== "active"
+) {
+
+    $_SESSION["cart_error"] =
+        "This product is currently unavailable.";
+
+    header("Location: ../pages/shop.php");
+    exit;
 }
 
-/* Find the user's cart */
+
+/* =========================================================
+   CHECK STOCK
+========================================================= */
+
+$stock = (int)$product["stock"];
+
+if ($stock <= 0) {
+
+    $_SESSION["cart_error"] =
+        "This product is out of stock.";
+
+    header("Location: ../pages/shop.php");
+    exit;
+}
+
+
+/* =========================================================
+   GET OR CREATE CUSTOMER CART
+========================================================= */
+
 $cartStmt = $pdo->prepare("
     SELECT cart_id
     FROM cart
@@ -60,30 +149,44 @@ $cartStmt = $pdo->prepare("
     LIMIT 1
 ");
 
-$cartStmt->execute([$user_id]);
+$cartStmt->execute([
+    $user_id
+]);
 
 $cart = $cartStmt->fetch();
 
-if ($cart) {
 
-    $cart_id = $cart["cart_id"];
+/* =========================================================
+   CREATE CART IF NONE EXISTS
+========================================================= */
 
-} else {
+if (!$cart) {
 
-    /* Create a cart for the user */
-    $createCart = $pdo->prepare("
+    $createCartStmt = $pdo->prepare("
         INSERT INTO cart (user_id)
         VALUES (?)
     ");
 
-    $createCart->execute([$user_id]);
+    $createCartStmt->execute([
+        $user_id
+    ]);
 
-    $cart_id = $pdo->lastInsertId();
+    $cart_id = (int)$pdo->lastInsertId();
+
+} else {
+
+    $cart_id = (int)$cart["cart_id"];
 }
 
-/* Check if product is already in cart */
+
+/* =========================================================
+   CHECK IF PRODUCT ALREADY EXISTS IN CART
+========================================================= */
+
 $itemStmt = $pdo->prepare("
-    SELECT cart_item_id, quantity
+    SELECT
+        cart_item_id,
+        quantity
     FROM cart_items
     WHERE cart_id = ?
       AND product_id = ?
@@ -95,28 +198,65 @@ $itemStmt->execute([
     $product_id
 ]);
 
-$item = $itemStmt->fetch();
+$existingItem = $itemStmt->fetch();
 
-if ($item) {
 
-    /* Increase quantity */
+/* =========================================================
+   ADD OR INCREASE QUANTITY
+========================================================= */
+
+if ($existingItem) {
+
+    $newQuantity =
+        (int)$existingItem["quantity"] + 1;
+
+
+    /* ---------------------------------------------
+       DO NOT EXCEED STOCK
+    --------------------------------------------- */
+
+    if ($newQuantity > $stock) {
+
+        $_SESSION["cart_error"] =
+            "You cannot add more than the available stock.";
+
+        header("Location: ../pages/cart.php");
+        exit;
+    }
+
+
     $updateStmt = $pdo->prepare("
         UPDATE cart_items
-        SET quantity = quantity + 1
+        SET quantity = ?
         WHERE cart_item_id = ?
+          AND cart_id = ?
     ");
 
     $updateStmt->execute([
-        $item["cart_item_id"]
+        $newQuantity,
+        (int)$existingItem["cart_item_id"],
+        $cart_id
     ]);
 
 } else {
 
-    /* Add new product */
+    /* ---------------------------------------------
+       INSERT NEW CART ITEM
+    --------------------------------------------- */
+
     $insertStmt = $pdo->prepare("
         INSERT INTO cart_items
-        (cart_id, product_id, quantity)
-        VALUES (?, ?, 1)
+        (
+            cart_id,
+            product_id,
+            quantity
+        )
+        VALUES
+        (
+            ?,
+            ?,
+            1
+        )
     ");
 
     $insertStmt->execute([
@@ -125,6 +265,19 @@ if ($item) {
     ]);
 }
 
-/* Go to cart */
-header("Location: cart.php");
+
+/* =========================================================
+   SUCCESS
+========================================================= */
+
+$_SESSION["cart_success"] =
+    htmlspecialchars($product["product_name"])
+    . " added to your cart.";
+
+
+/* =========================================================
+   REDIRECT TO CART
+========================================================= */
+
+header("Location: ../pages/cart.php");
 exit;

@@ -1,28 +1,40 @@
 <?php
 
+/**
+ * BrightBuy - Cancel Order Action
+ *
+ * Customer can:
+ * - Cancel their own Pending order
+ * - Restore the purchased product stock
+ *
+ * File location:
+ * /BrightBuy/actions/cancel-order.php
+ */
+
 session_start();
 
 require_once "../db.php";
 
 
-/* =====================================================
-   CUSTOMER ACCESS CHECK
-===================================================== */
+/* =========================================================
+   CUSTOMER LOGIN CHECK
+========================================================= */
 
 if (
     !isset($_SESSION["logged_in"]) ||
     $_SESSION["logged_in"] !== true
 ) {
-    header("Location: login.php");
+    header("Location: ../pages/login.php");
     exit;
 }
 
-$user_id = $_SESSION["user_id"];
+
+$user_id = (int) $_SESSION["user_id"];
 
 
-/* =====================================================
+/* =========================================================
    GET ORDER ID
-===================================================== */
+========================================================= */
 
 $order_id = filter_input(
     INPUT_POST,
@@ -30,25 +42,26 @@ $order_id = filter_input(
     FILTER_VALIDATE_INT
 );
 
+
 if (!$order_id) {
-    header("Location: my-orders.php");
+    header("Location: ../pages/my-orders.php?error=invalid_order");
     exit;
 }
 
 
 try {
 
-    /* =================================================
+    /* =====================================================
        START TRANSACTION
-    ================================================= */
+    ===================================================== */
 
     $pdo->beginTransaction();
 
 
-    /* =================================================
-       GET ORDER
-       CUSTOMER CAN ONLY CANCEL THEIR OWN ORDER
-    ================================================= */
+    /* =====================================================
+       GET CUSTOMER ORDER
+       LOCK THE ORDER DURING TRANSACTION
+    ===================================================== */
 
     $orderStmt = $pdo->prepare("
         SELECT
@@ -67,34 +80,44 @@ try {
         $user_id
     ]);
 
-    $order = $orderStmt->fetch();
+    $order = $orderStmt->fetch(PDO::FETCH_ASSOC);
 
+
+    /* =====================================================
+       ORDER NOT FOUND
+    ===================================================== */
 
     if (!$order) {
 
         $pdo->rollBack();
 
-        header("Location: my-orders.php");
+        header(
+            "Location: ../pages/my-orders.php?error=order_not_found"
+        );
+
         exit;
     }
 
 
-    /* =================================================
+    /* =====================================================
        ONLY PENDING ORDERS CAN BE CANCELLED
-    ================================================= */
+    ===================================================== */
 
     if ($order["status"] !== "Pending") {
 
         $pdo->rollBack();
 
-        header("Location: my-orders.php");
+        header(
+            "Location: ../pages/my-orders.php?error=cannot_cancel"
+        );
+
         exit;
     }
 
 
-    /* =================================================
+    /* =====================================================
        GET ORDER ITEMS
-    ================================================= */
+    ===================================================== */
 
     $itemsStmt = $pdo->prepare("
         SELECT
@@ -108,14 +131,23 @@ try {
         $order_id
     ]);
 
-    $items = $itemsStmt->fetchAll();
+    $items = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-    /* =================================================
+    /* =====================================================
        RESTORE PRODUCT STOCK
-    ================================================= */
+    ===================================================== */
 
     foreach ($items as $item) {
+
+        $product_id = (int) $item["product_id"];
+        $quantity = (int) $item["quantity"];
+
+
+        if ($product_id <= 0 || $quantity <= 0) {
+            continue;
+        }
+
 
         $stockStmt = $pdo->prepare("
             UPDATE products
@@ -124,15 +156,15 @@ try {
         ");
 
         $stockStmt->execute([
-            (int)$item["quantity"],
-            (int)$item["product_id"]
+            $quantity,
+            $product_id
         ]);
     }
 
 
-    /* =================================================
-       CHANGE ORDER STATUS
-    ================================================= */
+    /* =====================================================
+       CHANGE ORDER STATUS TO CANCELLED
+    ===================================================== */
 
     $updateStmt = $pdo->prepare("
         UPDATE orders
@@ -148,24 +180,50 @@ try {
     ]);
 
 
-    /* =================================================
+    /* =====================================================
+       VERIFY STATUS WAS ACTUALLY UPDATED
+    ===================================================== */
+
+    if ($updateStmt->rowCount() !== 1) {
+
+        throw new Exception(
+            "Order could not be cancelled."
+        );
+    }
+
+
+    /* =====================================================
        COMPLETE TRANSACTION
-    ================================================= */
+    ===================================================== */
 
     $pdo->commit();
 
 
-    header("Location: my-orders.php");
+    /* =====================================================
+       RETURN TO MY ORDERS
+    ===================================================== */
+
+    header(
+        "Location: ../pages/my-orders.php?success=cancelled"
+    );
+
     exit;
 
 
 } catch (Exception $e) {
 
+    /* =====================================================
+       ROLLBACK IF SOMETHING FAILED
+    ===================================================== */
+
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
 
-    die(
-        "Unable to cancel order. Please try again."
+
+    header(
+        "Location: ../pages/my-orders.php?error=cancel_failed"
     );
+
+    exit;
 }

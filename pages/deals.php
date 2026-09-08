@@ -812,7 +812,7 @@ $pageTitle = "Deals";
 
                             <form
                                 method="POST"
-                                action="add-to-cart.php"
+                                action="../actions/cart.php"
                                 class="deal-cart-form"
                             >
 

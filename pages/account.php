@@ -1,18 +1,37 @@
 <?php
 
+/**
+ * BrightBuy Customer Account
+ *
+ * Displays the logged-in customer's account information
+ * and provides account management actions.
+ */
+
+
 /* =========================================================
    SESSION & ACCESS CONTROL
 ========================================================= */
 
 session_start();
 
-/*
-|--------------------------------------------------------------------------
-| Check if the customer is logged in
-|--------------------------------------------------------------------------
-*/
+require_once "../db.php";
+require_once "../includes/auth.php";
 
-if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) {
+
+/* =========================================================
+   REQUIRE CUSTOMER LOGIN
+========================================================= */
+
+requireCustomer($pdo, "login.php");
+
+
+/* =========================================================
+   GET CURRENT CUSTOMER ID
+========================================================= */
+
+$userId = getCurrentUserId();
+
+if ($userId === null) {
 
     header("Location: login.php");
     exit;
@@ -20,14 +39,91 @@ if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) {
 
 
 /* =========================================================
-   GET CUSTOMER SESSION INFORMATION
+   GET CUSTOMER INFORMATION FROM DATABASE
 ========================================================= */
 
-$first_name = $_SESSION["first_name"] ?? "";
-$last_name  = $_SESSION["last_name"] ?? "";
-$email      = $_SESSION["email"] ?? "";
-$phone      = $_SESSION["phone"] ?? "";
-$role       = $_SESSION["role"] ?? "customer";
+$stmt = $pdo->prepare("
+    SELECT
+        user_id,
+        first_name,
+        last_name,
+        email,
+        phone,
+        role
+    FROM users
+    WHERE user_id = ?
+    LIMIT 1
+");
+
+$stmt->execute([$userId]);
+
+$user = $stmt->fetch();
+
+
+/* =========================================================
+   CHECK IF CUSTOMER EXISTS
+========================================================= */
+
+if (!$user) {
+
+    logoutUser();
+
+    header("Location: login.php");
+    exit;
+}
+
+
+/* =========================================================
+   CUSTOMER INFORMATION
+========================================================= */
+
+$first_name = $user["first_name"] ?? "";
+$last_name  = $user["last_name"] ?? "";
+$email      = $user["email"] ?? "";
+$phone      = $user["phone"] ?? "";
+$role       = $user["role"] ?? "customer";
+
+
+/* =========================================================
+   UPDATE SESSION INFORMATION
+========================================================= */
+
+$_SESSION["user_id"]    = (int)$user["user_id"];
+$_SESSION["first_name"] = $first_name;
+$_SESSION["last_name"]  = $last_name;
+$_SESSION["email"]      = $email;
+$_SESSION["phone"]      = $phone;
+$_SESSION["role"]       = $role;
+$_SESSION["logged_in"]  = true;
+
+
+/* =========================================================
+   SESSION SUCCESS MESSAGE
+========================================================= */
+
+$success = $_SESSION["account_success"] ?? "";
+
+unset($_SESSION["account_success"]);
+
+
+/* =========================================================
+   SESSION ERROR MESSAGE
+========================================================= */
+
+$errors = $_SESSION["account_errors"] ?? [];
+
+unset($_SESSION["account_errors"]);
+
+
+/* =========================================================
+   ACCOUNT DELETED MESSAGE
+========================================================= */
+
+if (isset($_GET["deleted"]) && $_GET["deleted"] === "1") {
+
+    $success = "Your account has been deleted successfully.";
+
+}
 
 ?>
 
@@ -93,7 +189,9 @@ $role       = $_SESSION["role"] ?? "customer";
 
     <div class="container text-center">
 
-        <!-- Account Icon -->
+
+        <!-- ACCOUNT ICON -->
+
         <div class="account-icon">
 
             <i class="bi bi-person"></i>
@@ -101,7 +199,8 @@ $role       = $_SESSION["role"] ?? "customer";
         </div>
 
 
-        <!-- Account Title -->
+        <!-- ACCOUNT TITLE -->
+
         <h2 class="mb-1">
 
             My Account
@@ -109,11 +208,16 @@ $role       = $_SESSION["role"] ?? "customer";
         </h2>
 
 
-        <!-- Welcome Message -->
+        <!-- WELCOME MESSAGE -->
+
         <p class="mb-0">
 
             Welcome,
-            <?= htmlspecialchars($first_name) ?>!
+            <?= htmlspecialchars(
+                $first_name,
+                ENT_QUOTES,
+                "UTF-8"
+            ) ?>!
 
         </p>
 
@@ -129,6 +233,86 @@ $role       = $_SESSION["role"] ?? "customer";
 
 <div class="container py-5">
 
+
+    <!-- =====================================================
+         SUCCESS MESSAGE
+    ====================================================== -->
+
+    <?php if ($success !== ""): ?>
+
+        <div
+            class="alert alert-success alert-dismissible fade show"
+            role="alert"
+        >
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            <?= htmlspecialchars(
+                $success,
+                ENT_QUOTES,
+                "UTF-8"
+            ) ?>
+
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+            ></button>
+
+        </div>
+
+    <?php endif; ?>
+
+
+
+    <!-- =====================================================
+         ERROR MESSAGE
+    ====================================================== -->
+
+    <?php if (!empty($errors)): ?>
+
+        <div
+            class="alert alert-danger alert-dismissible fade show"
+            role="alert"
+        >
+
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+
+
+            <?php foreach ($errors as $error): ?>
+
+                <div>
+
+                    <?= htmlspecialchars(
+                        $error,
+                        ENT_QUOTES,
+                        "UTF-8"
+                    ) ?>
+
+                </div>
+
+            <?php endforeach; ?>
+
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+            ></button>
+
+        </div>
+
+    <?php endif; ?>
+
+
+
+    <!-- =====================================================
+         ACCOUNT ROW
+    ====================================================== -->
+
     <div class="row g-4">
 
 
@@ -142,6 +326,9 @@ $role       = $_SESSION["role"] ?? "customer";
 
                 <div class="card-body p-4">
 
+
+                    <!-- TITLE -->
+
                     <h4 class="mb-4">
 
                         <i class="bi bi-person-circle"></i>
@@ -151,7 +338,11 @@ $role       = $_SESSION["role"] ?? "customer";
                     </h4>
 
 
-                    <!-- Full Name -->
+
+                    <!-- =================================================
+                         FULL NAME
+                    ================================================== -->
+
                     <div class="account-info">
 
                         <div class="account-label">
@@ -163,7 +354,9 @@ $role       = $_SESSION["role"] ?? "customer";
                         <div class="account-value">
 
                             <?= htmlspecialchars(
-                                $first_name . " " . $last_name
+                                $first_name . " " . $last_name,
+                                ENT_QUOTES,
+                                "UTF-8"
                             ) ?>
 
                         </div>
@@ -171,7 +364,11 @@ $role       = $_SESSION["role"] ?? "customer";
                     </div>
 
 
-                    <!-- Email -->
+
+                    <!-- =================================================
+                         EMAIL
+                    ================================================== -->
+
                     <div class="account-info">
 
                         <div class="account-label">
@@ -182,14 +379,22 @@ $role       = $_SESSION["role"] ?? "customer";
 
                         <div class="account-value">
 
-                            <?= htmlspecialchars($email) ?>
+                            <?= htmlspecialchars(
+                                $email,
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ) ?>
 
                         </div>
 
                     </div>
 
 
-                    <!-- Phone Number -->
+
+                    <!-- =================================================
+                         PHONE NUMBER
+                    ================================================== -->
+
                     <div class="account-info">
 
                         <div class="account-label">
@@ -202,7 +407,11 @@ $role       = $_SESSION["role"] ?? "customer";
 
                             <?php if ($phone !== ""): ?>
 
-                                <?= htmlspecialchars($phone) ?>
+                                <?= htmlspecialchars(
+                                    $phone,
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>
 
                             <?php else: ?>
 
@@ -219,7 +428,11 @@ $role       = $_SESSION["role"] ?? "customer";
                     </div>
 
 
-                    <!-- Account Type -->
+
+                    <!-- =================================================
+                         ACCOUNT TYPE
+                    ================================================== -->
+
                     <div class="account-info">
 
                         <div class="account-label">
@@ -230,9 +443,34 @@ $role       = $_SESSION["role"] ?? "customer";
 
                         <div class="account-value text-capitalize">
 
-                            <?= htmlspecialchars($role) ?>
+                            <?= htmlspecialchars(
+                                $role,
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ) ?>
 
                         </div>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         EDIT ACCOUNT
+                    ================================================== -->
+
+                    <div class="mt-4">
+
+                        <a
+                            href="edit-account.php"
+                            class="btn btn-primary"
+                        >
+
+                            <i class="bi bi-pencil-square"></i>
+
+                            Edit Account
+
+                        </a>
 
                     </div>
 
@@ -255,7 +493,8 @@ $role       = $_SESSION["role"] ?? "customer";
                 <div class="card-body p-0 account-menu">
 
 
-                    <!-- Menu Heading -->
+                    <!-- MENU HEADING -->
+
                     <div class="p-4">
 
                         <h4 class="mb-0">
@@ -267,7 +506,11 @@ $role       = $_SESSION["role"] ?? "customer";
                     </div>
 
 
-                    <!-- Continue Shopping -->
+
+                    <!-- =================================================
+                         CONTINUE SHOPPING
+                    ================================================== -->
+
                     <a href="shop.php">
 
                         <i class="bi bi-bag"></i>
@@ -281,7 +524,11 @@ $role       = $_SESSION["role"] ?? "customer";
                     </a>
 
 
-                    <!-- My Orders -->
+
+                    <!-- =================================================
+                         MY ORDERS
+                    ================================================== -->
+
                     <a href="my-orders.php">
 
                         <i class="bi bi-bag-check"></i>
@@ -295,7 +542,11 @@ $role       = $_SESSION["role"] ?? "customer";
                     </a>
 
 
-                    <!-- Track Order -->
+
+                    <!-- =================================================
+                         TRACK ORDER
+                    ================================================== -->
+
                     <a href="track-order.php">
 
                         <i class="bi bi-box-seam"></i>
@@ -309,7 +560,11 @@ $role       = $_SESSION["role"] ?? "customer";
                     </a>
 
 
-                    <!-- Help Center -->
+
+                    <!-- =================================================
+                         HELP CENTER
+                    ================================================== -->
+
                     <a href="help.php">
 
                         <i class="bi bi-question-circle"></i>
@@ -323,7 +578,11 @@ $role       = $_SESSION["role"] ?? "customer";
                     </a>
 
 
-                    <!-- Logout -->
+
+                    <!-- =================================================
+                         LOGOUT
+                    ================================================== -->
+
                     <a
                         href="logout.php"
                         class="logout-link"
@@ -350,14 +609,58 @@ $role       = $_SESSION["role"] ?? "customer";
 
 
     <!-- =====================================================
-         BACK TO HOME
+         ACCOUNT ACTIONS
     ====================================================== -->
 
     <div class="text-center mt-4">
 
+
+        <!-- EDIT ACCOUNT -->
+
+        <a
+            href="edit-account.php"
+            class="btn btn-primary px-4 me-2"
+        >
+
+            <i class="bi bi-pencil-square"></i>
+
+            Edit Account
+
+        </a>
+
+
+
+        <!-- DELETE ACCOUNT -->
+
+        <form
+            method="POST"
+            action="delete-account.php"
+            class="d-inline"
+            onsubmit="return confirm(
+                'Are you sure you want to permanently delete your account? This action cannot be undone.'
+            );"
+        >
+
+            <button
+                type="submit"
+                class="btn btn-outline-danger px-4"
+            >
+
+                <i class="bi bi-trash"></i>
+
+                Delete Account
+
+            </button>
+
+        </form>
+
+
+
+        <!-- BACK TO HOME -->
+
         <a
             href="../index.php"
-            class="btn btn-primary px-4"
+            class="btn btn-secondary px-4 ms-2"
         >
 
             <i class="bi bi-house"></i>
@@ -369,6 +672,16 @@ $role       = $_SESSION["role"] ?? "customer";
     </div>
 
 </div>
+
+
+
+<!-- =========================================================
+     BOOTSTRAP JS
+========================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
 
 
 </body>

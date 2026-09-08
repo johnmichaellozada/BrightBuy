@@ -423,7 +423,7 @@ if ($orders) {
 
         <form
             method="POST"
-            action="cancel-order.php"
+            action="../actions/cancel-order.php"
             onsubmit="return confirm('Are you sure you want to cancel this order?');"
         >
 

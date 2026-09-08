@@ -733,7 +733,7 @@ $newArrivals = $productStmt->fetchAll();
 
                             <form
                                 method="POST"
-                                action="add-to-cart.php"
+                                action="../actions/cart.php"
                                 class="new-arrival-cart-form"
                             >
 

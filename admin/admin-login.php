@@ -329,9 +329,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <br>
 
-            <a href="login.php">
-                <i class="bi bi-person"></i>
-                Customer Login
+            <a href="../pages/login.php" class="text-decoration-none fw-bold">
+                 <i class="bi bi-person"></i>
+                 Customer Login
             </a>
 
         </div>

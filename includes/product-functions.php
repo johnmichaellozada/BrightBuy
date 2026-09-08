@@ -1,11 +1,19 @@
 <?php
 
 /**
- * Get all products with their category names.
+ * BrightBuy Product Functions
+ *
+ * Reusable database functions for product management.
  */
+
+
+/* =====================================================
+   GET ALL PRODUCTS
+===================================================== */
+
 function getAllProducts(PDO $pdo): array
 {
-    $stmt = $pdo->prepare("
+    $stmt = $pdo->query("
         SELECT
             p.product_id,
             p.product_name,
@@ -14,6 +22,7 @@ function getAllProducts(PDO $pdo): array
             p.stock,
             p.image,
             p.status,
+            p.category_id,
             c.category_name
         FROM products p
         LEFT JOIN categories c
@@ -21,15 +30,14 @@ function getAllProducts(PDO $pdo): array
         ORDER BY p.product_id ASC
     ");
 
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $stmt->fetchAll();
 }
 
 
-/**
- * Get one product by ID.
- */
+/* =====================================================
+   GET PRODUCT BY ID
+===================================================== */
+
 function getProductById(PDO $pdo, int $productId): ?array
 {
     $stmt = $pdo->prepare("
@@ -50,17 +58,38 @@ function getProductById(PDO $pdo, int $productId): ?array
         LIMIT 1
     ");
 
-    $stmt->execute([$productId]);
+    $stmt->execute([
+        $productId
+    ]);
 
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+    $product = $stmt->fetch();
 
     return $product ?: null;
 }
 
 
-/**
- * Create a product.
- */
+/* =====================================================
+   GET ALL CATEGORIES
+===================================================== */
+
+function getAllCategories(PDO $pdo): array
+{
+    $stmt = $pdo->query("
+        SELECT
+            category_id,
+            category_name
+        FROM categories
+        ORDER BY category_name ASC
+    ");
+
+    return $stmt->fetchAll();
+}
+
+
+/* =====================================================
+   CREATE PRODUCT
+===================================================== */
+
 function createProduct(
     PDO $pdo,
     string $productName,
@@ -73,8 +102,7 @@ function createProduct(
 ): bool {
 
     $stmt = $pdo->prepare("
-        INSERT INTO products
-        (
+        INSERT INTO products (
             product_name,
             description,
             price,
@@ -98,9 +126,10 @@ function createProduct(
 }
 
 
-/**
- * Update a product.
- */
+/* =====================================================
+   UPDATE PRODUCT
+===================================================== */
+
 function updateProduct(
     PDO $pdo,
     int $productId,
@@ -139,9 +168,10 @@ function updateProduct(
 }
 
 
-/**
- * Update product stock only.
- */
+/* =====================================================
+   UPDATE PRODUCT STOCK
+===================================================== */
+
 function updateProductStock(
     PDO $pdo,
     int $productId,
@@ -161,9 +191,10 @@ function updateProductStock(
 }
 
 
-/**
- * Delete a product.
- */
+/* =====================================================
+   DELETE PRODUCT
+===================================================== */
+
 function deleteProduct(
     PDO $pdo,
     int $productId
@@ -177,4 +208,28 @@ function deleteProduct(
     return $stmt->execute([
         $productId
     ]);
+}
+
+
+/* =====================================================
+   CHECK PRODUCT EXISTS
+===================================================== */
+
+function productExists(
+    PDO $pdo,
+    int $productId
+): bool {
+
+    $stmt = $pdo->prepare("
+        SELECT product_id
+        FROM products
+        WHERE product_id = ?
+        LIMIT 1
+    ");
+
+    $stmt->execute([
+        $productId
+    ]);
+
+    return (bool) $stmt->fetch();
 }

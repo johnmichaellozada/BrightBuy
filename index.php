@@ -1028,7 +1028,7 @@ $testimonials = [
 
                                                 <form
                                                     method="POST"
-                                                    action="pages/add-to-cart.php"
+                                                    action="actions/add-to-cart.php"
                                                     class="add-cart-form"
                                                 >
 

@@ -1,8 +1,11 @@
 <?php
 
-/* =========================================================
-   SESSION & DATABASE
-========================================================= */
+/**
+ * BrightBuy Customer Login
+ *
+ * Handles customer authentication and creates
+ * a secure session after successful login.
+ */
 
 session_start();
 
@@ -10,7 +13,7 @@ require_once "../db.php";
 
 
 /* =========================================================
-   LOGIN VARIABLES
+   VARIABLES
 ========================================================= */
 
 $errors = [];
@@ -18,7 +21,7 @@ $email = "";
 
 
 /* =========================================================
-   LOGIN PROCESS
+   PROCESS LOGIN
 ========================================================= */
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -27,9 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST["password"] ?? "";
 
 
-    /* -----------------------------------------------------
-       INPUT VALIDATION
-    ----------------------------------------------------- */
+    /* =====================================================
+       VALIDATION
+    ===================================================== */
 
     if ($email === "") {
 
@@ -38,80 +41,81 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
         $errors[] = "Please enter a valid email address.";
-
     }
+
 
     if ($password === "") {
 
         $errors[] = "Password is required.";
-
     }
 
 
-    /* -----------------------------------------------------
-       CHECK LOGIN CREDENTIALS
-    ----------------------------------------------------- */
+    /* =====================================================
+       AUTHENTICATE USER
+    ===================================================== */
 
     if (empty($errors)) {
 
-        $stmt = $pdo->prepare(
-            "SELECT user_id, first_name, last_name, email, password, phone, role
-             FROM users
-             WHERE email = ?
-             LIMIT 1"
-        );
+        $stmt = $pdo->prepare("
+            SELECT
+                user_id,
+                first_name,
+                last_name,
+                email,
+                password,
+                phone,
+                role
+            FROM users
+            WHERE email = ?
+            LIMIT 1
+        ");
 
         $stmt->execute([$email]);
 
         $user = $stmt->fetch();
 
 
-        /* -------------------------------------------------
-           VERIFY PASSWORD
-        ------------------------------------------------- */
+        /* =================================================
+           VERIFY ACCOUNT
+        ================================================= */
 
-        if ($user && password_verify($password, $user["password"])) {
-
-
-            /* ---------------------------------------------
-               CUSTOMER LOGIN ONLY
-            --------------------------------------------- */
-
-            if ($user["role"] !== "customer") {
-
-                $errors[] =
-                    "This login is for customers only. Please use Admin Login.";
-
-            } else {
-
-
-                /* -----------------------------------------
-                   CREATE CUSTOMER SESSION
-                ----------------------------------------- */
-
-                session_regenerate_id(true);
-
-                $_SESSION["user_id"] = $user["user_id"];
-                $_SESSION["first_name"] = $user["first_name"];
-                $_SESSION["last_name"] = $user["last_name"];
-                $_SESSION["email"] = $user["email"];
-                $_SESSION["phone"] = $user["phone"];
-                $_SESSION["role"] = $user["role"];
-                $_SESSION["logged_in"] = true;
-
-
-                /* -----------------------------------------
-                   REDIRECT TO HOMEPAGE
-                ----------------------------------------- */
-
-                header("Location: ../index.php");
-                exit;
-            }
-
-        } else {
+        if (!$user || !password_verify($password, $user["password"])) {
 
             $errors[] = "Invalid email or password.";
 
+        } elseif ($user["role"] !== "customer") {
+
+            $errors[] =
+                "This login is for customers only. Please use Admin Login.";
+
+        } else {
+
+            /* =============================================
+               REGENERATE SESSION ID
+            ============================================= */
+
+            session_regenerate_id(true);
+
+
+            /* =============================================
+               CREATE CUSTOMER SESSION
+            ============================================= */
+
+            $_SESSION["user_id"] = (int)$user["user_id"];
+            $_SESSION["first_name"] = $user["first_name"];
+            $_SESSION["last_name"] = $user["last_name"];
+            $_SESSION["email"] = $user["email"];
+            $_SESSION["phone"] = $user["phone"];
+            $_SESSION["role"] = $user["role"];
+            $_SESSION["logged_in"] = true;
+
+
+            /* =============================================
+               REDIRECT TO HOMEPAGE
+            ============================================= */
+
+            header("Location: ../index.php");
+            exit;
         }
     }
 }
@@ -219,7 +223,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     <?php if (!empty($errors)): ?>
 
-                        <div class="alert alert-danger login-alert">
+                        <div
+                            class="alert alert-danger login-alert"
+                            role="alert"
+                        >
 
                             <?php foreach ($errors as $error): ?>
 
@@ -244,13 +251,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     >
 
 
-                        <!-- =================================================
-                             EMAIL
-                        ================================================== -->
+                        <!-- EMAIL -->
 
                         <div class="mb-3">
 
-                            <label class="form-label">
+                            <label
+                                for="email"
+                                class="form-label"
+                            >
                                 Email
                             </label>
 
@@ -262,10 +270,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                                 <input
                                     type="email"
+                                    id="email"
                                     name="email"
                                     class="form-control"
                                     placeholder="Enter your email"
                                     value="<?= htmlspecialchars($email) ?>"
+                                    autocomplete="email"
                                     required
                                 >
 
@@ -274,13 +284,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
 
 
-                        <!-- =================================================
-                             PASSWORD
-                        ================================================== -->
+                        <!-- PASSWORD -->
 
                         <div class="mb-4">
 
-                            <label class="form-label">
+                            <label
+                                for="password"
+                                class="form-label"
+                            >
                                 Password
                             </label>
 
@@ -292,9 +303,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                                 <input
                                     type="password"
+                                    id="password"
                                     name="password"
                                     class="form-control"
                                     placeholder="Enter your password"
+                                    autocomplete="current-password"
                                     required
                                 >
 
@@ -303,9 +316,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
 
 
-                        <!-- =================================================
-                             LOGIN BUTTON
-                        ================================================== -->
+                        <!-- LOGIN BUTTON -->
 
                         <button
                             type="submit"
@@ -337,13 +348,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
                     <!-- =================================================
-                         ADMIN LOGIN SECTION
+                         ADMIN LOGIN
                     ================================================== -->
 
                     <div class="admin-section">
 
 
-                        <!-- ADMIN DIVIDER -->
+                        <!-- DIVIDER -->
 
                         <div class="admin-divider">
 
@@ -361,10 +372,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </p>
 
 
-                        <!-- ADMIN LOGIN BUTTON -->
+                        <!-- IMPORTANT:
+                             admin-login.php is inside ../admin/
+                        -->
 
                         <a
-                            href="admin-login.php"
+                            href="../admin/admin-login.php"
                             class="btn admin-login-btn w-100"
                         >
 

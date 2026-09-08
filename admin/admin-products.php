@@ -1,97 +1,34 @@
 <?php
 
-declare(strict_types=1);
-
-session_start();
+/**
+ * BrightBuy Admin Product Management
+ *
+ * Handles the display of products for administrators.
+ */
 
 require_once "../db.php";
+require_once "../includes/auth.php";
+require_once "../includes/product-functions.php";
 
-/* =========================================================
-   ADMIN ACCESS CHECK
-========================================================= */
-
-function requireAdmin(PDO $pdo): void
-{
-    if (
-        !isset($_SESSION["logged_in"]) ||
-        $_SESSION["logged_in"] !== true ||
-        !isset($_SESSION["user_id"])
-    ) {
-        header("Location: admin-login.php");
-        exit;
-    }
-
-    $stmt = $pdo->prepare("
-        SELECT role
-        FROM users
-        WHERE user_id = ?
-        LIMIT 1
-    ");
-
-    $stmt->execute([
-        $_SESSION["user_id"]
-    ]);
-
-    $user = $stmt->fetch();
-
-    if (!$user || $user["role"] !== "admin") {
-        http_response_code(403);
-        exit("Access denied. Administrator privileges required.");
-    }
-}
+requireAdmin($pdo, "admin-login.php");
 
 
-/* =========================================================
+/* =====================================================
    GET PRODUCTS
-========================================================= */
+===================================================== */
 
-function getProducts(PDO $pdo): array
-{
-    $stmt = $pdo->prepare("
-        SELECT
-            p.product_id,
-            p.product_name,
-            p.description,
-            p.price,
-            p.stock,
-            p.image,
-            p.status,
-            c.category_name
-        FROM products p
-        LEFT JOIN categories c
-            ON p.category_id = c.category_id
-        ORDER BY p.product_id ASC
-    ");
-
-    $stmt->execute();
-
-    return $stmt->fetchAll();
-}
+$products = getAllProducts($pdo);
 
 
-/* =========================================================
-   ESCAPE HTML OUTPUT
-========================================================= */
+/* =====================================================
+   SESSION MESSAGES
+===================================================== */
 
-function e(?string $value): string
-{
-    return htmlspecialchars(
-        $value ?? "",
-        ENT_QUOTES,
-        "UTF-8"
-    );
-}
+$success = $_SESSION["product_success"] ?? "";
+$errors = $_SESSION["product_errors"] ?? [];
 
-
-/* =========================================================
-   INITIALIZE PAGE
-========================================================= */
-
-requireAdmin($pdo);
-
-$products = getProducts($pdo);
-
-$totalProducts = count($products);
+unset($_SESSION["product_success"]);
+unset($_SESSION["product_errors"]);
 
 ?>
 
@@ -109,20 +46,17 @@ $totalProducts = count($products);
 
     <title>BrightBuy | Product Management</title>
 
-
     <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-
     <!-- Bootstrap Icons -->
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
         rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     >
-
 
     <!-- BrightBuy CSS -->
     <link
@@ -136,23 +70,68 @@ $totalProducts = count($products);
 <body class="admin-inventory-page">
 
 
-<!-- =========================================================
+<!-- =====================================================
+     SUCCESS MESSAGE
+===================================================== -->
+
+<?php if ($success !== ""): ?>
+
+    <div class="alert alert-success">
+
+        <i class="bi bi-check-circle-fill"></i>
+
+        <?= htmlspecialchars(
+            $success,
+            ENT_QUOTES,
+            "UTF-8"
+        ) ?>
+
+    </div>
+
+<?php endif; ?>
+
+
+<!-- =====================================================
+     ERROR MESSAGES
+===================================================== -->
+
+<?php if (!empty($errors)): ?>
+
+    <div class="alert alert-danger">
+
+        <?php foreach ($errors as $error): ?>
+
+            <div>
+
+                <i class="bi bi-exclamation-circle-fill"></i>
+
+                <?= htmlspecialchars(
+                    $error,
+                    ENT_QUOTES,
+                    "UTF-8"
+                ) ?>
+
+            </div>
+
+        <?php endforeach; ?>
+
+    </div>
+
+<?php endif; ?>
+
+
+<!-- =====================================================
      ADMIN HEADER
-========================================================= -->
+===================================================== -->
 
 <header class="admin-header">
 
     <div class="container">
 
-        <div class="
-            d-flex
-            justify-content-between
-            align-items-center
-            flex-wrap
-            gap-3
-        ">
-
-            <!-- PAGE TITLE -->
+        <div
+            class="d-flex justify-content-between
+            align-items-center flex-wrap gap-3"
+        >
 
             <div>
 
@@ -173,34 +152,16 @@ $totalProducts = count($products);
             </div>
 
 
-            <!-- HEADER ACTIONS -->
+            <a
+                href="admin-dashboard.php"
+                class="btn btn-light"
+            >
 
-            <div class="d-flex gap-2">
+                <i class="bi bi-arrow-left"></i>
 
-                <a
-                    href="add-product.php"
-                    class="btn btn-warning fw-semibold"
-                >
+                Dashboard
 
-                    <i class="bi bi-plus-circle"></i>
-
-                    Add Product
-
-                </a>
-
-
-                <a
-                    href="admin-dashboard.php"
-                    class="btn btn-light"
-                >
-
-                    <i class="bi bi-arrow-left"></i>
-
-                    Dashboard
-
-                </a>
-
-            </div>
+            </a>
 
         </div>
 
@@ -209,16 +170,11 @@ $totalProducts = count($products);
 </header>
 
 
-<!-- =========================================================
+<!-- =====================================================
      PRODUCT CONTENT
-========================================================= -->
+===================================================== -->
 
 <main class="container py-5">
-
-
-    <!-- =====================================================
-         INVENTORY CARD
-    ====================================================== -->
 
     <div class="card product-card">
 
@@ -229,14 +185,10 @@ $totalProducts = count($products);
                  INVENTORY HEADER
             ================================================== -->
 
-            <div class="
-                d-flex
-                justify-content-between
-                align-items-center
-                flex-wrap
-                gap-3
-                mb-4
-            ">
+            <div
+                class="d-flex justify-content-between
+                align-items-center flex-wrap gap-3 mb-4"
+            >
 
                 <div>
 
@@ -248,18 +200,40 @@ $totalProducts = count($products);
 
                     <p class="text-muted mb-0">
 
-                        Manage products, prices, stock, and status.
+                        Manage BrightBuy products and stock.
 
                     </p>
 
                 </div>
 
 
+                <!-- ADD PRODUCT -->
+
+                <a
+                    href="add-product.php"
+                    class="btn btn-primary"
+                >
+
+                    <i class="bi bi-plus-circle"></i>
+
+                    Add Product
+
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 PRODUCT COUNT
+            ================================================== -->
+
+            <div class="mb-4">
+
                 <span class="badge bg-primary fs-6">
 
-                    <?= $totalProducts ?>
+                    <?= count($products) ?>
 
-                    <?= $totalProducts === 1
+                    <?= count($products) === 1
                         ? "Product"
                         : "Products"
                     ?>
@@ -267,58 +241,6 @@ $totalProducts = count($products);
                 </span>
 
             </div>
-
-
-            <!-- =================================================
-                 SUCCESS MESSAGE
-            ================================================== -->
-
-            <?php if (isset($_GET["success"])): ?>
-
-                <div
-                    class="alert alert-success alert-dismissible fade show"
-                    role="alert"
-                >
-
-                    <i class="bi bi-check-circle-fill"></i>
-
-                    <?= e($_GET["success"]) ?>
-
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"
-                    ></button>
-
-                </div>
-
-            <?php endif; ?>
-
-
-            <!-- =================================================
-                 ERROR MESSAGE
-            ================================================== -->
-
-            <?php if (isset($_GET["error"])): ?>
-
-                <div
-                    class="alert alert-danger alert-dismissible fade show"
-                    role="alert"
-                >
-
-                    <i class="bi bi-exclamation-circle-fill"></i>
-
-                    <?= e($_GET["error"]) ?>
-
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"
-                    ></button>
-
-                </div>
-
-            <?php endif; ?>
 
 
             <!-- =================================================
@@ -345,7 +267,6 @@ $totalProducts = count($products);
                         Add your first product to the inventory.
 
                     </p>
-
 
                     <a
                         href="add-product.php"
@@ -375,30 +296,34 @@ $totalProducts = count($products);
                         <div class="row align-items-center g-3">
 
 
-                            <!-- =====================================
-                                 PRODUCT IMAGE
-                            ====================================== -->
+                            <!-- PRODUCT IMAGE -->
 
                             <div class="col-md-1 text-center">
 
                                 <?php if (!empty($product["image"])): ?>
 
                                     <img
-                                        src="../<?= e($product["image"]) ?>"
-                                        alt="<?= e($product["product_name"]) ?>"
+                                        src="../<?= htmlspecialchars(
+                                            $product["image"],
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?>"
+                                        alt="<?= htmlspecialchars(
+                                            $product["product_name"],
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?>"
                                         class="product-image"
                                     >
 
                                 <?php else: ?>
 
-                                    <div
-                                        class="product-image
-                                        d-flex
-                                        align-items-center
-                                        justify-content-center"
-                                    >
+                                    <div class="text-muted">
 
-                                        <i class="bi bi-image"></i>
+                                        <i
+                                            class="bi bi-image"
+                                            style="font-size: 35px;"
+                                        ></i>
 
                                     </div>
 
@@ -407,28 +332,30 @@ $totalProducts = count($products);
                             </div>
 
 
-                            <!-- =====================================
-                                 PRODUCT INFORMATION
-                            ====================================== -->
+                            <!-- PRODUCT INFORMATION -->
 
                             <div class="col-md-3">
 
                                 <h5 class="fw-bold mb-1">
 
-                                    <?= e($product["product_name"]) ?>
+                                    <?= htmlspecialchars(
+                                        $product["product_name"],
+                                        ENT_QUOTES,
+                                        "UTF-8"
+                                    ) ?>
 
                                 </h5>
 
-
                                 <small class="text-muted">
 
-                                    <?= e(
+                                    <?= htmlspecialchars(
                                         $product["category_name"]
-                                        ?? "Uncategorized"
+                                        ?? "Uncategorized",
+                                        ENT_QUOTES,
+                                        "UTF-8"
                                     ) ?>
 
                                 </small>
-
 
                                 <div class="text-primary fw-bold mt-1">
 
@@ -442,9 +369,7 @@ $totalProducts = count($products);
                             </div>
 
 
-                            <!-- =====================================
-                                 CURRENT STOCK
-                            ====================================== -->
+                            <!-- CURRENT STOCK -->
 
                             <div class="col-md-2">
 
@@ -454,36 +379,25 @@ $totalProducts = count($products);
 
                                 </small>
 
+                                <span
+                                    class="<?= (int)$product["stock"] <= 10
+                                        ? "stock-low"
+                                        : "stock-good"
+                                    ?>"
+                                >
 
-                                <?php
-                                $stock = (int)$product["stock"];
+                                    <?= (int)$product["stock"] ?>
 
-                                $stockClass =
-                                    $stock <= 10
-                                    ? "stock-low"
-                                    : "stock-good";
-                                ?>
-
-
-                                <span class="<?= $stockClass ?>">
-
-                                    <?= $stock ?>
-
-                                    <?= $stock === 1
-                                        ? "unit"
-                                        : "units"
-                                    ?>
+                                    units
 
                                 </span>
 
                             </div>
 
 
-                            <!-- =====================================
-                                 UPDATE STOCK
-                            ====================================== -->
+                            <!-- UPDATE STOCK -->
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
 
                                 <form
                                     method="POST"
@@ -497,24 +411,23 @@ $totalProducts = count($products);
                                         value="<?= (int)$product["product_id"] ?>"
                                     >
 
-
                                     <input
                                         type="number"
                                         name="stock"
-                                        value="<?= $stock ?>"
+                                        value="<?= (int)$product["stock"] ?>"
                                         min="0"
                                         class="form-control stock-input"
                                         required
                                     >
 
-
                                     <button
                                         type="submit"
                                         class="btn btn-primary"
-                                        title="Update stock"
                                     >
 
                                         <i class="bi bi-save"></i>
+
+                                        Save
 
                                     </button>
 
@@ -523,13 +436,19 @@ $totalProducts = count($products);
                             </div>
 
 
-                            <!-- =====================================
-                                 STATUS
-                            ====================================== -->
+                            <!-- STATUS -->
 
                             <div class="col-md-1">
 
-                                <?php if ($product["status"] === "active"): ?>
+                                <?php
+
+                                $status = strtolower(
+                                    trim($product["status"] ?? "")
+                                );
+
+                                ?>
+
+                                <?php if ($status === "active"): ?>
 
                                     <span class="badge bg-success">
 
@@ -537,11 +456,23 @@ $totalProducts = count($products);
 
                                     </span>
 
-                                <?php else: ?>
+                                <?php elseif ($status === "inactive"): ?>
 
                                     <span class="badge bg-secondary">
 
-                                        <?= e($product["status"]) ?>
+                                        Inactive
+
+                                    </span>
+
+                                <?php else: ?>
+
+                                    <span class="badge bg-warning text-dark">
+
+                                        <?= htmlspecialchars(
+                                            $product["status"] ?? "Unknown",
+                                            ENT_QUOTES,
+                                            "UTF-8"
+                                        ) ?>
 
                                     </span>
 
@@ -550,29 +481,21 @@ $totalProducts = count($products);
                             </div>
 
 
-                            <!-- =====================================
-                                 CRUD ACTIONS
-                            ====================================== -->
+                            <!-- ACTIONS -->
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
 
-                                <div
-                                    class="
-                                    d-flex
-                                    justify-content-md-end
-                                    gap-2
-                                    flex-wrap
-                                    "
-                                >
+                                <div class="d-flex gap-2 flex-wrap">
+
 
                                     <!-- EDIT -->
 
                                     <a
-                                        href="edit-product.php?id=<?= (int)$product["product_id"] ?>"
+                                        href="edit-product.php?product_id=<?= (int)$product["product_id"] ?>"
                                         class="btn btn-outline-primary btn-sm"
                                     >
 
-                                        <i class="bi bi-pencil-square"></i>
+                                        <i class="bi bi-pencil"></i>
 
                                         Edit
 
@@ -583,12 +506,10 @@ $totalProducts = count($products);
 
                                     <form
                                         method="POST"
-                                        action="delete-product.php"
-                                        onsubmit="
-                                            return confirm(
-                                                'Are you sure you want to delete this product?'
-                                            );
-                                        "
+                                        action="../actions/delete-product.php"
+                                        onsubmit="return confirm(
+                                            'Are you sure you want to delete this product?'
+                                        );"
                                     >
 
                                         <input
@@ -596,7 +517,6 @@ $totalProducts = count($products);
                                             name="product_id"
                                             value="<?= (int)$product["product_id"] ?>"
                                         >
-
 
                                         <button
                                             type="submit"
@@ -650,14 +570,11 @@ $totalProducts = count($products);
 </main>
 
 
-<!-- =========================================================
-     BOOTSTRAP JS
-========================================================= -->
+<!-- Bootstrap JS -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
-
 
 </body>
 

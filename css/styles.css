@@ -15132,3 +15132,191 @@ body {
 
 }
 
+/* =========================================================
+   BRIGHTBUY LOGIN PAGE
+   ========================================================= */
+
+.login-page {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: #eef2ff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Login page Bootstrap container */
+.login-page > .container {
+    width: 100%;
+    max-width: 100%;
+    padding-top: 70px !important;
+    padding-bottom: 70px !important;
+}
+
+/* Restore normal Bootstrap row behavior */
+.login-page .row {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Login column */
+.login-page .col-md-6,
+.login-page .col-lg-5 {
+    width: 100%;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+/* Login card */
+.login-page .card {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    border: none;
+    border-top: 5px solid #ffc400;
+    border-radius: 24px;
+    background: #ffffff;
+    box-shadow: 0 15px 40px rgba(0, 35, 100, 0.12) !important;
+    overflow: hidden;
+}
+
+/* Card content */
+.login-page .card-body {
+    width: 100%;
+    padding: 40px !important;
+}
+
+/* Welcome Back */
+.login-page h2 {
+    width: 100%;
+    margin-bottom: 30px !important;
+    color: #062b78;
+    font-size: 32px;
+    font-weight: 800;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Labels */
+.login-page .form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #062b78;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Inputs */
+.login-page .form-control {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 15px;
+    border: 1px solid #d9e2f2;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #062b78;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+.login-page .form-control:focus {
+    border-color: #1464d2;
+    box-shadow: 0 0 0 3px rgba(20, 100, 210, 0.12);
+}
+
+/* Login button */
+.login-page .btn-primary {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 10px;
+    background: #1464d2;
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.login-page .btn-primary:hover {
+    background: #0d4fa8;
+}
+
+/* Register text */
+.login-page .register-text {
+    color: #7182a5;
+    font-size: 16px;
+}
+
+.login-page .register-text a {
+    color: #1464d2;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-page .register-text a:hover {
+    text-decoration: underline;
+}
+
+/* Divider */
+.login-page .login-divider {
+    margin-top: 25px;
+    border-top: 1px solid #dce3ef;
+}
+
+/* Administrator text */
+.login-page .admin-text {
+    margin-top: 20px;
+    margin-bottom: 12px;
+    color: #7182a5;
+    font-size: 15px;
+}
+
+/* Admin Login button */
+.login-page .admin-login-btn {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #062b78;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #062b78;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.login-page .admin-login-btn:hover {
+    background: #062b78;
+    color: #ffffff;
+}
+
+/* Error message */
+.login-page .alert {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 576px) {
+
+    .login-page > .container {
+        padding-top: 30px !important;
+        padding-bottom: 30px !important;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .login-page .card-body {
+        padding: 30px 22px !important;
+    }
+
+    .login-page h2 {
+        font-size: 28px;
+    }
+
+}

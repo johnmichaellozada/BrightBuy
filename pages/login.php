@@ -1,17 +1,35 @@
 <?php
 
+/* =========================================================
+   SESSION & DATABASE
+========================================================= */
+
 session_start();
 
 require_once "../db.php";
 
-$errors = [];
 
+/* =========================================================
+   LOGIN VARIABLES
+========================================================= */
+
+$errors = [];
 $email = "";
+
+
+/* =========================================================
+   LOGIN PROCESS
+========================================================= */
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
+
+
+    /* -----------------------------------------------------
+       INPUT VALIDATION
+    ----------------------------------------------------- */
 
     if ($email === "") {
 
@@ -29,6 +47,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     }
 
+
+    /* -----------------------------------------------------
+       CHECK LOGIN CREDENTIALS
+    ----------------------------------------------------- */
+
     if (empty($errors)) {
 
         $stmt = $pdo->prepare(
@@ -42,14 +65,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $user = $stmt->fetch();
 
+
+        /* -------------------------------------------------
+           VERIFY PASSWORD
+        ------------------------------------------------- */
+
         if ($user && password_verify($password, $user["password"])) {
 
-            // CUSTOMER LOGIN ONLY
+
+            /* ---------------------------------------------
+               CUSTOMER LOGIN ONLY
+            --------------------------------------------- */
+
             if ($user["role"] !== "customer") {
 
-                $errors[] = "This login is for customers only. Please use Admin Login.";
+                $errors[] =
+                    "This login is for customers only. Please use Admin Login.";
 
             } else {
+
+
+                /* -----------------------------------------
+                   CREATE CUSTOMER SESSION
+                ----------------------------------------- */
 
                 session_regenerate_id(true);
 
@@ -60,6 +98,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION["phone"] = $user["phone"];
                 $_SESSION["role"] = $user["role"];
                 $_SESSION["logged_in"] = true;
+
+
+                /* -----------------------------------------
+                   REDIRECT TO HOMEPAGE
+                ----------------------------------------- */
 
                 header("Location: ../index.php");
                 exit;
@@ -89,19 +132,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <title>BrightBuy | Login</title>
 
-    <!-- Bootstrap -->
+
+    <!-- =================================================
+         BOOTSTRAP
+    ================================================== -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    <!-- Bootstrap Icons -->
+
+    <!-- =================================================
+         BOOTSTRAP ICONS
+    ================================================== -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
         rel="stylesheet"
     >
 
-    <!-- BrightBuy CSS -->
+
+    <!-- =================================================
+         BRIGHTBUY CSS
+    ================================================== -->
+
     <link
         rel="stylesheet"
         href="../css/styles.css"
@@ -109,7 +164,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 </head>
 
+
 <body class="login-page">
+
+
+<!-- =====================================================
+     LOGIN CONTAINER
+===================================================== -->
 
 <div class="container login-container">
 
@@ -117,20 +178,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <div class="col-md-6 col-lg-5">
 
+
+            <!-- =================================================
+                 LOGIN CARD
+            ================================================== -->
+
             <div class="card login-card">
 
                 <div class="card-body">
 
-                    <!-- Login Header -->
+
+                    <!-- =================================================
+                         LOGIN HEADER
+                    ================================================== -->
+
                     <div class="login-heading">
 
                         <div class="login-icon">
+
                             <i class="bi bi-person-fill"></i>
+
                         </div>
+
 
                         <h2>
                             Welcome Back
                         </h2>
+
 
                         <p>
                             Sign in to your BrightBuy account
@@ -139,7 +213,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
 
 
-                    <!-- Error Messages -->
+                    <!-- =================================================
+                         ERROR MESSAGES
+                    ================================================== -->
+
                     <?php if (!empty($errors)): ?>
 
                         <div class="alert alert-danger login-alert">
@@ -157,22 +234,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <?php endif; ?>
 
 
-                    <!-- Login Form -->
+                    <!-- =================================================
+                         LOGIN FORM
+                    ================================================== -->
+
                     <form
                         method="POST"
                         action="login.php"
                     >
 
-                        <!-- Email -->
+
+                        <!-- =================================================
+                             EMAIL
+                        ================================================== -->
+
                         <div class="mb-3">
 
                             <label class="form-label">
                                 Email
                             </label>
 
+
                             <div class="login-input">
 
                                 <i class="bi bi-envelope"></i>
+
 
                                 <input
                                     type="email"
@@ -188,16 +274,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
 
 
-                        <!-- Password -->
+                        <!-- =================================================
+                             PASSWORD
+                        ================================================== -->
+
                         <div class="mb-4">
 
                             <label class="form-label">
                                 Password
                             </label>
 
+
                             <div class="login-input">
 
                                 <i class="bi bi-lock"></i>
+
 
                                 <input
                                     type="password"
@@ -212,7 +303,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
 
 
-                        <!-- Login Button -->
+                        <!-- =================================================
+                             LOGIN BUTTON
+                        ================================================== -->
+
                         <button
                             type="submit"
                             class="btn login-btn w-100"
@@ -227,7 +321,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </form>
 
 
-                    <!-- Register -->
+                    <!-- =================================================
+                         REGISTER LINK
+                    ================================================== -->
+
                     <div class="register-text">
 
                         Don't have an account?
@@ -239,8 +336,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
 
 
-                    <!-- Admin Section -->
+                    <!-- =================================================
+                         ADMIN LOGIN SECTION
+                    ================================================== -->
+
                     <div class="admin-section">
+
+
+                        <!-- ADMIN DIVIDER -->
 
                         <div class="admin-divider">
 
@@ -250,9 +353,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                         </div>
 
+
+                        <!-- ADMIN MESSAGE -->
+
                         <p class="admin-text">
                             Are you an administrator?
                         </p>
+
+
+                        <!-- ADMIN LOGIN BUTTON -->
 
                         <a
                             href="admin-login.php"
@@ -276,6 +385,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
 
 </div>
+
 
 </body>
 

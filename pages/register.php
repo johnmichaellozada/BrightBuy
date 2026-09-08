@@ -95,174 +95,242 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>BrightBuy | Register</title>
 
+    <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- BrightBuy Main CSS -->
+    <link
+        rel="stylesheet"
+        href="../css/styles.css"
+    >
+
 </head>
 
-<body>
+<body class="register-page">
 
-<div class="container py-5">
+    <div class="register-container">
 
-    <div class="row justify-content-center">
+        <div class="register-card">
 
-        <div class="col-md-6 col-lg-5">
+            <!-- Register Icon -->
+            <div class="register-icon">
+                <i class="bi bi-bag-heart-fill"></i>
+            </div>
 
-            <div class="card shadow">
+            <!-- Heading -->
+            <h1 class="register-title">
+                Create Your Account
+            </h1>
 
-                <div class="card-body p-4">
+            <p class="register-subtitle">
+                Join BrightBuy and start shopping today!
+            </p>
 
-                    <h2 class="text-center mb-4">
-                        Create Your Account
-                    </h2>
+            <div class="register-accent"></div>
 
-                    <?php if (!empty($errors)): ?>
 
-                        <div class="alert alert-danger">
+            <!-- Error Messages -->
+            <?php if (!empty($errors)): ?>
 
-                            <?php foreach ($errors as $error): ?>
+                <div class="register-error">
 
-                                <div>
-                                    <?= htmlspecialchars($error) ?>
-                                </div>
+                    <?php foreach ($errors as $error): ?>
 
-                            <?php endforeach; ?>
-
+                        <div>
+                            <?= htmlspecialchars($error) ?>
                         </div>
 
-                    <?php endif; ?>
-
-                    <?php if ($success !== ""): ?>
-
-                        <div class="alert alert-success">
-                            <?= htmlspecialchars($success) ?>
-                        </div>
-
-                    <?php endif; ?>
-
-                    <form method="POST" action="register.php">
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                First Name
-                            </label>
-
-                            <input
-                                type="text"
-                                name="first_name"
-                                class="form-control"
-                                value="<?= htmlspecialchars($first_name) ?>"
-                                required
-                            >
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Last Name
-                            </label>
-
-                            <input
-                                type="text"
-                                name="last_name"
-                                class="form-control"
-                                value="<?= htmlspecialchars($last_name) ?>"
-                                required
-                            >
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Email
-                            </label>
-
-                            <input
-                                type="email"
-                                name="email"
-                                class="form-control"
-                                value="<?= htmlspecialchars($email) ?>"
-                                required
-                            >
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Password
-                            </label>
-
-                            <input
-                                type="password"
-                                name="password"
-                                class="form-control"
-                                minlength="8"
-                                required
-                            >
-
-                            <small class="text-muted">
-                                Minimum 8 characters
-                            </small>
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Confirm Password
-                            </label>
-
-                            <input
-                                type="password"
-                                name="confirm_password"
-                                class="form-control"
-                                minlength="8"
-                                required
-                            >
-
-                        </div>
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary w-100"
-                        >
-                            Register
-                        </button>
-
-                    </form>
-
-                    <p class="text-center mt-3 mb-0">
-
-                        Already have an account?
-
-                        <a href="login.php">
-                            Login
-                        </a>
-
-                    </p>
+                    <?php endforeach; ?>
 
                 </div>
+
+            <?php endif; ?>
+
+
+            <!-- Registration Form -->
+            <form method="POST" action="register.php">
+
+                <!-- First Name -->
+                <div class="register-form-group">
+
+                    <label for="first_name">
+                        First Name
+                    </label>
+
+                    <div class="register-input-wrapper">
+
+                        <div class="register-input-icon">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+
+                        <input
+                            type="text"
+                            id="first_name"
+                            name="first_name"
+                            placeholder="Enter your first name"
+                            value="<?= htmlspecialchars($first_name ?? '') ?>"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Last Name -->
+                <div class="register-form-group">
+
+                    <label for="last_name">
+                        Last Name
+                    </label>
+
+                    <div class="register-input-wrapper">
+
+                        <div class="register-input-icon">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+
+                        <input
+                            type="text"
+                            id="last_name"
+                            name="last_name"
+                            placeholder="Enter your last name"
+                            value="<?= htmlspecialchars($last_name ?? '') ?>"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Email -->
+                <div class="register-form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <div class="register-input-wrapper">
+
+                        <div class="register-input-icon">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email address"
+                            value="<?= htmlspecialchars($email ?? '') ?>"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="register-form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="register-input-wrapper">
+
+                        <div class="register-input-icon">
+                            <i class="bi bi-lock-fill"></i>
+                        </div>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create a password"
+                            minlength="8"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="register-help">
+                        Minimum 8 characters
+                    </div>
+
+                </div>
+
+
+                <!-- Confirm Password -->
+                <div class="register-form-group">
+
+                    <label for="confirm_password">
+                        Confirm Password
+                    </label>
+
+                    <div class="register-input-wrapper">
+
+                        <div class="register-input-icon">
+                            <i class="bi bi-lock-fill"></i>
+                        </div>
+
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            name="confirm_password"
+                            placeholder="Confirm your password"
+                            minlength="8"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Register Button -->
+                <button
+                    type="submit"
+                    class="register-button"
+                >
+
+                    <i class="bi bi-person-plus-fill"></i>
+
+                    Register
+
+                </button>
+
+            </form>
+
+
+            <!-- Login -->
+            <div class="register-login">
+
+                Already have an account?
+
+                <a href="login.php">
+                    Login
+                </a>
 
             </div>
 
         </div>
 
     </div>
-
-</div>
 
 </body>
 

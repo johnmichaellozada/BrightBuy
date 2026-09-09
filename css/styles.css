@@ -15811,3 +15811,296 @@ body.register-page .alert {
     }
 
 }
+
+/* =========================================================
+   BRIGHTBUY CART — WISHLIST THEME
+   Design only — does NOT change the cart layout
+========================================================= */
+
+/* PAGE BACKGROUND */
+body {
+    background: #f1f4ff;
+    color: #082b68;
+}
+
+/* MAIN CONTAINERS */
+.container {
+    max-width: 1200px;
+}
+
+/* =========================================================
+   CART HEADER
+========================================================= */
+
+.container.py-4 h2 {
+    color: #082b68;
+    font-weight: 800;
+}
+
+.container.py-4 h2 .bi {
+    color: #0d5bd7;
+}
+
+.container.py-4 p.text-muted {
+    color: #4d6080 !important;
+}
+
+/* =========================================================
+   CONTINUE SHOPPING BUTTON
+========================================================= */
+
+.btn-outline-primary {
+    color: #1264e8;
+    border-color: #1264e8;
+    border-radius: 8px;
+    font-weight: 500;
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: #1264e8;
+    border-color: #1264e8;
+    color: #ffffff;
+}
+
+/* =========================================================
+   SUCCESS / ERROR ALERTS
+========================================================= */
+
+.alert {
+    border-radius: 10px;
+    border-width: 1px;
+}
+
+.alert-success {
+    background: #e9f8ef;
+    color: #08753d;
+    border-color: #b9e8ca;
+}
+
+.alert-danger {
+    background: #fff0f0;
+    color: #c62828;
+    border-color: #f1b8b8;
+}
+
+/* =========================================================
+   CART PRODUCT CARDS
+========================================================= */
+
+.card {
+    border: none !important;
+    border-top: 4px solid #ffc107 !important;
+    border-radius: 16px !important;
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(8, 43, 104, 0.10) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Small hover effect */
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(8, 43, 104, 0.15) !important;
+}
+
+/* =========================================================
+   PRODUCT IMAGE
+========================================================= */
+
+.card img {
+    background: #ffffff;
+    border-radius: 12px;
+}
+
+/* =========================================================
+   PRODUCT NAME
+========================================================= */
+
+.card h5 {
+    color: #082b68;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+/* PRODUCT PRICE */
+.card p.text-muted {
+    color: #155fca !important;
+    font-weight: 600;
+}
+
+/* STOCK TEXT */
+.card small.text-muted {
+    color: #60708b !important;
+}
+
+/* =========================================================
+   QUANTITY LABEL
+========================================================= */
+
+.form-label {
+    color: #082b68;
+    font-weight: 600;
+}
+
+/* QUANTITY INPUT */
+.form-control {
+    border: 1px solid #d5def0;
+    border-radius: 8px;
+    color: #082b68;
+    background: #ffffff;
+}
+
+.form-control:focus {
+    border-color: #1264e8;
+    box-shadow: 0 0 0 0.2rem rgba(18, 100, 232, 0.12);
+}
+
+/* =========================================================
+   UPDATE QUANTITY BUTTON
+========================================================= */
+
+.input-group .btn-outline-primary {
+    color: #1264e8;
+    border-color: #1264e8;
+    background: #ffffff;
+}
+
+.input-group .btn-outline-primary:hover {
+    background: #1264e8;
+    color: #ffffff;
+}
+
+/* =========================================================
+   SUBTOTAL
+========================================================= */
+
+.card strong {
+    color: #082b68;
+}
+
+.card .fs-4 {
+    color: #075dcc !important;
+    font-weight: 800;
+}
+
+/* =========================================================
+   REMOVE BUTTON
+========================================================= */
+
+.btn-outline-danger {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-outline-danger:hover {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+/* =========================================================
+   CLEAR CART
+========================================================= */
+
+.container > .btn-outline-danger,
+.container form > .btn-outline-danger {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* =========================================================
+   ORDER SUMMARY
+========================================================= */
+
+.card h4 {
+    color: #082b68;
+    font-weight: 800;
+}
+
+/* Summary text */
+.card-body span {
+    color: #243b61;
+}
+
+/* Summary total */
+.card-body > div strong {
+    color: #082b68;
+}
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.btn-primary {
+    background: #1264e8;
+    border-color: #1264e8;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #084fbe;
+    border-color: #084fbe;
+}
+
+/* =========================================================
+   BACK TO BRIGHTBUY
+========================================================= */
+
+.btn-outline-secondary {
+    color: #60708b;
+    border-color: #8795aa;
+    border-radius: 8px;
+    font-weight: 500;
+    background: transparent;
+}
+
+.btn-outline-secondary:hover {
+    background: #082b68;
+    border-color: #082b68;
+    color: #ffffff;
+}
+
+/* =========================================================
+   HORIZONTAL LINES
+========================================================= */
+
+hr {
+    border-color: #d9e1ef;
+    opacity: 1;
+}
+
+/* =========================================================
+   EMPTY CART
+========================================================= */
+
+.bi-cart-x {
+    color: #0d5bd7;
+}
+
+.text-center h3 {
+    color: #082b68;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .container.py-4 {
+        padding-top: 25px !important;
+    }
+
+    .container.py-4 > .d-flex {
+        gap: 20px;
+        align-items: flex-start !important;
+    }
+
+    .container.py-4 h2 {
+        font-size: 28px;
+    }
+
+    .card {
+        border-top-width: 3px !important;
+    }
+}

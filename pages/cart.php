@@ -63,7 +63,6 @@ $cart = $cartStmt->fetch();
 ========================================================= */
 
 $items = [];
-
 $total = 0;
 
 
@@ -74,7 +73,6 @@ $total = 0;
 if ($cart) {
 
     $cart_id = (int) $cart["cart_id"];
-
 
     $itemsStmt = $pdo->prepare("
         SELECT
@@ -127,7 +125,6 @@ $error = $_GET["error"] ?? "";
 ?>
 
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -143,7 +140,6 @@ $error = $_GET["error"] ?? "";
 
 
     <!-- Bootstrap -->
-
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -151,15 +147,13 @@ $error = $_GET["error"] ?? "";
 
 
     <!-- Bootstrap Icons -->
-
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
         rel="stylesheet"
     >
 
 
-    <!-- BrightBuy CSS -->
-
+    <!-- BrightBuy Main CSS -->
     <link
         rel="stylesheet"
         href="../css/styles.css"
@@ -172,270 +166,334 @@ $error = $_GET["error"] ?? "";
 
 
 <!-- =========================================================
-     HEADER
+     CART PAGE WRAPPER
 ========================================================= -->
 
-<div class="container py-4">
-
-    <div
-        class="d-flex justify-content-between align-items-center"
-    >
-
-        <div>
-
-            <h2 class="fw-bold mb-1">
-
-                <i class="bi bi-cart3"></i>
-
-                My Cart
-
-            </h2>
-
-            <p class="text-muted mb-0">
-
-                Review and manage your items.
-
-            </p>
-
-        </div>
-
-
-        <a
-            href="shop.php"
-            class="btn btn-outline-primary"
-        >
-
-            <i class="bi bi-arrow-left"></i>
-
-            Continue Shopping
-
-        </a>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     SUCCESS / ERROR MESSAGES
-========================================================= -->
-
-<div class="container">
-
-    <?php if ($success === "added"): ?>
-
-        <div class="alert alert-success">
-
-            <i class="bi bi-check-circle-fill"></i>
-
-            Product added to your cart.
-
-        </div>
-
-    <?php endif; ?>
-
-
-    <?php if ($success === "updated"): ?>
-
-        <div class="alert alert-success">
-
-            <i class="bi bi-check-circle-fill"></i>
-
-            Cart quantity updated.
-
-        </div>
-
-    <?php endif; ?>
-
-
-    <?php if ($success === "removed"): ?>
-
-        <div class="alert alert-success">
-
-            <i class="bi bi-check-circle-fill"></i>
-
-            Product removed from your cart.
-
-        </div>
-
-    <?php endif; ?>
-
-
-    <?php if ($success === "cleared"): ?>
-
-        <div class="alert alert-success">
-
-            <i class="bi bi-check-circle-fill"></i>
-
-            Your cart has been cleared.
-
-        </div>
-
-    <?php endif; ?>
-
-
-    <?php if ($error === "item_not_found"): ?>
-
-        <div class="alert alert-danger">
-
-            Cart item could not be found.
-
-        </div>
-
-    <?php endif; ?>
-
-
-    <?php if ($error === "out_of_stock"): ?>
-
-        <div class="alert alert-danger">
-
-            This product is currently out of stock.
-
-        </div>
-
-    <?php endif; ?>
-
-</div>
-
-
-<!-- =========================================================
-     CART CONTENT
-========================================================= -->
-
-<div class="container py-4">
-
-
-<?php if (empty($items)): ?>
+<div class="cart-page-wrapper">
 
 
     <!-- =====================================================
-         EMPTY CART
+         TOP HEADER
     ====================================================== -->
 
-    <div class="text-center py-5">
+    <section class="cart-header">
 
-        <i
-            class="bi bi-cart-x"
-            style="font-size: 80px;"
-        ></i>
+        <div class="cart-header-inner">
 
+            <div class="cart-title-area">
 
-        <h3 class="fw-bold mt-4">
+                <div class="cart-title-icon">
+                    <i class="bi bi-cart3"></i>
+                </div>
 
-            Your Cart is Empty
+                <div>
 
-        </h3>
+                    <span class="cart-eyebrow">
+                        BRIGHTBUY
+                    </span>
 
+                    <h1>
+                        My Cart
+                    </h1>
 
-        <p class="text-muted">
+                    <p>
+                        Review and manage your items.
+                    </p>
 
-            You haven't added any products yet.
+                </div>
 
-        </p>
-
-
-        <a
-            href="shop.php"
-            class="btn btn-primary px-4"
-        >
-
-            <i class="bi bi-bag"></i>
-
-            Start Shopping
-
-        </a>
-
-    </div>
+            </div>
 
 
-<?php else: ?>
+            <a
+    href="shop.php"
+    class="cart-yellow-btn"
+>
+
+                <i class="bi bi-arrow-left"></i>
+
+                Continue Shopping
+
+            </a>
+
+        </div>
+
+    </section>
 
 
-    <div class="row g-4">
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="cart-main">
 
 
         <!-- =================================================
-             CART ITEMS
+             SUCCESS / ERROR MESSAGES
         ================================================== -->
 
-        <div class="col-lg-8">
+        <?php if ($success === "added"): ?>
+
+            <div class="cart-alert cart-alert-success">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                <span>
+                    Product added to your cart.
+                </span>
+
+            </div>
+
+        <?php endif; ?>
 
 
-            <?php foreach ($items as $item): ?>
+        <?php if ($success === "updated"): ?>
+
+            <div class="cart-alert cart-alert-success">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                <span>
+                    Cart quantity updated.
+                </span>
+
+            </div>
+
+        <?php endif; ?>
 
 
-                <div class="card shadow-sm border-0 mb-3">
+        <?php if ($success === "removed"): ?>
 
-                    <div class="card-body">
+            <div class="cart-alert cart-alert-success">
 
-                        <div class="row align-items-center">
+                <i class="bi bi-check-circle-fill"></i>
+
+                <span>
+                    Product removed from your cart.
+                </span>
+
+            </div>
+
+        <?php endif; ?>
+
+
+        <?php if ($success === "cleared"): ?>
+
+            <div class="cart-alert cart-alert-success">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                <span>
+                    Your cart has been cleared.
+                </span>
+
+            </div>
+
+        <?php endif; ?>
+
+
+        <?php if ($error === "item_not_found"): ?>
+
+            <div class="cart-alert cart-alert-danger">
+
+                <i class="bi bi-exclamation-circle-fill"></i>
+
+                <span>
+                    Cart item could not be found.
+                </span>
+
+            </div>
+
+        <?php endif; ?>
+
+
+        <?php if ($error === "out_of_stock"): ?>
+
+            <div class="cart-alert cart-alert-danger">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                <span>
+                    This product is currently out of stock.
+                </span>
+
+            </div>
+
+        <?php endif; ?>
+
+
+
+        <?php if (empty($items)): ?>
+
+
+            <!-- =================================================
+                 EMPTY CART
+            ================================================== -->
+
+            <section class="cart-empty">
+
+                <div class="cart-empty-icon">
+
+                    <i class="bi bi-cart-x"></i>
+
+                </div>
+
+                <span class="cart-empty-eyebrow">
+                    YOUR SHOPPING CART
+                </span>
+
+                <h2>
+                    Your Cart is Empty
+                </h2>
+
+                <p>
+                    You haven't added any products yet.
+                    Find something you love and add it to your cart.
+                </p>
+
+                <a
+                    href="shop.php"
+                    class="cart-primary-btn"
+                >
+
+                    <i class="bi bi-bag"></i>
+
+                    Start Shopping
+
+                </a>
+
+            </section>
+
+
+
+        <?php else: ?>
+
+
+            <!-- =================================================
+                 CART CONTENT HEADER
+            ================================================== -->
+
+            <div class="cart-content-heading">
+
+                <div>
+
+                    <span>
+                        YOUR SHOPPING CART
+                    </span>
+
+                    <h2>
+                        Cart Items
+                    </h2>
+
+                </div>
+
+                <div class="cart-item-count">
+
+                    <i class="bi bi-bag-check"></i>
+
+                    <strong>
+                        <?= count($items) ?>
+                    </strong>
+
+                    <small>
+                        <?= count($items) === 1 ? "Item" : "Items" ?>
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CART LAYOUT
+            ================================================== -->
+
+            <div class="cart-layout">
+
+
+                <!-- =============================================
+                     CART ITEMS
+                ============================================== -->
+
+                <section class="cart-items-column">
+
+
+                    <?php foreach ($items as $item): ?>
+
+                        <?php
+
+                        $itemSubtotal =
+                            (float) $item["price"] *
+                            (int) $item["quantity"];
+
+                        ?>
+
+
+                        <article class="cart-product-card">
 
 
                             <!-- PRODUCT IMAGE -->
 
-                            <div class="col-md-2 text-center">
+                            <div class="cart-product-image">
 
                                 <?php if (!empty($item["image"])): ?>
 
                                     <img
                                         src="../<?= htmlspecialchars($item["image"]) ?>"
                                         alt="<?= htmlspecialchars($item["product_name"]) ?>"
-                                        class="img-fluid"
-                                        style="
-                                            width:90px;
-                                            height:90px;
-                                            object-fit:contain;
-                                        "
                                     >
 
                                 <?php else: ?>
 
-                                    <i
-                                        class="bi bi-image"
-                                        style="font-size:60px;"
-                                    ></i>
+                                    <i class="bi bi-image"></i>
 
                                 <?php endif; ?>
 
                             </div>
 
 
-                            <!-- PRODUCT INFORMATION -->
 
-                            <div class="col-md-4">
+                            <!-- PRODUCT DETAILS -->
 
-                                <h5 class="fw-bold">
+                            <div class="cart-product-details">
 
+                                <span class="cart-product-label">
+                                    PRODUCT
+                                </span>
+
+                                <h3>
                                     <?= htmlspecialchars(
                                         $item["product_name"]
                                     ) ?>
+                                </h3>
 
-                                </h5>
-
-
-                                <p class="text-muted mb-1">
+                                <div class="cart-product-price">
 
                                     ₱<?= number_format(
                                         (float) $item["price"],
                                         2
                                     ) ?>
 
-                                </p>
+                                </div>
 
+                                <div class="cart-product-stock">
 
-                                <small class="text-muted">
+                                    <i class="bi bi-box-seam"></i>
 
                                     Stock:
                                     <?= (int) $item["stock"] ?>
 
-                                </small>
+                                </div>
 
                             </div>
 
 
-                            <!-- UPDATE QUANTITY -->
 
-                            <div class="col-md-3">
+                            <!-- QUANTITY -->
+
+                            <div class="cart-quantity-area">
 
                                 <form
                                     method="POST"
@@ -448,37 +506,29 @@ $error = $_GET["error"] ?? "";
                                         value="update"
                                     >
 
-
                                     <input
                                         type="hidden"
                                         name="cart_item_id"
                                         value="<?= (int) $item["cart_item_id"] ?>"
                                     >
 
-
-                                    <label class="form-label small">
-
+                                    <label>
                                         Quantity
-
                                     </label>
 
-
-                                    <div class="input-group">
+                                    <div class="cart-quantity-control">
 
                                         <input
                                             type="number"
                                             name="quantity"
-                                            class="form-control"
                                             min="1"
                                             max="<?= (int) $item["stock"] ?>"
                                             value="<?= (int) $item["quantity"] ?>"
                                             required
                                         >
 
-
                                         <button
                                             type="submit"
-                                            class="btn btn-outline-primary"
                                             title="Update Quantity"
                                         >
 
@@ -493,24 +543,24 @@ $error = $_GET["error"] ?? "";
                             </div>
 
 
-                            <!-- SUBTOTAL -->
 
-                            <div
-                                class="col-md-3 text-md-end mt-3 mt-md-0"
-                            >
+                            <!-- SUBTOTAL / REMOVE -->
 
-                                <strong class="d-block mb-3">
+                            <div class="cart-product-total">
+
+                                <span>
+                                    Subtotal
+                                </span>
+
+                                <strong>
 
                                     ₱<?= number_format(
-                                        (float) $item["price"] *
-                                        (int) $item["quantity"],
+                                        $itemSubtotal,
                                         2
                                     ) ?>
 
                                 </strong>
 
-
-                                <!-- REMOVE -->
 
                                 <form
                                     method="POST"
@@ -528,20 +578,18 @@ $error = $_GET["error"] ?? "";
                                         value="remove"
                                     >
 
-
                                     <input
                                         type="hidden"
                                         name="cart_item_id"
                                         value="<?= (int) $item["cart_item_id"] ?>"
                                     >
 
-
                                     <button
                                         type="submit"
-                                        class="btn btn-outline-danger btn-sm"
+                                        class="cart-remove-btn"
                                     >
 
-                                        <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash3"></i>
 
                                         Remove
 
@@ -551,172 +599,190 @@ $error = $_GET["error"] ?? "";
 
                             </div>
 
+                        </article>
+
+                    <?php endforeach; ?>
+
+
+
+                    <!-- =========================================
+                         CLEAR CART
+                    ========================================== -->
+
+                    <div class="cart-clear-row">
+
+                        <form
+                            method="POST"
+                            action="../actions/cart.php"
+                            onsubmit="
+                                return confirm(
+                                    'Are you sure you want to clear your cart?'
+                                );
+                            "
+                        >
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="clear"
+                            >
+
+                            <button
+    type="submit"
+    class="cart-yellow-btn"
+>
+                                <i class="bi bi-trash3"></i>
+
+                                Clear Cart
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =============================================
+                     ORDER SUMMARY
+                ============================================== -->
+
+                <aside class="cart-summary-card">
+
+
+                    <div class="cart-summary-header">
+
+                        <div class="cart-summary-icon">
+
+                            <i class="bi bi-receipt"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                ORDER SUMMARY
+                            </span>
+
+                            <h2>
+                                Your Order
+                            </h2>
+
                         </div>
 
                     </div>
 
-                </div>
 
 
-            <?php endforeach; ?>
+                    <div class="cart-summary-body">
 
 
-            <!-- =================================================
-                 CLEAR CART
-            ================================================== -->
+                        <div class="cart-summary-row">
 
-            <form
-                method="POST"
-                action="../actions/cart.php"
-                onsubmit="
-                    return confirm(
-                        'Are you sure you want to clear your cart?'
-                    );
-                "
-            >
+                            <span>
+                                Products
+                            </span>
 
-                <input
-                    type="hidden"
-                    name="action"
-                    value="clear"
-                >
+                            <strong>
+                                <?= count($items) ?>
+                            </strong>
+
+                        </div>
 
 
-                <button
-                    type="submit"
-                    class="btn btn-outline-danger"
-                >
 
-                    <i class="bi bi-trash3"></i>
-
-                    Clear Cart
-
-                </button>
-
-            </form>
+                        <div class="cart-summary-divider"></div>
 
 
-        </div>
+
+                        <div class="cart-summary-total">
+
+                            <span>
+                                Total
+                            </span>
+
+                            <strong>
+
+                                ₱<?= number_format(
+                                    $total,
+                                    2
+                                ) ?>
+
+                            </strong>
+
+                        </div>
 
 
-        <!-- =================================================
-             ORDER SUMMARY
-        ================================================== -->
 
-        <div class="col-lg-4">
+                        <a
+                            href="checkout.php"
+                            class="cart-checkout-btn"
+                        >
 
-            <div class="card shadow-sm border-0">
+                            <i class="bi bi-credit-card-fill"></i>
 
-                <div class="card-body p-4">
+                            Proceed to Checkout
 
-                    <h4 class="fw-bold mb-4">
-
-                        Order Summary
-
-                    </h4>
+                        </a>
 
 
-                    <div
-                        class="
-                            d-flex
-                            justify-content-between
-                            mb-3
-                        "
-                    >
 
-                        <span>
+                        <div class="cart-secure-note">
 
-                            Items
+                            <i class="bi bi-shield-check"></i>
 
-                        </span>
+                            <div>
 
+                                <strong>
+                                    Secure Checkout
+                                </strong>
 
-                        <span>
+                                <span>
+                                    Your information is protected.
+                                </span>
 
-                            <?= count($items) ?>
+                            </div>
 
-                        </span>
+                        </div>
 
                     </div>
 
+                </aside>
 
-                    <hr>
-
-
-                    <div
-                        class="
-                            d-flex
-                            justify-content-between
-                            mb-4
-                        "
-                    >
-
-                        <strong>
-
-                            Total
-
-                        </strong>
-
-
-                        <strong class="fs-4">
-
-                            ₱<?= number_format(
-                                $total,
-                                2
-                            ) ?>
-
-                        </strong>
-
-                    </div>
-
-
-                    <a
-                        href="checkout.php"
-                        class="btn btn-primary w-100"
-                    >
-
-                        <i class="bi bi-credit-card"></i>
-
-                        Proceed to Checkout
-
-                    </a>
-
-                </div>
 
             </div>
 
+
+        <?php endif; ?>
+
+
+        <!-- =================================================
+             BACK TO HOME
+        ================================================== -->
+
+        <div class="cart-back-home">
+
+            <a
+                href="../index.php"
+                class="cart-back-btn"
+            >
+
+                <i class="bi bi-house"></i>
+
+                Back to BrightBuy
+
+            </a>
+
         </div>
 
 
-    </div>
-
-
-<?php endif; ?>
-
-
-</div>
-
-
-<!-- =========================================================
-     BACK TO HOME
-========================================================= -->
-
-<div class="container text-center py-4">
-
-    <a
-        href="../index.php"
-        class="btn btn-outline-secondary"
-    >
-
-        <i class="bi bi-house"></i>
-
-        Back to BrightBuy
-
-    </a>
+    </main>
 
 </div>
 
 
 </body>
-
 </html>

@@ -870,24 +870,30 @@ $testimonials = [
                                     <!-- WISHLIST BUTTON -->
 
                                     <button
-                                        class="product-wishlist <?= in_array(
-                                            $product["product_id"],
-                                            $wishlistProductIds
-                                        ) ? "active" : "" ?>"
-                                        type="button"
-                                        data-product-id="<?= (int)
-                                            $product["product_id"] ?>"
-                                        aria-label="Add to wishlist"
-                                    >
-
-                                        <i class="bi <?= in_array(
-                                            $product["product_id"],
-                                            $wishlistProductIds
-                                        )
-                                            ? "bi-heart-fill"
-                                            : "bi-heart" ?>"></i>
-
-                                    </button>
+    class="product-wishlist <?= in_array(
+        (int)$product['product_id'],
+        $wishlistProductIds,
+        true
+    ) ? 'active' : '' ?>"
+    type="button"
+    data-product-id="<?= (int)$product['product_id'] ?>"
+    aria-label="<?= in_array(
+        (int)$product['product_id'],
+        $wishlistProductIds,
+        true
+    ) ? 'Remove from wishlist' : 'Add to wishlist' ?>"
+    title="<?= in_array(
+        (int)$product['product_id'],
+        $wishlistProductIds,
+        true
+    ) ? 'Remove from Wishlist' : 'Add to Wishlist' ?>"
+>
+    <i class="bi <?= in_array(
+        (int)$product['product_id'],
+        $wishlistProductIds,
+        true
+    ) ? 'bi-heart-fill' : 'bi-heart' ?>"></i>
+</button>
 
 
                                     <!-- PRODUCT IMAGE -->

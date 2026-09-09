@@ -732,10 +732,10 @@ $newArrivals = $productStmt->fetchAll();
                         <?php if ($stock > 0): ?>
 
                             <form
-                                method="POST"
-                                action="../actions/cart.php"
-                                class="new-arrival-cart-form"
-                            >
+    method="POST"
+    action="../actions/add-to-cart.php"
+    class="new-arrival-cart-form"
+>
 
                                 <input
                                     type="hidden"

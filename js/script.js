@@ -4,40 +4,36 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
-
     /* =====================================================
        PRODUCT CART BUTTON
     ===================================================== */
 
     const cartButtons = document.querySelectorAll(".add-cart");
-
     const cartCount = document.querySelector(".cart-count");
 
-
+    if (typeof window.cartItems === "undefined") {
+        window.cartItems = 0;
+    }
 
     cartButtons.forEach(function (button) {
 
         button.addEventListener("click", function () {
 
-            cartItems++;
+            window.cartItems++;
 
             if (cartCount) {
-                cartCount.textContent = cartItems;
+                cartCount.textContent = window.cartItems;
             }
-
 
             const originalIcon = button.innerHTML;
 
-            button.innerHTML =
-                '<i class="bi bi-check-lg"></i>';
+            button.innerHTML = '<i class="bi bi-check-lg"></i>';
 
             button.classList.add("added");
-
 
             setTimeout(function () {
 
                 button.innerHTML = originalIcon;
-
                 button.classList.remove("added");
 
             }, 1000);
@@ -49,40 +45,372 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =====================================================
        WISHLIST
+       WORKS ON BOTH:
+       - index.php
+       - pages/shop.php
+       - pages/deals.php
+       - pages/new-arrivals.php
     ===================================================== */
 
-    const wishlistButtons =
-        document.querySelectorAll(".product-wishlist");
+    function getWishlistURL() {
+
+        /*
+         * index.php is in the root folder:
+         *     ../actions/  would be WRONG
+         *
+         * pages/shop.php is inside /pages/:
+         *     ../actions/  is CORRECT
+         */
+
+        const path = window.location.pathname;
+
+        if (
+            path.includes("/pages/") ||
+            path.endsWith("/pages")
+        ) {
+            return "../actions/toggle-wishlist.php";
+        }
+
+        return "actions/toggle-wishlist.php";
+    }
 
 
-    wishlistButtons.forEach(function (button) {
+    /* =====================================================
+       WISHLIST BUTTON HANDLER
+       EVENT DELEGATION
+       
+       This allows wishlist buttons to work even if they
+       are generated dynamically.
+    ===================================================== */
 
-        button.addEventListener("click", function () {
+    document.addEventListener("click", function (event) {
 
-            const icon = button.querySelector("i");
+        const button = event.target.closest(
+            ".wishlist-button, .wishlist-btn, .product-wishlist"
+        );
 
-            if (!icon) {
-                return;
+        if (!button) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        /* ---------------------------------------------
+           PREVENT DOUBLE CLICK
+        --------------------------------------------- */
+
+        if (button.dataset.loading === "true") {
+            return;
+        }
+
+        button.dataset.loading = "true";
+
+
+        /* ---------------------------------------------
+           GET PRODUCT ID
+        --------------------------------------------- */
+
+        const productId =
+            button.getAttribute("data-product-id") ||
+            button.dataset.productId;
+
+
+        if (!productId) {
+
+            console.error(
+                "Wishlist Error: Product ID is missing."
+            );
+
+            alert("Unable to update wishlist.");
+
+            button.dataset.loading = "false";
+
+            return;
+        }
+
+
+        /* ---------------------------------------------
+           GET HEART ICON
+        --------------------------------------------- */
+
+        const icon = button.querySelector("i");
+
+
+        /* ---------------------------------------------
+           CREATE FORM DATA
+        --------------------------------------------- */
+
+        const formData = new FormData();
+
+        formData.append(
+            "product_id",
+            productId
+        );
+
+
+        /* ---------------------------------------------
+           GET CORRECT PHP URL
+        --------------------------------------------- */
+
+        const wishlistURL = getWishlistURL();
+
+        console.log(
+            "Wishlist URL:",
+            wishlistURL
+        );
+
+        console.log(
+            "Product ID:",
+            productId
+        );
+
+
+        /* ---------------------------------------------
+           SEND REQUEST
+        --------------------------------------------- */
+
+        fetch(wishlistURL, {
+
+            method: "POST",
+
+            body: formData,
+
+            credentials: "same-origin"
+
+        })
+
+        .then(function (response) {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Server returned HTTP " +
+                    response.status
+                );
+
+            }
+
+            return response.text();
+
+        })
+
+        .then(function (responseText) {
+
+            console.log(
+                "Wishlist Response:",
+                responseText
+            );
+
+
+            /* -----------------------------------------
+               PARSE JSON
+            ----------------------------------------- */
+
+            let data;
+
+            try {
+
+                data = JSON.parse(responseText);
+
+            } catch (error) {
+
+                console.error(
+                    "Invalid JSON returned by wishlist PHP:",
+                    responseText
+                );
+
+                throw new Error(
+                    "Server returned invalid JSON."
+                );
+
             }
 
 
-            if (icon.classList.contains("bi-heart")) {
+            /* -----------------------------------------
+               LOGIN CHECK
+            ----------------------------------------- */
 
-                icon.classList.remove("bi-heart");
+            if (data.logged_in === false) {
 
-                icon.classList.add("bi-heart-fill");
+                /*
+                 * If current page is inside /pages/
+                 * login.php is directly available.
+                 *
+                 * If current page is index.php
+                 * login is inside /pages/.
+                 */
 
+                const currentPath =
+                    window.location.pathname;
+
+                if (
+                    currentPath.includes("/pages/")
+                ) {
+
+                    window.location.href =
+                        "login.php";
+
+                } else {
+
+                    window.location.href =
+                        "pages/login.php";
+
+                }
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------
+               CHECK SUCCESS
+            ----------------------------------------- */
+
+            if (data.success !== true) {
+
+                alert(
+                    data.message ||
+                    "Unable to update wishlist."
+                );
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------
+               ADDED TO WISHLIST
+            ----------------------------------------- */
+
+            if (data.in_wishlist === true) {
+
+                button.classList.add("active");
                 button.classList.add("selected");
 
-            } else {
+                button.setAttribute(
+                    "aria-label",
+                    "Remove from wishlist"
+                );
 
-                icon.classList.remove("bi-heart-fill");
+                button.setAttribute(
+                    "title",
+                    "Remove from Wishlist"
+                );
 
-                icon.classList.add("bi-heart");
 
-                button.classList.remove("selected");
+                if (icon) {
+
+                    /*
+                     * Bootstrap Icons
+                     */
+
+                    icon.classList.remove(
+                        "bi-heart"
+                    );
+
+                    icon.classList.add(
+                        "bi-heart-fill"
+                    );
+
+
+                    /*
+                     * Font Awesome
+                     * In case some buttons use FA
+                     */
+
+                    icon.classList.remove(
+                        "fa-regular"
+                    );
+
+                    icon.classList.add(
+                        "fa-solid"
+                    );
+
+                }
+
+
+                console.log(
+                    "Added to wishlist."
+                );
 
             }
+
+
+            /* -----------------------------------------
+               REMOVED FROM WISHLIST
+            ----------------------------------------- */
+
+            else {
+
+                button.classList.remove("active");
+                button.classList.remove("selected");
+
+                button.setAttribute(
+                    "aria-label",
+                    "Add to wishlist"
+                );
+
+                button.setAttribute(
+                    "title",
+                    "Add to Wishlist"
+                );
+
+
+                if (icon) {
+
+                    /*
+                     * Bootstrap Icons
+                     */
+
+                    icon.classList.remove(
+                        "bi-heart-fill"
+                    );
+
+                    icon.classList.add(
+                        "bi-heart"
+                    );
+
+
+                    /*
+                     * Font Awesome
+                     */
+
+                    icon.classList.remove(
+                        "fa-solid"
+                    );
+
+                    icon.classList.add(
+                        "fa-regular"
+                    );
+
+                }
+
+
+                console.log(
+                    "Removed from wishlist."
+                );
+
+            }
+
+        })
+
+        .catch(function (error) {
+
+            console.error(
+                "Wishlist request failed:",
+                error
+            );
+
+            alert(
+                "Unable to update wishlist. Please try again."
+            );
+
+        })
+
+        .finally(function () {
+
+            button.dataset.loading = "false";
 
         });
 
@@ -105,24 +433,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (track && previous && next) {
 
-        previous.addEventListener("click", function () {
+        previous.addEventListener(
+            "click",
+            function () {
 
-            track.scrollBy({
-                left: -300,
-                behavior: "smooth"
-            });
+                track.scrollBy({
 
-        });
+                    left: -300,
+
+                    behavior: "smooth"
+
+                });
+
+            }
+        );
 
 
-        next.addEventListener("click", function () {
+        next.addEventListener(
+            "click",
+            function () {
 
-            track.scrollBy({
-                left: 300,
-                behavior: "smooth"
-            });
+                track.scrollBy({
 
-        });
+                    left: 300,
+
+                    behavior: "smooth"
+
+                });
+
+            }
+        );
 
     }
 
@@ -137,29 +477,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (backToTop) {
 
-        window.addEventListener("scroll", function () {
+        window.addEventListener(
+            "scroll",
+            function () {
 
-            if (window.scrollY > 500) {
+                if (window.scrollY > 500) {
 
-                backToTop.classList.add("show");
+                    backToTop.classList.add(
+                        "show"
+                    );
 
-            } else {
+                } else {
 
-                backToTop.classList.remove("show");
+                    backToTop.classList.remove(
+                        "show"
+                    );
+
+                }
 
             }
+        );
 
-        });
 
+        backToTop.addEventListener(
+            "click",
+            function () {
 
-        backToTop.addEventListener("click", function () {
+                window.scrollTo({
 
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+                    top: 0,
 
-        });
+                    behavior: "smooth"
+
+                });
+
+            }
+        );
 
     }
 
@@ -169,39 +522,63 @@ document.addEventListener("DOMContentLoaded", function () {
     ===================================================== */
 
     const currentPage =
-        window.location.pathname.split("/").pop();
+        window.location.pathname
+            .split("/")
+            .pop();
 
 
     const navLinks =
-        document.querySelectorAll(".nav-menu a");
+        document.querySelectorAll(
+            ".nav-menu a"
+        );
 
 
-    navLinks.forEach(function (link) {
+    navLinks.forEach(
+        function (link) {
 
-        const linkPage =
-            link.getAttribute("href")
-                .split("/")
-                .pop()
-                .split("?")[0];
+            const href =
+                link.getAttribute("href");
 
 
-        if (
-            currentPage === linkPage ||
-            (
-                currentPage === "" &&
-                linkPage === "index.php"
-            )
-        ) {
+            if (!href) {
+                return;
+            }
 
-            navLinks.forEach(function (item) {
-                item.classList.remove("active");
-            });
 
-            link.classList.add("active");
+            const linkPage =
+                href
+                    .split("/")
+                    .pop()
+                    .split("?")[0];
+
+
+            if (
+                currentPage === linkPage ||
+                (
+                    currentPage === "" &&
+                    linkPage === "index.php"
+                )
+            ) {
+
+                navLinks.forEach(
+                    function (item) {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                link.classList.add(
+                    "active"
+                );
+
+            }
 
         }
-
-    });
+    );
 
 
     /* =====================================================
@@ -209,7 +586,9 @@ document.addEventListener("DOMContentLoaded", function () {
     ===================================================== */
 
     const searchInput =
-        document.querySelector(".search-box input");
+        document.querySelector(
+            ".search-box input"
+        );
 
 
     if (searchInput) {
@@ -220,7 +599,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (event.key === "Enter") {
 
-                    if (searchInput.value.trim() === "") {
+                    if (
+                        searchInput.value.trim() === ""
+                    ) {
 
                         event.preventDefault();
 
@@ -238,205 +619,229 @@ document.addEventListener("DOMContentLoaded", function () {
        PREVENT IMAGE DRAGGING
     ===================================================== */
 
-    document.querySelectorAll("img").forEach(function (image) {
+    document
+        .querySelectorAll("img")
+        .forEach(
+            function (image) {
 
-        image.addEventListener("dragstart", function (event) {
+                image.addEventListener(
+                    "dragstart",
+                    function (event) {
 
-            event.preventDefault();
+                        event.preventDefault();
 
-        });
+                    }
+                );
 
-    });
+            }
+        );
 
 
-          /* =====================================================
-   SPECIAL OFFER SLIDER
-===================================================== */
+    /* =====================================================
+       SPECIAL OFFER SLIDER
+    ===================================================== */
 
-const offerSlides = document.querySelectorAll(".offer-slide");
-const offerDots = document.querySelectorAll(".offer-dot");
+    const offerSlides =
+        document.querySelectorAll(
+            ".offer-slide"
+        );
 
-let currentOfferSlide = 0;
-let offerInterval = null;
 
-function showOfferSlide(index) {
+    const offerDots =
+        document.querySelectorAll(
+            ".offer-dot"
+        );
 
-    if (offerSlides.length === 0) {
-        return;
+
+    let currentOfferSlide = 0;
+
+    let offerInterval = null;
+
+
+    function showOfferSlide(index) {
+
+        if (offerSlides.length === 0) {
+            return;
+        }
+
+
+        /* ---------------------------------------------
+           KEEP INDEX WITHIN RANGE
+        --------------------------------------------- */
+
+        if (index < 0) {
+
+            index =
+                offerSlides.length - 1;
+
+        }
+
+
+        if (
+            index >=
+            offerSlides.length
+        ) {
+
+            index = 0;
+
+        }
+
+
+        /* ---------------------------------------------
+           REMOVE ACTIVE FROM SLIDES
+        --------------------------------------------- */
+
+        offerSlides.forEach(
+            function (slide) {
+
+                slide.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+        /* ---------------------------------------------
+           REMOVE ACTIVE FROM DOTS
+        --------------------------------------------- */
+
+        offerDots.forEach(
+            function (dot) {
+
+                dot.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+        /* ---------------------------------------------
+           ACTIVATE SELECTED SLIDE
+        --------------------------------------------- */
+
+        offerSlides[index]
+            .classList.add(
+                "active"
+            );
+
+
+        /* ---------------------------------------------
+           ACTIVATE MATCHING DOT
+        --------------------------------------------- */
+
+        if (offerDots[index]) {
+
+            offerDots[index]
+                .classList.add(
+                    "active"
+                );
+
+        }
+
+
+        currentOfferSlide = index;
+
     }
 
-    /* Make sure index stays within range */
-    if (index < 0) {
-        index = offerSlides.length - 1;
+
+    /* =====================================================
+       NEXT OFFER SLIDE
+    ===================================================== */
+
+    function nextOfferSlide() {
+
+        let nextSlide =
+            currentOfferSlide + 1;
+
+
+        if (
+            nextSlide >=
+            offerSlides.length
+        ) {
+
+            nextSlide = 0;
+
+        }
+
+
+        showOfferSlide(
+            nextSlide
+        );
+
     }
 
-    if (index >= offerSlides.length) {
-        index = 0;
+
+    /* =====================================================
+       START OFFER SLIDER
+    ===================================================== */
+
+    function startOfferSlider() {
+
+        if (offerInterval !== null) {
+
+            clearInterval(
+                offerInterval
+            );
+
+        }
+
+
+        if (offerSlides.length <= 1) {
+
+            return;
+
+        }
+
+
+        offerInterval =
+            setInterval(
+                function () {
+
+                    nextOfferSlide();
+
+                },
+                4000
+            );
+
     }
 
-    /* Remove active state from ALL slides */
-    offerSlides.forEach(function (slide) {
-        slide.classList.remove("active");
-    });
 
-    /* Remove active state from ALL dots */
-    offerDots.forEach(function (dot) {
-        dot.classList.remove("active");
-    });
+    /* =====================================================
+       OFFER DOT CONTROLS
+    ===================================================== */
 
-    /* Activate selected slide */
-    offerSlides[index].classList.add("active");
+    offerDots.forEach(
+        function (dot, index) {
 
-    /* Activate matching dot */
-    if (offerDots[index]) {
-        offerDots[index].classList.add("active");
-    }
+            dot.addEventListener(
+                "click",
+                function () {
 
-    currentOfferSlide = index;
-}
+                    showOfferSlide(
+                        index
+                    );
 
+                    startOfferSlider();
 
-/* =====================================================
-   NEXT SLIDE
-===================================================== */
+                }
+            );
 
-function nextOfferSlide() {
-
-    let nextSlide = currentOfferSlide + 1;
-
-    if (nextSlide >= offerSlides.length) {
-        nextSlide = 0;
-    }
-
-    showOfferSlide(nextSlide);
-}
+        }
+    );
 
 
-/* =====================================================
-   START AUTOMATIC SLIDER
-===================================================== */
+    /* =====================================================
+       START OFFER SLIDER
+    ===================================================== */
 
-function startOfferSlider() {
+    if (offerSlides.length > 0) {
 
-    /* Stop previous timer */
-    if (offerInterval !== null) {
-        clearInterval(offerInterval);
-    }
+        showOfferSlide(0);
 
-    /* Don't start if there is only one slide */
-    if (offerSlides.length <= 1) {
-        return;
-    }
-
-    /* Change slide every 4 seconds */
-    offerInterval = setInterval(function () {
-        nextOfferSlide();
-    }, 4000);
-}
-
-
-/* =====================================================
-   DOT CONTROLS
-===================================================== */
-
-offerDots.forEach(function (dot, index) {
-
-    dot.addEventListener("click", function () {
-
-        showOfferSlide(index);
-
-        /* Restart the 4-second timer */
         startOfferSlider();
 
-    });
-
-});
-
-
-/* =====================================================
-   START SLIDER
-===================================================== */
-
-if (offerSlides.length > 0) {
-
-    /* Start with Slide 1 */
-    showOfferSlide(0);
-
-    /* Start automatic movement */
-    startOfferSlider();
-
-}
-
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const wishlistButtons = document.querySelectorAll(".product-wishlist");
-
-    wishlistButtons.forEach(function (button) {
-
-        button.addEventListener("click", function () {
-
-            const productId = this.dataset.productId;
-            const icon = this.querySelector("i");
-
-            const formData = new FormData();
-
-            formData.append("product_id", productId);
-
-            fetch("pages/toggle-wishlist.php", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-
-                if (data.logged_in === false) {
-                    window.location.href = "pages/login.php";
-                    return;
-                }
-
-                if (!data.success) {
-                    alert(data.message || "Something went wrong.");
-                    return;
-                }
-
-                if (data.in_wishlist) {
-
-                    button.classList.add("active");
-
-                    icon.classList.remove("bi-heart");
-                    icon.classList.add("bi-heart-fill");
-
-                    button.setAttribute(
-                        "aria-label",
-                        "Remove from wishlist"
-                    );
-
-                } else {
-
-                    button.classList.remove("active");
-
-                    icon.classList.remove("bi-heart-fill");
-                    icon.classList.add("bi-heart");
-
-                    button.setAttribute(
-                        "aria-label",
-                        "Add to wishlist"
-                    );
-                }
-
-            })
-            .catch(error => {
-
-                console.error("Wishlist error:", error);
-
-                alert("Unable to update wishlist.");
-
-            });
-
-        });
-
-    });
+    }
 
 });

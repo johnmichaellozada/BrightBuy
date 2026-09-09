@@ -900,63 +900,52 @@ if ($search !== "") {
 
                                 <?php if ($stock > 0): ?>
 
-                                    <form
-                                        method="POST"
-                                        action="../actions/cart.php"
-                                        class="shop-cart-form"
-                                    >
+    <form
+        method="POST"
+        action="../actions/add-to-cart.php"
+        class="shop-cart-form"
+    >
 
-                                        <!-- IMPORTANT -->
-                                        <!-- THIS WAS MISSING -->
+        <input
+            type="hidden"
+            name="product_id"
+            value="<?= $productId ?>"
+        >
 
-                                        <input
-                                            type="hidden"
-                                            name="action"
-                                            value="add"
-                                        >
+        <input
+            type="hidden"
+            name="quantity"
+            value="1"
+        >
 
-                                        <input
-                                            type="hidden"
-                                            name="product_id"
-                                            value="<?= $productId ?>"
-                                        >
+        <button
+            type="submit"
+            class="shop-cart-button"
+        >
 
-                                        <input
-                                            type="hidden"
-                                            name="quantity"
-                                            value="1"
-                                        >
+            <i class="bi bi-cart-plus"></i>
 
+            Add to Cart
 
-                                        <button
-                                            type="submit"
-                                            class="shop-cart-button"
-                                        >
+        </button>
 
-                                            <i class="bi bi-cart-plus"></i>
+    </form>
 
-                                            Add to Cart
+<?php else: ?>
 
-                                        </button>
+    <button
+        type="button"
+        class="shop-cart-button"
+        disabled
+    >
 
-                                    </form>
+        <i class="bi bi-x-circle"></i>
 
+        Out of Stock
 
-                                <?php else: ?>
+    </button>
 
-                                    <button
-                                        type="button"
-                                        class="shop-cart-button"
-                                        disabled
-                                    >
-
-                                        <i class="bi bi-x-circle"></i>
-
-                                        Out of Stock
-
-                                    </button>
-
-                                <?php endif; ?>
+<?php endif; ?>
 
 
                             </div>
@@ -999,96 +988,6 @@ if ($search !== "") {
 
 
         </main>
-
-
-        <!-- =====================================================
-             WISHLIST SCRIPT
-        ===================================================== -->
-
-        <script>
-
-        document
-            .querySelectorAll(".wishlist-button")
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        const productId =
-                            this.dataset.productId;
-
-
-                        fetch(
-                            "toggle-wishlist.php",
-                            {
-                                method: "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/x-www-form-urlencoded"
-                                },
-
-                                body:
-                                    "product_id=" +
-                                    encodeURIComponent(productId)
-                            }
-                        )
-
-                        .then(response => response.json())
-
-                        .then(data => {
-
-                            if (data.logged_in === false) {
-
-                                window.location.href =
-                                    "login.php";
-
-                                return;
-                            }
-
-
-                            if (data.success) {
-
-                                const icon =
-                                    this.querySelector("i");
-
-
-                                if (data.in_wishlist) {
-
-                                    this.classList.add("active");
-
-                                    icon.className =
-                                        "bi bi-heart-fill";
-
-                                } else {
-
-                                    this.classList.remove("active");
-
-                                    icon.className =
-                                        "bi bi-heart";
-
-                                }
-
-                            }
-
-                        })
-
-                        .catch(error => {
-
-                            console.error(
-                                "Wishlist error:",
-                                error
-                            );
-
-                        });
-
-                    }
-                );
-
-            });
-
-        </script>
 
 
         <!-- =====================================================

@@ -811,10 +811,10 @@ $pageTitle = "Deals";
                         <?php if ($stock > 0): ?>
 
                             <form
-                                method="POST"
-                                action="../actions/cart.php"
-                                class="deal-cart-form"
-                            >
+    method="POST"
+    action="../actions/add-to-cart.php"
+    class="deal-cart-form"
+>
 
                                 <input
                                     type="hidden"

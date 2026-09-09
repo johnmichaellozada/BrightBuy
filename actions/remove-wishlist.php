@@ -1,38 +1,89 @@
 <?php
 
 session_start();
+
 require_once "../db.php";
 
-// User must be logged in
-if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) {
-    header("Location: login.php");
+
+/* =====================================================
+   CHECK LOGIN
+===================================================== */
+
+if (
+    !isset($_SESSION["logged_in"]) ||
+    $_SESSION["logged_in"] !== true
+) {
+    header("Location: ../pages/login.php");
     exit;
 }
 
-$user_id = $_SESSION["user_id"];
 
-$wishlist_id = filter_input(
+/* =====================================================
+   GET USER ID
+===================================================== */
+
+$user_id = (int)($_SESSION["user_id"] ?? 0);
+
+if ($user_id <= 0) {
+    header("Location: ../pages/login.php");
+    exit;
+}
+
+
+/* =====================================================
+   GET PRODUCT ID
+===================================================== */
+
+$product_id = filter_input(
     INPUT_GET,
     "id",
     FILTER_VALIDATE_INT
 );
 
-if (!$wishlist_id) {
-    header("Location: wishlist.php");
+
+/* =====================================================
+   INVALID PRODUCT ID
+===================================================== */
+
+if (!$product_id || $product_id <= 0) {
+
+    header("Location: ../pages/wishlist.php");
     exit;
 }
 
-// Delete only the current user's wishlist item
-$stmt = $pdo->prepare("
-    DELETE FROM wishlist
-    WHERE wishlist_id = ?
-      AND user_id = ?
-");
 
-$stmt->execute([
-    $wishlist_id,
-    $user_id
-]);
+/* =====================================================
+   REMOVE WISHLIST ITEM
+===================================================== */
 
-header("Location: wishlist.php");
-exit;
+try {
+
+    $delete = $pdo->prepare("
+        DELETE FROM wishlist
+        WHERE user_id = ?
+          AND product_id = ?
+    ");
+
+    $delete->execute([
+        $user_id,
+        $product_id
+    ]);
+
+
+    /* =================================================
+       RETURN TO WISHLIST
+    ================================================= */
+
+    header("Location: ../pages/wishlist.php");
+    exit;
+
+
+} catch (PDOException $e) {
+
+    /* =================================================
+       IF DATABASE ERROR
+    ================================================= */
+
+    header("Location: ../pages/wishlist.php");
+    exit;
+}

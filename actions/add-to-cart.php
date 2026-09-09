@@ -59,6 +59,16 @@ $product_id = filter_input(
     FILTER_VALIDATE_INT
 );
 
+$quantity = filter_input(
+    INPUT_POST,
+    "quantity",
+    FILTER_VALIDATE_INT
+);
+
+if (!$quantity || $quantity < 1) {
+    $quantity = 1;
+}
+
 
 /* =========================================================
    VALIDATE PRODUCT ID
@@ -200,6 +210,14 @@ $itemStmt->execute([
 
 $existingItem = $itemStmt->fetch();
 
+if ($quantity > $stock) {
+
+    $_SESSION["cart_error"] =
+        "You cannot add more than the available stock.";
+
+    header("Location: ../pages/shop.php");
+    exit;
+}
 
 /* =========================================================
    ADD OR INCREASE QUANTITY
@@ -208,7 +226,7 @@ $existingItem = $itemStmt->fetch();
 if ($existingItem) {
 
     $newQuantity =
-        (int)$existingItem["quantity"] + 1;
+    (int)$existingItem["quantity"] + $quantity;
 
 
     /* ---------------------------------------------
@@ -252,17 +270,19 @@ if ($existingItem) {
             quantity
         )
         VALUES
-        (
-            ?,
-            ?,
-            1
-        )
+(
+    ?,
+    ?,
+    ?
+)
     ");
 
     $insertStmt->execute([
-        $cart_id,
-        $product_id
-    ]);
+    $cart_id,
+    $product_id,
+    $quantity
+]);
+
 }
 
 

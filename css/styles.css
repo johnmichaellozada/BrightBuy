@@ -24711,3 +24711,1883 @@ textarea.checkout-input {
 .cart-page .cart-yellow-btn:hover i {
     color: #123b82 !important;
 }
+
+/* =========================================================
+   ADMIN CUSTOMER ORDERS
+   PAYMENT INFORMATION
+========================================================= */
+
+.admin-orders-page .payment-information {
+
+    margin-top: 20px;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f3f7ff,
+            #ffffff
+        );
+
+    border: 1px solid #dce6f7;
+
+    box-shadow:
+        0 5px 18px rgba(
+            13,
+            71,
+            161,
+            0.06
+        );
+}
+
+
+/* =========================================================
+   PAYMENT HEADER
+========================================================= */
+
+.admin-orders-page .payment-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding-bottom: 15px;
+
+    margin-bottom: 5px;
+
+    border-bottom:
+        1px solid #e1e8f3;
+}
+
+
+.admin-orders-page .payment-header-icon {
+
+    width: 44px;
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #eaf2ff;
+
+    color: #1264e8;
+
+    font-size: 20px;
+}
+
+
+.admin-orders-page .payment-title {
+
+    color: #0d47a1;
+
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+
+.admin-orders-page .payment-subtitle {
+
+    margin-top: 2px;
+
+    color: #7183a3;
+
+    font-size: 11px;
+
+    font-weight: 500;
+}
+
+
+
+/* =========================================================
+   PAYMENT DETAIL ROW
+========================================================= */
+
+.admin-orders-page .payment-method-row,
+.admin-orders-page .payment-detail-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px 0;
+
+    border-bottom:
+        1px solid #e8edf5;
+}
+
+
+.admin-orders-page .payment-detail-row:last-child {
+
+    border-bottom: none;
+}
+
+
+.admin-orders-page .payment-detail-icon {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #eef4ff;
+
+    color: #1465e8;
+
+    font-size: 17px;
+}
+
+
+.admin-orders-page .reference-icon {
+
+    background: #fff6d9;
+
+    color: #b17b00;
+}
+
+
+.admin-orders-page .payment-detail-content {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+    min-width: 0;
+}
+
+
+.admin-orders-page .payment-detail-content span {
+
+    color: #8292ad;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+
+.admin-orders-page .payment-detail-content strong {
+
+    color: #193b73;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    word-break: break-word;
+}
+
+
+
+/* =========================================================
+   GCASH / COD METHOD
+========================================================= */
+
+.admin-orders-page .gcash-method {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    width: fit-content;
+
+    padding: 5px 12px;
+
+    border-radius: 20px;
+
+    background: #e7f0ff;
+
+    color: #1264e8 !important;
+
+    font-size: 12px !important;
+}
+
+
+.admin-orders-page .cod-method {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    width: fit-content;
+
+    padding: 5px 12px;
+
+    border-radius: 20px;
+
+    background: #fff3cd;
+
+    color: #8a6500 !important;
+
+    font-size: 12px !important;
+}
+
+
+
+/* =========================================================
+   COD INFORMATION
+========================================================= */
+
+.admin-orders-page .cod-information {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 12px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    background: #fff8e3;
+
+    border: 1px solid #f5df9a;
+
+    color: #775900;
+}
+
+
+.admin-orders-page .cod-information > i {
+
+    font-size: 20px;
+
+    flex-shrink: 0;
+}
+
+
+.admin-orders-page .cod-information strong {
+
+    display: block;
+
+    color: #765900;
+
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+
+.admin-orders-page .cod-information span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: #947b3c;
+
+    font-size: 11px;
+}
+
+
+
+/* =========================================================
+   PAYMENT STATUS
+========================================================= */
+
+.admin-orders-page .payment-status {
+
+    display: inline-flex;
+
+    width: fit-content;
+
+    padding: 4px 10px;
+
+    border-radius: 15px;
+
+    font-size: 11px !important;
+}
+
+
+.admin-orders-page .payment-paid {
+
+    background: #dff5e7;
+
+    color: #19703b !important;
+}
+
+
+.admin-orders-page .payment-pending {
+
+    background: #fff3cd;
+
+    color: #8a6500 !important;
+}
+
+
+
+/* =========================================================
+   ADMIN PRODUCT IMAGE
+========================================================= */
+
+.admin-orders-page .order-item-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+
+.admin-orders-page .admin-product-image {
+
+    width: 55px;
+
+    height: 55px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: #f3f6fb;
+
+    border: 1px solid #dfe7f2;
+}
+
+
+.admin-orders-page .admin-product-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+}
+
+
+.admin-orders-page .admin-product-placeholder {
+
+    color: #9aabc4;
+
+    font-size: 20px;
+}
+
+
+
+/* =========================================================
+   ORDER TOTAL
+========================================================= */
+
+.admin-orders-page .order-total-container {
+
+    text-align: right;
+}
+
+
+.admin-orders-page .order-total-label {
+
+    color: #7183a3;
+
+    font-size: 12px;
+
+    margin-bottom: 3px;
+}
+
+
+.admin-orders-page .order-total {
+
+    color: #0d47a1;
+
+    font-size: 21px;
+
+    font-weight: 800;
+}
+
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .admin-orders-page .order-top {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+
+    .admin-orders-page .order-total-container {
+
+        text-align: left;
+    }
+
+
+    .admin-orders-page .order-item {
+
+        gap: 12px;
+    }
+
+
+    .admin-orders-page .order-item-left {
+
+        min-width: 0;
+    }
+
+
+    .admin-orders-page .item-name {
+
+        font-size: 13px;
+    }
+
+
+    .admin-orders-page .payment-information {
+
+        padding: 16px;
+    }
+
+
+    .admin-orders-page .order-controls {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .admin-orders-page .status-form {
+
+        width: 100%;
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .admin-orders-page .status-form select {
+
+        width: 100%;
+    }
+
+
+    .admin-orders-page .update-btn,
+    .admin-orders-page .track-btn {
+
+        width: 100%;
+
+        justify-content: center;
+
+        text-align: center;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .admin-orders-page .payment-header {
+
+        align-items: flex-start;
+    }
+
+
+    .admin-orders-page .payment-detail-row,
+    .admin-orders-page .payment-method-row {
+
+        align-items: flex-start;
+    }
+
+
+    .admin-orders-page .payment-detail-icon {
+
+        width: 34px;
+
+        height: 34px;
+
+        font-size: 15px;
+    }
+
+
+    .admin-orders-page .admin-product-image {
+
+        width: 48px;
+
+        height: 48px;
+    }
+
+}
+
+/* =========================================================
+   BRIGHTBUY ADMIN DASHBOARD
+   ========================================================= */
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+.admin-dashboard-page {
+
+    margin: 0;
+
+    font-family: "Poppins", sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f4f8ff 0%,
+            #eef4ff 50%,
+            #f8fbff 100%
+        );
+
+    color: #1f2937;
+
+    min-height: 100vh;
+
+}
+
+
+/* =========================================================
+   ADMIN HEADER
+========================================================= */
+
+.admin-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d47a1,
+            #1264e8
+        );
+
+    color: white;
+
+    padding: 16px 35px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    box-shadow:
+        0 4px 18px rgba(13, 71, 161, 0.20);
+
+}
+
+
+.admin-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+.admin-brand-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(255,255,255,0.15);
+
+    font-size: 22px;
+
+}
+
+
+.admin-brand h4 {
+
+    margin: 0;
+
+    font-weight: 700;
+
+    font-size: 20px;
+
+}
+
+
+.admin-brand small {
+
+    opacity: 0.85;
+
+    font-size: 12px;
+
+}
+
+
+.admin-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.admin-inventory-btn {
+
+    background: #ffbf00;
+
+    color: #172554;
+
+    border-radius: 8px;
+
+    padding: 8px 14px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: 0.2s ease;
+
+}
+
+
+.admin-inventory-btn:hover {
+
+    background: #ffd04d;
+
+    color: #172554;
+
+}
+
+
+.admin-logout-btn {
+
+    color: white;
+
+    border: 1px solid rgba(255,255,255,0.55);
+
+    border-radius: 8px;
+
+    padding: 8px 14px;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition: 0.2s ease;
+
+}
+
+
+.admin-logout-btn:hover {
+
+    background: white;
+
+    color: #0d47a1;
+
+}
+
+
+/* =========================================================
+   DASHBOARD CONTAINER
+========================================================= */
+
+.dashboard-container {
+
+    width: 100%;
+
+    max-width: 1250px;
+
+    margin: 0 auto;
+
+    padding: 35px 20px 50px;
+
+}
+
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome-section {
+
+    margin-bottom: 25px;
+
+}
+
+
+.dashboard-eyebrow {
+
+    display: block;
+
+    color: #1264e8;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 4px;
+
+}
+
+
+.welcome-section h2 {
+
+    margin: 0 0 5px;
+
+    color: #082b73;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+}
+
+
+.welcome-section p {
+
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   SECTION HEADINGS
+========================================================= */
+
+.section-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 14px;
+
+}
+
+
+.section-eyebrow {
+
+    display: block;
+
+    color: #1264e8;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+
+    margin-bottom: 2px;
+
+}
+
+
+.section-heading h3 {
+
+    margin: 0;
+
+    color: #082b73;
+
+    font-size: 19px;
+
+    font-weight: 700;
+
+}
+
+
+.income-date {
+
+    color: #6b7280;
+
+    font-size: 12px;
+
+    background: white;
+
+    border: 1px solid #e1e8f5;
+
+    border-radius: 20px;
+
+    padding: 7px 12px;
+
+}
+
+
+.income-date i {
+
+    color: #1264e8;
+
+    margin-right: 4px;
+
+}
+
+
+/* =========================================================
+   INCOME SECTION
+========================================================= */
+
+.income-section {
+
+    margin-bottom: 28px;
+
+}
+
+
+.income-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 145px;
+
+    border-radius: 15px;
+
+    padding: 22px;
+
+    color: white;
+
+    box-shadow:
+        0 5px 18px rgba(13, 71, 161, 0.13);
+
+}
+
+
+.today-income-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d47a1,
+            #1264e8
+        );
+
+}
+
+
+.month-income-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #082b73,
+            #0d47a1
+        );
+
+}
+
+
+.income-card-content {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    position: relative;
+
+    z-index: 2;
+
+}
+
+
+.income-icon {
+
+    width: 52px;
+
+    height: 52px;
+
+    min-width: 52px;
+
+    border-radius: 13px;
+
+    background: rgba(255,255,255,0.16);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 23px;
+
+}
+
+
+.income-label {
+
+    display: block;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    opacity: 0.82;
+
+    margin-bottom: 2px;
+
+}
+
+
+.income-card h2 {
+
+    margin: 0;
+
+    font-size: 29px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+}
+
+
+.income-card p {
+
+    margin: 4px 0 0;
+
+    font-size: 11px;
+
+    opacity: 0.78;
+
+}
+
+
+.income-decoration {
+
+    position: absolute;
+
+    right: 20px;
+
+    bottom: -14px;
+
+    font-size: 85px;
+
+    opacity: 0.08;
+
+    transform: rotate(-8deg);
+
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.statistics-section {
+
+    margin-bottom: 30px;
+
+}
+
+
+.stat-card {
+
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    min-height: 145px;
+
+    height: 100%;
+
+    box-shadow:
+        0 3px 15px rgba(0,0,0,0.055);
+
+    border: 1px solid #edf1f7;
+
+    position: relative;
+
+    overflow: hidden;
+
+}
+
+
+.stat-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 95px;
+
+    height: 95px;
+
+    right: -30px;
+
+    bottom: -30px;
+
+    background: #f1f5fb;
+
+    border-radius: 50%;
+
+}
+
+
+.stat-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 11px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 20px;
+
+    background: #e8f0fe;
+
+    color: #0d47a1;
+
+    margin-bottom: 10px;
+
+    position: relative;
+
+    z-index: 2;
+
+}
+
+
+.stat-number {
+
+    font-size: 26px;
+
+    font-weight: 700;
+
+    margin: 0;
+
+    color: #082b73;
+
+    position: relative;
+
+    z-index: 2;
+
+}
+
+
+.stat-label {
+
+    color: #6b7280;
+
+    font-size: 12px;
+
+    position: relative;
+
+    z-index: 2;
+
+}
+
+
+/* =========================================================
+   ORDER STATUS
+========================================================= */
+
+.order-status-card {
+
+    padding-bottom: 14px;
+
+}
+
+
+.order-status-card .stat-icon {
+
+    margin-bottom: 7px;
+
+}
+
+
+.status-breakdown {
+
+    position: relative;
+
+    z-index: 3;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.status-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+.status-name {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #6b7280;
+
+}
+
+
+.status-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    min-width: 7px;
+
+    border-radius: 50%;
+
+    display: inline-block;
+
+}
+
+
+.status-dot.pending {
+
+    background: #f4b400;
+
+}
+
+
+.status-dot.processing {
+
+    background: #1264e8;
+
+}
+
+
+.status-dot.shipped {
+
+    background: #7c3aed;
+
+}
+
+
+.status-dot.delivered {
+
+    background: #16a34a;
+
+}
+
+
+.status-dot.cancelled {
+
+    background: #ef4444;
+
+}
+
+
+.status-count {
+
+    color: #082b73;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CUSTOMERS
+========================================================= */
+
+.customers-card {
+
+    background: white;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 3px 15px rgba(0,0,0,0.055);
+
+    border: 1px solid #edf1f7;
+
+    overflow: hidden;
+
+}
+
+
+.customers-header {
+
+    padding: 18px 22px;
+
+    border-bottom: 1px solid #edf0f5;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.customers-header h4 {
+
+    margin: 0;
+
+    font-weight: 700;
+
+    font-size: 17px;
+
+    color: #082b73;
+
+}
+
+
+.customers-header h4 i {
+
+    color: #1264e8;
+
+    margin-right: 4px;
+
+}
+
+
+.customers-count {
+
+    background: #eef4ff;
+
+    color: #0d47a1;
+
+    padding: 6px 11px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   CUSTOMER ROW
+========================================================= */
+
+.customer-row {
+
+    padding: 15px 22px;
+
+    border-bottom: 1px solid #edf0f5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    transition: background 0.2s ease;
+
+}
+
+
+.customer-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.customer-row:hover {
+
+    background: #f9fbff;
+
+}
+
+
+.customer-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    min-width: 0;
+
+}
+
+
+/* =========================================================
+   CUSTOMER AVATAR
+========================================================= */
+
+.customer-avatar {
+
+    width: 45px;
+
+    height: 45px;
+
+    min-width: 45px;
+
+    border-radius: 50%;
+
+    background: #e8f0fe;
+
+    color: #0d47a1;
+
+    border: 2px solid #ffbf00;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CUSTOMER INFORMATION
+========================================================= */
+
+.customer-name {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    margin: 0;
+
+    color: #082b73;
+
+}
+
+
+.customer-email {
+
+    font-size: 11px;
+
+    color: #6b7280;
+
+    margin: 2px 0 0;
+
+    word-break: break-word;
+
+}
+
+
+.customer-phone {
+
+    font-size: 10px;
+
+    color: #888;
+
+    margin: 2px 0 0;
+
+}
+
+
+.customer-phone i {
+
+    margin-right: 3px;
+
+}
+
+
+/* =========================================================
+   CUSTOMER ACTIONS
+========================================================= */
+
+.customer-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-shrink: 0;
+
+}
+
+
+.order-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    background: #eef4ff;
+
+    color: #0d47a1;
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+}
+
+
+.view-customer-btn {
+
+    background: #0d47a1;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 7px;
+
+    padding: 8px 12px;
+
+    text-decoration: none;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    transition: 0.2s ease;
+
+}
+
+
+.view-customer-btn:hover {
+
+    background: #083579;
+
+    color: white;
+
+}
+
+
+/* =========================================================
+   EMPTY CUSTOMERS
+========================================================= */
+
+.empty-customers {
+
+    padding: 50px 20px;
+
+    text-align: center;
+
+    color: #777;
+
+}
+
+
+.empty-customers i {
+
+    font-size: 42px;
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #b8c7dd;
+
+}
+
+
+.empty-customers h5 {
+
+    font-weight: 600;
+
+    color: #082b73;
+
+    font-size: 16px;
+
+}
+
+
+.empty-customers p {
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .admin-header {
+
+        padding: 14px 18px;
+
+    }
+
+
+    .admin-brand h4 {
+
+        font-size: 17px;
+
+    }
+
+
+    .admin-brand small {
+
+        font-size: 10px;
+
+    }
+
+
+    .admin-actions a {
+
+        font-size: 11px;
+
+        padding: 7px 10px;
+
+    }
+
+
+    .dashboard-container {
+
+        padding:
+            25px
+            15px
+            40px;
+
+    }
+
+
+    .welcome-section h2 {
+
+        font-size: 24px;
+
+    }
+
+
+    .income-card {
+
+        min-height: 135px;
+
+    }
+
+
+    .income-card h2 {
+
+        font-size: 24px;
+
+    }
+
+
+    .income-decoration {
+
+        font-size: 65px;
+
+    }
+
+
+    .customer-row {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .customer-info {
+
+        width: 100%;
+
+    }
+
+
+    .customer-actions {
+
+        width: 100%;
+
+        justify-content: flex-end;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 576px) {
+
+    .admin-header {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 12px;
+
+    }
+
+
+    .admin-actions {
+
+        width: 100%;
+
+    }
+
+
+    .admin-actions a {
+
+        flex: 1;
+
+        text-align: center;
+
+        justify-content: center;
+
+    }
+
+
+    .dashboard-container {
+
+        padding-top: 22px;
+
+    }
+
+
+    .welcome-section h2 {
+
+        font-size: 22px;
+
+    }
+
+
+    .section-heading {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 8px;
+
+    }
+
+
+    .income-date {
+
+        font-size: 10px;
+
+    }
+
+
+    .income-card {
+
+        padding: 18px;
+
+    }
+
+
+    .income-card h2 {
+
+        font-size: 22px;
+
+    }
+
+
+    .income-label {
+
+        font-size: 9px;
+
+    }
+
+
+    .income-icon {
+
+        width: 45px;
+
+        height: 45px;
+
+        min-width: 45px;
+
+        font-size: 19px;
+
+    }
+
+
+    .customers-header {
+
+        padding: 16px;
+
+    }
+
+
+    .customer-row {
+
+        padding: 16px;
+
+    }
+
+
+    .customer-actions {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .order-badge {
+
+        justify-content: center;
+
+    }
+
+
+    .view-customer-btn {
+
+        justify-content: center;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .admin-brand {
+
+        gap: 8px;
+
+    }
+
+
+    .admin-brand-icon {
+
+        width: 40px;
+
+        height: 40px;
+
+    }
+
+
+    .admin-brand h4 {
+
+        font-size: 15px;
+
+    }
+
+
+    .income-card-content {
+
+        gap: 10px;
+
+    }
+
+
+    .income-card h2 {
+
+        font-size: 19px;
+
+    }
+
+
+    .income-icon {
+
+        width: 40px;
+
+        height: 40px;
+
+        min-width: 40px;
+
+    }
+
+}

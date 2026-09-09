@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+
 require_once "../db.php";
 
 
@@ -57,7 +58,18 @@ $status = trim($_POST["status"] ?? "");
 
 
 /* =====================================================
-   VALIDATE
+   GET CUSTOMER ID
+===================================================== */
+
+$customer_id = filter_input(
+    INPUT_POST,
+    "customer_id",
+    FILTER_VALIDATE_INT
+);
+
+
+/* =====================================================
+   VALIDATE ORDER ID AND STATUS
 ===================================================== */
 
 $allowed_statuses = [
@@ -68,24 +80,116 @@ $allowed_statuses = [
     "Cancelled"
 ];
 
+
 if (
     !$order_id ||
     !in_array($status, $allowed_statuses, true)
 ) {
-    header("Location: admin-dashboard.php");
+
+    if ($customer_id) {
+        header(
+            "Location: customer-orders.php?user_id="
+            . $customer_id
+        );
+    } else {
+        header("Location: admin-dashboard.php");
+    }
+
     exit;
 }
 
 
 /* =====================================================
-   UPDATE ORDER
+   GET CURRENT ORDER STATUS
+===================================================== */
+
+$orderStmt = $pdo->prepare("
+    SELECT
+        order_id,
+        status
+    FROM orders
+    WHERE order_id = ?
+    LIMIT 1
+");
+
+$orderStmt->execute([
+    $order_id
+]);
+
+$order = $orderStmt->fetch();
+
+
+/* =====================================================
+   ORDER NOT FOUND
+===================================================== */
+
+if (!$order) {
+
+    if ($customer_id) {
+        header(
+            "Location: customer-orders.php?user_id="
+            . $customer_id
+        );
+    } else {
+        header("Location: admin-dashboard.php");
+    }
+
+    exit;
+}
+
+
+/* =====================================================
+   PREVENT CHANGING A DELIVERED ORDER
+===================================================== */
+
+$currentStatus = trim(
+    $order["status"] ?? ""
+);
+
+
+/*
+    Once an order is Delivered,
+    it is considered COMPLETED.
+
+    It can no longer be changed
+    to any other status.
+*/
+
+if (
+    strtolower($currentStatus) === "delivered"
+) {
+
+    if ($customer_id) {
+
+        header(
+            "Location: customer-orders.php?user_id="
+            . $customer_id
+            . "&error=order_completed"
+        );
+
+    } else {
+
+        header(
+            "Location: admin-dashboard.php?error=order_completed"
+        );
+
+    }
+
+    exit;
+}
+
+
+/* =====================================================
+   UPDATE ORDER STATUS
 ===================================================== */
 
 $stmt = $pdo->prepare("
     UPDATE orders
     SET status = ?
     WHERE order_id = ?
+      AND LOWER(TRIM(status)) <> 'delivered'
 ");
+
 
 $stmt->execute([
     $status,
@@ -94,21 +198,53 @@ $stmt->execute([
 
 
 /* =====================================================
-   RETURN TO ADMIN DASHBOARD
+   CHECK IF UPDATE WAS SUCCESSFUL
 ===================================================== */
 
-$customer_id = filter_input(
-    INPUT_POST,
-    "customer_id",
-    FILTER_VALIDATE_INT
-);
+if ($stmt->rowCount() > 0) {
+
+    /*
+        Status successfully changed.
+    */
+
+    if ($customer_id) {
+
+        header(
+            "Location: customer-orders.php?user_id="
+            . $customer_id
+            . "&success=status_updated"
+        );
+
+    } else {
+
+        header(
+            "Location: admin-dashboard.php?success=status_updated"
+        );
+
+    }
+
+    exit;
+}
+
+
+/* =====================================================
+   UPDATE FAILED
+===================================================== */
 
 if ($customer_id) {
+
     header(
-        "Location: customer-orders.php?user_id=" . $customer_id
+        "Location: customer-orders.php?user_id="
+        . $customer_id
+        . "&error=status_update_failed"
     );
+
 } else {
-    header("Location: admin-dashboard.php");
+
+    header(
+        "Location: admin-dashboard.php?error=status_update_failed"
+    );
+
 }
 
 exit;

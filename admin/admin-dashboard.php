@@ -1,42 +1,21 @@
 <?php
 
 session_start();
+
 require_once "../db.php";
-
-/* =========================
-   ADMIN ACCESS CHECK
-========================= */
-
-if (!isset($_SESSION["logged_in"]) || $_SESSION["logged_in"] !== true) {
-    header("Location: admin-login.php");
-    exit;
-}
-
-$user_id = $_SESSION["user_id"];
-
-/* =========================
-   CHECK ADMIN ROLE
-========================= */
-
-$userStmt = $pdo->prepare("
-    SELECT role
-    FROM users
-    WHERE user_id = ?
-    LIMIT 1
-");
-
-$userStmt->execute([$user_id]);
-$currentUser = $userStmt->fetch();
-
-if (!$currentUser || $currentUser["role"] !== "admin") {
-    die("Access denied. Administrator privileges required.");
-}
+require_once "../includes/auth.php";
 
 
-/* =========================
+/* =====================================================
+   REQUIRE ADMIN LOGIN
+===================================================== */
+
+requireAdmin($pdo);
+
+
+/* =====================================================
    GET CUSTOMERS
-   DYNAMIC ORDER COUNT
-========================= */
+===================================================== */
 
 $customerStmt = $pdo->query("
     SELECT
@@ -61,56 +40,69 @@ $customerStmt = $pdo->query("
     ORDER BY u.created_at DESC
 ");
 
-$customers = $customerStmt->fetchAll();
+$customers = $customerStmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-/* =========================
+/* =====================================================
    DASHBOARD STATISTICS
-========================= */
+===================================================== */
 
 $totalCustomers = count($customers);
 
 
-/*
- * Count all orders dynamically.
- *
- * Pending + Processing are counted
- * separately and then combined below.
- */
+/* =====================================================
+   ORDER STATISTICS
+===================================================== */
 
 $orderStmt = $pdo->query("
     SELECT
         COUNT(*) AS total_orders,
 
-        SUM(CASE
-            WHEN LOWER(TRIM(status)) = 'pending' THEN 1
-            ELSE 0
-        END) AS pending_orders,
+        SUM(
+            CASE
+                WHEN LOWER(TRIM(status)) = 'pending'
+                THEN 1
+                ELSE 0
+            END
+        ) AS pending_orders,
 
-        SUM(CASE
-            WHEN LOWER(TRIM(status)) = 'processing' THEN 1
-            ELSE 0
-        END) AS processing_orders,
+        SUM(
+            CASE
+                WHEN LOWER(TRIM(status)) = 'processing'
+                THEN 1
+                ELSE 0
+            END
+        ) AS processing_orders,
 
-        SUM(CASE
-            WHEN LOWER(TRIM(status)) = 'shipped' THEN 1
-            ELSE 0
-        END) AS shipped_orders,
+        SUM(
+            CASE
+                WHEN LOWER(TRIM(status)) = 'shipped'
+                THEN 1
+                ELSE 0
+            END
+        ) AS shipped_orders,
 
-        SUM(CASE
-            WHEN LOWER(TRIM(status)) = 'delivered' THEN 1
-            ELSE 0
-        END) AS delivered_orders,
+        SUM(
+            CASE
+                WHEN LOWER(TRIM(status)) = 'delivered'
+                THEN 1
+                ELSE 0
+            END
+        ) AS delivered_orders,
 
-        SUM(CASE
-            WHEN LOWER(TRIM(status)) IN ('cancelled', 'canceled') THEN 1
-            ELSE 0
-        END) AS cancelled_orders
+        SUM(
+            CASE
+                WHEN LOWER(TRIM(status)) IN ('cancelled', 'canceled')
+                THEN 1
+                ELSE 0
+            END
+        ) AS cancelled_orders
 
     FROM orders
 ");
 
-$orderStats = $orderStmt->fetch();
+$orderStats = $orderStmt->fetch(PDO::FETCH_ASSOC);
+
 
 $totalOrders = (int)($orderStats["total_orders"] ?? 0);
 $pendingOrders = (int)($orderStats["pending_orders"] ?? 0);

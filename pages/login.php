@@ -1,10 +1,14 @@
 <?php
 
 /**
- * BrightBuy Customer Login
+ * BrightBuy Unified Login
  *
- * Handles customer authentication and creates
- * a secure session after successful login.
+ * One login page for both customers and administrators.
+ *
+ * The user's role is checked after authentication:
+ *
+ * customer → BrightBuy homepage
+ * admin    → Admin dashboard
  */
 
 session_start();
@@ -76,17 +80,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
         /* =================================================
-           VERIFY ACCOUNT
+           VERIFY EMAIL AND PASSWORD
         ================================================= */
 
         if (!$user || !password_verify($password, $user["password"])) {
 
             $errors[] = "Invalid email or password.";
-
-        } elseif ($user["role"] !== "customer") {
-
-            $errors[] =
-                "This login is for customers only. Please use Admin Login.";
 
         } else {
 
@@ -98,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
             /* =============================================
-               CREATE CUSTOMER SESSION
+               CREATE SESSION
             ============================================= */
 
             $_SESSION["user_id"] = (int)$user["user_id"];
@@ -111,11 +110,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
             /* =============================================
-               REDIRECT TO HOMEPAGE
+               ROLE-BASED REDIRECTION
             ============================================= */
 
-            header("Location: ../index.php");
-            exit;
+            if ($user["role"] === "admin") {
+
+                header("Location: ../admin/admin-dashboard.php");
+                exit;
+
+            } elseif ($user["role"] === "customer") {
+
+                header("Location: ../index.php");
+                exit;
+
+            } else {
+
+                /* Unknown/unsupported role */
+
+                session_unset();
+                session_destroy();
+
+                $errors[] = "Your account has an invalid user role.";
+            }
         }
     }
 }
@@ -137,9 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>BrightBuy | Login</title>
 
 
-    <!-- =================================================
-         BOOTSTRAP
-    ================================================== -->
+    <!-- Bootstrap -->
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -147,9 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     >
 
 
-    <!-- =================================================
-         BOOTSTRAP ICONS
-    ================================================== -->
+    <!-- Bootstrap Icons -->
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -157,9 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     >
 
 
-    <!-- =================================================
-         BRIGHTBUY CSS
-    ================================================== -->
+    <!-- BrightBuy CSS -->
 
     <link
         rel="stylesheet"
@@ -231,6 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <?php foreach ($errors as $error): ?>
 
                                 <div>
+                                    <i class="bi bi-exclamation-circle-fill me-1"></i>
                                     <?= htmlspecialchars($error) ?>
                                 </div>
 
@@ -333,7 +344,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
                     <!-- =================================================
-                         REGISTER LINK
+                         REGISTER
                     ================================================== -->
 
                     <div class="register-text">
@@ -348,46 +359,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
                     <!-- =================================================
-                         ADMIN LOGIN
+                         INFORMATION
                     ================================================== -->
 
-                    <div class="admin-section">
+                    <div class="text-center mt-4">
 
+                        <small class="text-muted">
 
-                        <!-- DIVIDER -->
+                            <i class="bi bi-shield-check me-1"></i>
 
-                        <div class="admin-divider">
+                            Customers and administrators use the same login.
 
-                            <span>
-                                OR
-                            </span>
-
-                        </div>
-
-
-                        <!-- ADMIN MESSAGE -->
-
-                        <p class="admin-text">
-                            Are you an administrator?
-                        </p>
-
-
-                        <!-- IMPORTANT:
-                             admin-login.php is inside ../admin/
-                        -->
-
-                        <a
-                            href="../admin/admin-login.php"
-                            class="btn admin-login-btn w-100"
-                        >
-
-                            <i class="bi bi-shield-lock-fill"></i>
-
-                            Admin Login
-
-                        </a>
+                        </small>
 
                     </div>
+
 
                 </div>
 

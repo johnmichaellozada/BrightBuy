@@ -1,20 +1,45 @@
 <?php
 
-/**
- * BrightBuy Admin Logout
- *
- * Destroys the current admin session
- * and redirects the user to the admin login page.
- */
-
 session_start();
 
-/* Clear all session variables */
+
+/* =====================================================
+   CLEAR SESSION DATA
+===================================================== */
+
 $_SESSION = [];
 
-/* Destroy the session */
+
+/* =====================================================
+   DELETE SESSION COOKIE
+===================================================== */
+
+if (ini_get("session.use_cookies")) {
+
+    $params = session_get_cookie_params();
+
+    setcookie(
+        session_name(),
+        "",
+        time() - 42000,
+        $params["path"],
+        $params["domain"],
+        $params["secure"],
+        $params["httponly"]
+    );
+}
+
+
+/* =====================================================
+   DESTROY SESSION
+===================================================== */
+
 session_destroy();
 
-/* Redirect to admin login */
-header("Location: admin-login.php");
+
+/* =====================================================
+   REDIRECT TO UNIFIED LOGIN
+===================================================== */
+
+header("Location: ../pages/login.php");
 exit;

@@ -56,7 +56,7 @@ function getCurrentUserRole(): ?string
    REQUIRE LOGIN
 ===================================================== */
 
-function requireLogin(string $redirect = "login.php"): void
+function requireLogin(string $redirect = "../pages/login.php"): void
 {
     if (!isLoggedIn()) {
         header("Location: " . $redirect);
@@ -69,8 +69,11 @@ function requireLogin(string $redirect = "login.php"): void
    REQUIRE ADMIN
 ===================================================== */
 
-function requireAdmin(PDO $pdo, string $redirect = "admin-login.php"): void
-{
+function requireAdmin(
+    PDO $pdo,
+    string $redirect = "../pages/login.php"
+): void {
+
     requireLogin($redirect);
 
     $userId = getCurrentUserId();
@@ -89,10 +92,12 @@ function requireAdmin(PDO $pdo, string $redirect = "admin-login.php"): void
 
     $stmt->execute([$userId]);
 
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user || $user["role"] !== "admin") {
+
         http_response_code(403);
+
         die("Access denied. Administrator privileges required.");
     }
 }
@@ -102,8 +107,11 @@ function requireAdmin(PDO $pdo, string $redirect = "admin-login.php"): void
    REQUIRE CUSTOMER
 ===================================================== */
 
-function requireCustomer(PDO $pdo, string $redirect = "../pages/login.php"): void
-{
+function requireCustomer(
+    PDO $pdo,
+    string $redirect = "login.php"
+): void {
+
     requireLogin($redirect);
 
     $userId = getCurrentUserId();
@@ -122,10 +130,12 @@ function requireCustomer(PDO $pdo, string $redirect = "../pages/login.php"): voi
 
     $stmt->execute([$userId]);
 
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user || $user["role"] !== "customer") {
+
         http_response_code(403);
+
         die("Access denied. Customer privileges required.");
     }
 }

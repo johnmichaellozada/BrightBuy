@@ -3,6 +3,10 @@
 session_start();
 require_once "../db.php";
 
+/* =====================================================
+   LOGIN CHECK
+===================================================== */
+
 if (
     !isset($_SESSION["logged_in"]) ||
     $_SESSION["logged_in"] !== true
@@ -14,7 +18,6 @@ if (
 
 /* =====================================================
    CUSTOMER ACCESS CHECK
-   CHECK ROLE DIRECTLY FROM DATABASE
 ===================================================== */
 
 $userRoleStmt = $pdo->prepare("
@@ -28,13 +31,15 @@ $userRoleStmt->execute([
     $_SESSION["user_id"]
 ]);
 
-$currentUser = $userRoleStmt->fetch();
+$currentUser = $userRoleStmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$currentUser || $currentUser["role"] !== "customer") {
+if (
+    !$currentUser ||
+    $currentUser["role"] !== "customer"
+) {
     header("Location: ../index.php");
     exit;
 }
-
 
 $user_id = $_SESSION["user_id"];
 
@@ -52,7 +57,7 @@ $cartStmt = $pdo->prepare("
 
 $cartStmt->execute([$user_id]);
 
-$cart = $cartStmt->fetch();
+$cart = $cartStmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$cart) {
     header("Location: cart.php");
@@ -83,7 +88,7 @@ $itemsStmt = $pdo->prepare("
 
 $itemsStmt->execute([$cart_id]);
 
-$items = $itemsStmt->fetchAll();
+$items = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (!$items) {
     header("Location: cart.php");
@@ -101,12 +106,12 @@ $stockError = false;
 foreach ($items as $item) {
 
     $total +=
-        (float)$item["price"] *
-        (int)$item["quantity"];
+        (float) $item["price"] *
+        (int) $item["quantity"];
 
     if (
-        (int)$item["quantity"] >
-        (int)$item["stock"]
+        (int) $item["quantity"] >
+        (int) $item["stock"]
     ) {
         $stockError = true;
     }
@@ -137,7 +142,7 @@ $addressStmt = $pdo->prepare("
 
 $addressStmt->execute([$user_id]);
 
-$savedAddresses = $addressStmt->fetchAll();
+$savedAddresses = $addressStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $hasSavedAddress = !empty($savedAddresses);
 
@@ -150,15 +155,18 @@ $defaultAddressId = null;
 
 foreach ($savedAddresses as $address) {
 
-    if ((int)$address["is_default"] === 1) {
-        $defaultAddressId = (int)$address["address_id"];
+    if ((int) $address["is_default"] === 1) {
+
+        $defaultAddressId =
+            (int) $address["address_id"];
+
         break;
     }
 }
 
 
 /* =====================================================
-   IF NO DEFAULT, USE MOST RECENT SAVED ADDRESS
+   IF NO DEFAULT ADDRESS
 ===================================================== */
 
 if (
@@ -166,13 +174,8 @@ if (
     $hasSavedAddress
 ) {
     $defaultAddressId =
-        (int)$savedAddresses[0]["address_id"];
+        (int) $savedAddresses[0]["address_id"];
 }
-
-
-/* =====================================================
-   PAGE
-===================================================== */
 
 ?>
 
@@ -190,11 +193,13 @@ if (
 
     <title>Checkout - BrightBuy</title>
 
+
     <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
+
 
     <!-- Bootstrap Icons -->
     <link
@@ -202,889 +207,1023 @@ if (
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     >
 
+
     <!-- Poppins -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
 
-    <style>
 
-        body {
-            background: #f5f7ff;
-            font-family: "Poppins", sans-serif;
-        }
-
-        .checkout-card {
-            border: none;
-            border-radius: 18px;
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        .address-option {
-            border: 2px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 16px;
-            cursor: pointer;
-            transition: 0.2s ease;
-            background: #fff;
-        }
-
-        .address-option:hover {
-            border-color: #0d47a1;
-            background: #f8fbff;
-        }
-
-        .address-option.selected {
-            border-color: #0d47a1;
-            background: #f0f6ff;
-        }
-
-        .address-option input[type="radio"] {
-            accent-color: #0d47a1;
-        }
-
-        .saved-address-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: #e8f0ff;
-            color: #0d47a1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .address-details {
-            line-height: 1.6;
-        }
-
-        .default-badge {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffe69c;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 20px;
-        }
-
-        .new-address-section {
-            display: none;
-        }
-
-        .new-address-section.show {
-            display: block;
-        }
-
-        .section-title {
-            font-weight: 700;
-        }
-
-        .required-star {
-            color: #dc3545;
-        }
-
-    </style>
+    <!-- Main Styles -->
+    <link
+        rel="stylesheet"
+        href="../css/styles.css"
+    >
 
 </head>
 
 
-<body>
+<body class="checkout-page">
 
 
-<div class="container py-5">
+<!-- =====================================================
+     BACKGROUND DECORATION
+===================================================== -->
 
-    <!-- =================================================
-         PAGE HEADER
-    ================================================== -->
+<div class="checkout-bg-circle checkout-circle-one"></div>
+<div class="checkout-bg-circle checkout-circle-two"></div>
+<div class="checkout-bg-circle checkout-circle-three"></div>
 
-    <div class="text-center mb-5">
 
-        <h1 class="fw-bold">
-            <i class="bi bi-credit-card"></i>
-            Checkout
-        </h1>
+<!-- =====================================================
+     CHECKOUT HEADER
+===================================================== -->
 
-        <p class="text-muted">
-            Review your order and delivery information.
-        </p>
+<header class="checkout-header">
+
+    <div class="checkout-header-inner">
+
+        <div class="checkout-header-icon">
+            <i class="bi bi-bag-check-fill"></i>
+        </div>
+
+        <div class="checkout-header-text">
+
+            <span class="checkout-header-label">
+                BRIGHTBUY
+            </span>
+
+            <h1>
+                Checkout
+            </h1>
+
+            <p>
+                Review your order and delivery information.
+            </p>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN CHECKOUT
+===================================================== -->
+
+<main class="checkout-container">
+
+
+    <!-- PAGE INTRO -->
+
+    <div class="checkout-page-intro">
+
+        <div>
+
+            <span class="checkout-small-title">
+                COMPLETE YOUR PURCHASE
+            </span>
+
+            <h2>
+                Almost there!
+            </h2>
+
+            <p>
+                Check your order details before placing your order.
+            </p>
+
+        </div>
+
+        <div class="checkout-secure-badge">
+
+            <i class="bi bi-shield-check"></i>
+
+            <div>
+                <strong>Secure Checkout</strong>
+                <span>Your information is protected</span>
+            </div>
+
+        </div>
 
     </div>
 
 
-    <div class="row g-4">
+    <!-- =================================================
+         CHECKOUT GRID
+    ================================================== -->
+
+    <div class="checkout-grid">
 
 
         <!-- =================================================
              ORDER SUMMARY
         ================================================== -->
 
-        <div class="col-lg-7">
+        <section class="checkout-card order-card">
 
-            <div class="card checkout-card">
+            <div class="checkout-card-header">
 
-                <div class="card-body p-4">
+                <div class="checkout-card-icon">
+                    <i class="bi bi-bag-check-fill"></i>
+                </div>
 
-                    <h4 class="section-title mb-4">
-                        <i class="bi bi-bag-check"></i>
+                <div>
+
+                    <span class="checkout-card-label">
+                        ORDER SUMMARY
+                    </span>
+
+                    <h2>
                         Your Order
-                    </h4>
-
-
-                    <?php foreach ($items as $item): ?>
-
-                        <div
-                            class="d-flex align-items-center border-bottom py-3"
-                        >
-
-                            <img
-                                src="../<?= htmlspecialchars($item["image"]) ?>"
-                                alt="<?= htmlspecialchars($item["product_name"]) ?>"
-                                width="80"
-                                height="80"
-                                style="object-fit: contain;"
-                                class="me-3"
-                            >
-
-
-                            <div class="flex-grow-1">
-
-                                <h6 class="fw-bold mb-1">
-
-                                    <?= htmlspecialchars(
-                                        $item["product_name"]
-                                    ) ?>
-
-                                </h6>
-
-
-                                <!-- STOCK -->
-
-                                <?php if ((int)$item["stock"] > 10): ?>
-
-                                    <small class="text-success fw-semibold d-block">
-
-                                        <i class="bi bi-check-circle-fill"></i>
-
-                                        <?= (int)$item["stock"] ?>
-                                        available
-
-                                    </small>
-
-                                <?php elseif ((int)$item["stock"] > 0): ?>
-
-                                    <small class="text-warning fw-semibold d-block">
-
-                                        <i class="bi bi-exclamation-circle-fill"></i>
-
-                                        Only
-                                        <?= (int)$item["stock"] ?>
-                                        left
-
-                                    </small>
-
-                                <?php else: ?>
-
-                                    <small class="text-danger fw-semibold d-block">
-
-                                        <i class="bi bi-x-circle-fill"></i>
-
-                                        Out of Stock
-
-                                    </small>
-
-                                <?php endif; ?>
-
-
-                                <small class="text-muted">
-
-                                    ₱<?= number_format(
-                                        $item["price"],
-                                        2
-                                    ) ?>
-
-                                    ×
-
-                                    <?= (int)$item["quantity"] ?>
-
-                                </small>
-
-                            </div>
-
-
-                            <strong>
-
-                                ₱<?= number_format(
-                                    $item["price"] *
-                                    $item["quantity"],
-                                    2
-                                ) ?>
-
-                            </strong>
-
-                        </div>
-
-                    <?php endforeach; ?>
-
-
-                    <div
-                        class="d-flex justify-content-between mt-4"
-                    >
-
-                        <span class="fw-bold">
-                            Total
-                        </span>
-
-                        <span
-                            class="fw-bold fs-4 text-primary"
-                        >
-                            ₱<?= number_format($total, 2) ?>
-                        </span>
-
-                    </div>
+                    </h2>
 
                 </div>
 
             </div>
 
-        </div>
 
+            <div class="checkout-card-body">
 
-        <!-- =================================================
-             CHECKOUT INFORMATION
-        ================================================== -->
 
-        <div class="col-lg-5">
+                <!-- ORDER ITEMS -->
 
-            <div class="card checkout-card">
+                <div class="order-items">
 
-                <div class="card-body p-4">
+                    <?php foreach ($items as $item): ?>
 
-                    <h4 class="section-title mb-4">
-                        <i class="bi bi-geo-alt-fill"></i>
-                        Delivery Information
-                    </h4>
+                        <div class="order-item">
 
 
-                    <form
-                        method="POST"
-                        action="place-order.php"
-                        id="checkoutForm"
-                    >
+                            <!-- PRODUCT IMAGE -->
 
+                            <div class="product-image-wrapper">
 
-                        <!-- =================================================
-                             SAVED ADDRESSES
-                        ================================================== -->
+                                <?php
+                                $imagePath = "../" . ltrim(
+                                    $item["image"],
+                                    "/"
+                                );
+                                ?>
 
-                        <?php if ($hasSavedAddress): ?>
-
-                            <div class="mb-4">
-
-                                <label class="form-label fw-bold">
-                                    Delivery Address
-                                </label>
-
-
-                                <?php foreach ($savedAddresses as $address): ?>
-
-                                    <?php
-                                    $addressId =
-                                        (int)$address["address_id"];
-
-                                    $isSelected =
-                                        $addressId ===
-                                        $defaultAddressId;
-                                    ?>
-
-
-                                    <label
-                                        class="address-option d-block mb-3
-                                        <?= $isSelected
-                                            ? "selected"
-                                            : "" ?>"
-                                    >
-
-                                        <div class="d-flex gap-3">
-
-                                            <div class="pt-1">
-
-                                                <input
-                                                    type="radio"
-                                                    name="address_option"
-                                                    value="saved"
-                                                    class="address-radio"
-                                                    data-address-id="<?= $addressId ?>"
-                                                    <?= $isSelected
-                                                        ? "checked"
-                                                        : "" ?>
-                                                >
-
-                                            </div>
-
-
-                                            <div
-                                                class="saved-address-icon"
-                                            >
-
-                                                <i
-                                                    class="bi bi-house-door-fill"
-                                                ></i>
-
-                                            </div>
-
-
-                                            <div class="address-details flex-grow-1">
-
-                                                <div
-                                                    class="d-flex
-                                                    justify-content-between
-                                                    align-items-center
-                                                    gap-2 mb-1"
-                                                >
-
-                                                    <strong>
-
-                                                        <?= htmlspecialchars(
-                                                            $address[
-                                                                "recipient_name"
-                                                            ]
-                                                        ) ?>
-
-                                                    </strong>
-
-
-                                                    <?php if (
-                                                        (int)$address["is_default"] === 1
-                                                    ): ?>
-
-                                                        <span
-                                                            class="default-badge"
-                                                        >
-                                                            DEFAULT
-                                                        </span>
-
-                                                    <?php endif; ?>
-
-                                                </div>
-
-
-                                                <div class="small text-muted">
-
-                                                    <div>
-                                                        <i
-                                                            class="bi bi-telephone"
-                                                        ></i>
-
-                                                        <?= htmlspecialchars(
-                                                            $address["phone"]
-                                                        ) ?>
-                                                    </div>
-
-
-                                                    <div>
-                                                        <i
-                                                            class="bi bi-house"
-                                                        ></i>
-
-                                                        <?= htmlspecialchars(
-                                                            $address["address_line"]
-                                                        ) ?>
-                                                    </div>
-
-
-                                                    <div>
-
-                                                        <?= htmlspecialchars(
-                                                            $address["barangay"]
-                                                        ) ?>,
-
-                                                        <?= htmlspecialchars(
-                                                            $address["city"]
-                                                        ) ?>
-
-                                                    </div>
-
-
-                                                    <div>
-
-                                                        <?= htmlspecialchars(
-                                                            $address["province"]
-                                                        ) ?>
-
-                                                        <?php if (
-                                                            !empty(
-                                                                $address[
-                                                                    "postal_code"
-                                                                ]
-                                                            )
-                                                        ): ?>
-
-                                                            ,
-
-                                                            <?= htmlspecialchars(
-                                                                $address[
-                                                                    "postal_code"
-                                                                ]
-                                                            ) ?>
-
-                                                        <?php endif; ?>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                    </label>
-
-                                <?php endforeach; ?>
-
-
-                                <input
-                                    type="hidden"
-                                    name="address_id"
-                                    id="selectedAddressId"
-                                    value="<?= $defaultAddressId ?>"
+                                <img
+                                    src="<?= htmlspecialchars($imagePath) ?>"
+                                    alt="<?= htmlspecialchars($item["product_name"]) ?>"
+                                    class="checkout-product-image"
                                 >
-
-
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-primary w-100"
-                                    id="showNewAddress"
-                                >
-
-                                    <i class="bi bi-plus-circle"></i>
-                                    Add New Address
-
-                                </button>
 
                             </div>
 
 
-                            <!-- =================================================
-                                 NEW ADDRESS
-                            ================================================== -->
+                            <!-- PRODUCT INFORMATION -->
 
-                            <div
-                                id="newAddressSection"
-                                class="new-address-section"
-                            >
+                            <div class="product-information">
 
-                                <div
-                                    class="border-top pt-4 mb-3"
+                                <h3>
+                                    <?= htmlspecialchars(
+                                        $item["product_name"]
+                                    ) ?>
+                                </h3>
+
+
+                                <div class="product-price-quantity">
+
+                                    ₱<?= number_format(
+                                        (float) $item["price"],
+                                        2
+                                    ) ?>
+
+                                    <span>×</span>
+
+                                    <?= (int) $item["quantity"] ?>
+
+                                </div>
+
+
+                                <!-- STOCK -->
+
+                                <?php if ((int) $item["stock"] > 10): ?>
+
+                                    <div class="stock-available">
+
+                                        <i class="bi bi-check-circle-fill"></i>
+
+                                        <?= (int) $item["stock"] ?>
+                                        available
+
+                                    </div>
+
+                                <?php elseif ((int) $item["stock"] > 0): ?>
+
+                                    <div class="stock-low">
+
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+
+                                        Only
+                                        <?= (int) $item["stock"] ?>
+                                        left
+
+                                    </div>
+
+                                <?php else: ?>
+
+                                    <div class="stock-out">
+
+                                        <i class="bi bi-x-circle-fill"></i>
+
+                                        Out of Stock
+
+                                    </div>
+
+                                <?php endif; ?>
+
+                            </div>
+
+
+                            <!-- SUBTOTAL -->
+
+                            <div class="product-subtotal">
+
+                                <span>
+                                    SUBTOTAL
+                                </span>
+
+                                <strong>
+
+                                    ₱<?= number_format(
+                                        (float) $item["price"] *
+                                        (int) $item["quantity"],
+                                        2
+                                    ) ?>
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+
+                <!-- TOTAL -->
+
+                <div class="checkout-total">
+
+                    <div>
+
+                        <span>
+                            Order Total
+                        </span>
+
+                        <small>
+                            <?= count($items) ?>
+                            <?= count($items) === 1 ? "item" : "items" ?>
+                        </small>
+
+                    </div>
+
+                    <strong>
+                        ₱<?= number_format($total, 2) ?>
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             DELIVERY INFORMATION
+        ================================================== -->
+
+        <section class="checkout-card delivery-card">
+
+            <div class="checkout-card-header">
+
+                <div class="checkout-card-icon">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+
+                </div>
+
+                <div>
+
+                    <span class="checkout-card-label">
+                        DELIVERY
+                    </span>
+
+                    <h2>
+                        Delivery Information
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="checkout-card-body">
+
+                <form
+                    method="POST"
+                    action="place-order.php"
+                    id="checkoutForm"
+                >
+
+
+                    <!-- =================================================
+                         SAVED ADDRESSES
+                    ================================================== -->
+
+                    <?php if ($hasSavedAddress): ?>
+
+                        <div class="address-container">
+
+                            <label class="checkout-label">
+                                Choose Delivery Address
+                            </label>
+
+
+                            <?php foreach ($savedAddresses as $address): ?>
+
+                                <?php
+
+                                $addressId =
+                                    (int) $address["address_id"];
+
+                                $isSelected =
+                                    $addressId ===
+                                    $defaultAddressId;
+
+                                ?>
+
+                                <label
+                                    class="address-option <?= $isSelected ? "selected" : "" ?>"
                                 >
 
-                                    <h5 class="fw-bold">
+                                    <input
+                                        type="radio"
+                                        name="address_option"
+                                        value="saved"
+                                        class="address-radio"
+                                        data-address-id="<?= $addressId ?>"
+                                        <?= $isSelected ? "checked" : "" ?>
+                                    >
 
-                                        <i
-                                            class="bi bi-plus-circle"
-                                        ></i>
 
+                                    <div class="address-radio-custom"></div>
+
+
+                                    <div class="saved-address-icon">
+
+                                        <i class="bi bi-house-door-fill"></i>
+
+                                    </div>
+
+
+                                    <div class="address-details">
+
+                                        <div class="address-name-row">
+
+                                            <strong>
+                                                <?= htmlspecialchars(
+                                                    $address["recipient_name"]
+                                                ) ?>
+                                            </strong>
+
+
+                                            <?php if (
+                                                (int) $address["is_default"] === 1
+                                            ): ?>
+
+                                                <span class="default-badge">
+                                                    DEFAULT
+                                                </span>
+
+                                            <?php endif; ?>
+
+                                        </div>
+
+
+                                        <div class="address-line">
+
+                                            <i class="bi bi-telephone-fill"></i>
+
+                                            <span>
+                                                <?= htmlspecialchars(
+                                                    $address["phone"]
+                                                ) ?>
+                                            </span>
+
+                                        </div>
+
+
+                                        <div class="address-line">
+
+                                            <i class="bi bi-house-fill"></i>
+
+                                            <span>
+                                                <?= htmlspecialchars(
+                                                    $address["address_line"]
+                                                ) ?>
+                                            </span>
+
+                                        </div>
+
+
+                                        <div class="address-line">
+
+                                            <span>
+
+                                                <?= htmlspecialchars(
+                                                    $address["barangay"]
+                                                ) ?>,
+
+                                                <?= htmlspecialchars(
+                                                    $address["city"]
+                                                ) ?>
+
+                                            </span>
+
+                                        </div>
+
+
+                                        <div class="address-line">
+
+                                            <span>
+
+                                                <?= htmlspecialchars(
+                                                    $address["province"]
+                                                ) ?>
+
+                                                <?php if (
+                                                    !empty(
+                                                        $address["postal_code"]
+                                                    )
+                                                ): ?>
+
+                                                    ,
+
+                                                    <?= htmlspecialchars(
+                                                        $address["postal_code"]
+                                                    ) ?>
+
+                                                <?php endif; ?>
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                            <?php endforeach; ?>
+
+
+                            <input
+                                type="hidden"
+                                name="address_id"
+                                id="selectedAddressId"
+                                value="<?= $defaultAddressId ?>"
+                            >
+
+
+                            <!-- ADD NEW -->
+
+                            <button
+                                type="button"
+                                class="new-address-button"
+                                id="showNewAddress"
+                            >
+
+                                <i class="bi bi-plus-circle-fill"></i>
+
+                                Add New Address
+
+                            </button>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             NEW ADDRESS
+                        ================================================== -->
+
+                        <div
+                            id="newAddressSection"
+                            class="new-address-section"
+                        >
+
+                            <div class="new-address-heading">
+
+                                <div class="new-address-icon">
+
+                                    <i class="bi bi-plus-lg"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h3>
                                         New Delivery Address
+                                    </h3>
 
-                                    </h5>
-
-                                    <p class="text-muted small mb-0">
+                                    <p>
                                         Enter a different address for this order.
                                     </p>
 
                                 </div>
 
-
-                                <!-- Recipient -->
-
-                                <div class="mb-3">
-
-                                    <label class="form-label">
-                                        Recipient Name
-                                        <span class="required-star">*</span>
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="recipient_name"
-                                        class="form-control new-address-field"
-                                        value="<?= htmlspecialchars(
-                                            $_SESSION["first_name"] .
-                                            " " .
-                                            $_SESSION["last_name"]
-                                        ) ?>"
-                                        disabled
-                                    >
-
-                                </div>
-
-
-                                <!-- Phone -->
-
-                                <div class="mb-3">
-
-                                    <label class="form-label">
-                                        Phone Number
-                                        <span class="required-star">*</span>
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        class="form-control new-address-field"
-                                        value="<?= htmlspecialchars(
-                                            $_SESSION["phone"] ?? ""
-                                        ) ?>"
-                                        placeholder="09XXXXXXXXX"
-                                        disabled
-                                    >
-
-                                </div>
-
-
-                                <!-- Address -->
-
-                                <div class="mb-3">
-
-                                    <label class="form-label">
-                                        House/Building No. & Street
-                                        <span class="required-star">*</span>
-                                    </label>
-
-                                    <textarea
-                                        name="address_line"
-                                        class="form-control new-address-field"
-                                        rows="2"
-                                        placeholder="e.g. Purok 1, National Highway"
-                                        disabled
-                                    ></textarea>
-
-                                </div>
-
-
-                                <!-- Barangay -->
-
-                                <div class="mb-3">
-
-                                    <label class="form-label">
-                                        Barangay
-                                        <span class="required-star">*</span>
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="barangay"
-                                        class="form-control new-address-field"
-                                        placeholder="Enter barangay"
-                                        disabled
-                                    >
-
-                                </div>
-
-
-                                <!-- City -->
-
-                                <div class="mb-3">
-
-                                    <label class="form-label">
-                                        City / Municipality
-                                        <span class="required-star">*</span>
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        class="form-control new-address-field"
-                                        placeholder="Enter city or municipality"
-                                        disabled
-                                    >
-
-                                </div>
-
-
-                                <!-- Province -->
-
-                                <div class="mb-3">
-
-                                    <label class="form-label">
-                                        Province
-                                        <span class="required-star">*</span>
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="province"
-                                        class="form-control new-address-field"
-                                        placeholder="Enter province"
-                                        disabled
-                                    >
-
-                                </div>
-
-
-                                <!-- Postal Code -->
-
-                                <div class="mb-3">
-
-                                    <label class="form-label">
-                                        Postal Code
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="postal_code"
-                                        class="form-control new-address-field"
-                                        placeholder="Optional"
-                                        disabled
-                                    >
-
-                                </div>
-
-
-                                <!-- Save Default -->
-
-                                <div class="form-check mb-3">
-
-                                    <input
-                                        class="form-check-input new-address-field"
-                                        type="checkbox"
-                                        name="save_as_default"
-                                        value="1"
-                                        id="saveAsDefault"
-                                        disabled
-                                    >
-
-                                    <label
-                                        class="form-check-label"
-                                        for="saveAsDefault"
-                                    >
-                                        Make this my default address
-                                    </label>
-
-                                </div>
-
-
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-secondary w-100 mb-3"
-                                    id="cancelNewAddress"
-                                >
-
-                                    <i class="bi bi-arrow-left"></i>
-                                    Use Saved Address
-
-                                </button>
-
-                            </div>
-
-                        <?php else: ?>
-
-
-                            <!-- =================================================
-                                 NO SAVED ADDRESS
-                            ================================================== -->
-
-                            <div class="mb-3">
-
-                                <div
-                                    class="alert alert-info"
-                                >
-
-                                    <i class="bi bi-info-circle-fill"></i>
-
-                                    You don't have a saved delivery address yet.
-                                    Please enter your address below.
-
-                                </div>
-
                             </div>
 
 
-                            <!-- Recipient -->
+                            <!-- RECIPIENT -->
 
-                            <div class="mb-3">
+                            <div class="checkout-field">
 
-                                <label class="form-label">
+                                <label for="recipient_name">
+
                                     Recipient Name
-                                    <span class="required-star">*</span>
+
+                                    <span>*</span>
+
                                 </label>
 
                                 <input
                                     type="text"
+                                    id="recipient_name"
                                     name="recipient_name"
-                                    class="form-control"
+                                    class="checkout-input new-address-field"
                                     value="<?= htmlspecialchars(
-                                        $_SESSION["first_name"] .
+                                        ($_SESSION["first_name"] ?? "") .
                                         " " .
-                                        $_SESSION["last_name"]
+                                        ($_SESSION["last_name"] ?? "")
                                     ) ?>"
-                                    required
+                                    disabled
                                 >
 
                             </div>
 
 
-                            <!-- Phone -->
+                            <!-- PHONE -->
 
-                            <div class="mb-3">
+                            <div class="checkout-field">
 
-                                <label class="form-label">
+                                <label for="phone">
+
                                     Phone Number
-                                    <span class="required-star">*</span>
+
+                                    <span>*</span>
+
                                 </label>
 
                                 <input
                                     type="text"
+                                    id="phone"
                                     name="phone"
-                                    class="form-control"
+                                    class="checkout-input new-address-field"
                                     value="<?= htmlspecialchars(
                                         $_SESSION["phone"] ?? ""
                                     ) ?>"
                                     placeholder="09XXXXXXXXX"
-                                    required
+                                    maxlength="11"
+                                    inputmode="numeric"
+                                    disabled
                                 >
 
                             </div>
 
 
-                            <!-- Address -->
+                            <!-- ADDRESS -->
 
-                            <div class="mb-3">
+                            <div class="checkout-field">
 
-                                <label class="form-label">
+                                <label for="address_line">
+
                                     House/Building No. & Street
-                                    <span class="required-star">*</span>
+
+                                    <span>*</span>
+
                                 </label>
 
                                 <textarea
+                                    id="address_line"
                                     name="address_line"
-                                    class="form-control"
+                                    class="checkout-input new-address-field"
                                     rows="2"
                                     placeholder="e.g. Purok 1, National Highway"
-                                    required
+                                    disabled
                                 ></textarea>
 
                             </div>
 
 
-                            <!-- Barangay -->
+                            <!-- BARANGAY -->
 
-                            <div class="mb-3">
+                            <div class="checkout-field">
 
-                                <label class="form-label">
+                                <label for="barangay">
+
                                     Barangay
-                                    <span class="required-star">*</span>
+
+                                    <span>*</span>
+
                                 </label>
 
                                 <input
                                     type="text"
+                                    id="barangay"
                                     name="barangay"
-                                    class="form-control"
+                                    class="checkout-input new-address-field"
                                     placeholder="Enter barangay"
-                                    required
+                                    disabled
                                 >
 
                             </div>
 
 
-                            <!-- City -->
+                            <!-- CITY -->
 
-                            <div class="mb-3">
+                            <div class="checkout-field">
 
-                                <label class="form-label">
+                                <label for="city">
+
                                     City / Municipality
-                                    <span class="required-star">*</span>
+
+                                    <span>*</span>
+
                                 </label>
 
                                 <input
                                     type="text"
+                                    id="city"
                                     name="city"
-                                    class="form-control"
+                                    class="checkout-input new-address-field"
                                     placeholder="Enter city or municipality"
-                                    required
+                                    disabled
                                 >
 
                             </div>
 
 
-                            <!-- Province -->
+                            <!-- PROVINCE -->
 
-                            <div class="mb-3">
+                            <div class="checkout-field">
 
-                                <label class="form-label">
+                                <label for="province">
+
                                     Province
-                                    <span class="required-star">*</span>
+
+                                    <span>*</span>
+
                                 </label>
 
                                 <input
                                     type="text"
+                                    id="province"
                                     name="province"
-                                    class="form-control"
+                                    class="checkout-input new-address-field"
                                     placeholder="Enter province"
-                                    required
+                                    disabled
                                 >
 
                             </div>
 
 
-                            <!-- Postal Code -->
+                            <!-- POSTAL -->
 
-                            <div class="mb-3">
+                            <div class="checkout-field">
 
-                                <label class="form-label">
+                                <label for="postal_code">
+
                                     Postal Code
+
                                 </label>
 
                                 <input
                                     type="text"
+                                    id="postal_code"
                                     name="postal_code"
-                                    class="form-control"
+                                    class="checkout-input new-address-field"
                                     placeholder="Optional"
+                                    disabled
                                 >
 
                             </div>
 
 
-                            <!-- Save Default -->
+                            <!-- DEFAULT -->
 
-                            <div class="form-check mb-3">
+                            <div class="default-checkbox">
 
                                 <input
-                                    class="form-check-input"
                                     type="checkbox"
                                     name="save_as_default"
                                     value="1"
-                                    id="saveAsDefaultNoAddress"
+                                    id="saveAsDefault"
+                                    class="new-address-field"
+                                    disabled
                                 >
 
-                                <label
-                                    class="form-check-label"
-                                    for="saveAsDefaultNoAddress"
-                                >
+                                <label for="saveAsDefault">
+
                                     Make this my default address
+
                                 </label>
 
                             </div>
 
-                        <?php endif; ?>
+
+                            <!-- CANCEL NEW ADDRESS -->
+
+                            <button
+                                type="button"
+                                class="cancel-address-button"
+                                id="cancelNewAddress"
+                            >
+
+                                <i class="bi bi-arrow-left"></i>
+
+                                Use Saved Address
+
+                            </button>
+
+                        </div>
+
+
+                    <?php else: ?>
 
 
                         <!-- =================================================
-                             PAYMENT METHOD
+                             NO SAVED ADDRESS
                         ================================================== -->
 
-                        <div class="mb-3">
+                        <div class="no-address-message">
 
-                            <label class="form-label fw-bold">
-                                Payment Method
-                                <span class="required-star">*</span>
+                            <div class="no-address-icon">
+
+                                <i class="bi bi-info-circle-fill"></i>
+
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    No saved address
+                                </strong>
+
+                                <span>
+                                    Please enter your delivery address below.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- RECIPIENT -->
+
+                        <div class="checkout-field">
+
+                            <label for="recipient_name">
+
+                                Recipient Name
+
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="recipient_name"
+                                name="recipient_name"
+                                class="checkout-input"
+                                value="<?= htmlspecialchars(
+                                    ($_SESSION["first_name"] ?? "") .
+                                    " " .
+                                    ($_SESSION["last_name"] ?? "")
+                                ) ?>"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- PHONE -->
+
+                        <div class="checkout-field">
+
+                            <label for="phone">
+
+                                Phone Number
+
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="phone"
+                                name="phone"
+                                class="checkout-input"
+                                value="<?= htmlspecialchars(
+                                    $_SESSION["phone"] ?? ""
+                                ) ?>"
+                                placeholder="09XXXXXXXXX"
+                                maxlength="11"
+                                inputmode="numeric"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- ADDRESS -->
+
+                        <div class="checkout-field">
+
+                            <label for="address_line">
+
+                                House/Building No. & Street
+
+                                <span>*</span>
+
+                            </label>
+
+                            <textarea
+                                id="address_line"
+                                name="address_line"
+                                class="checkout-input"
+                                rows="2"
+                                placeholder="e.g. Purok 1, National Highway"
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- BARANGAY -->
+
+                        <div class="checkout-field">
+
+                            <label for="barangay">
+
+                                Barangay
+
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="barangay"
+                                name="barangay"
+                                class="checkout-input"
+                                placeholder="Enter barangay"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- CITY -->
+
+                        <div class="checkout-field">
+
+                            <label for="city">
+
+                                City / Municipality
+
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="city"
+                                name="city"
+                                class="checkout-input"
+                                placeholder="Enter city or municipality"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- PROVINCE -->
+
+                        <div class="checkout-field">
+
+                            <label for="province">
+
+                                Province
+
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="province"
+                                name="province"
+                                class="checkout-input"
+                                placeholder="Enter province"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- POSTAL -->
+
+                        <div class="checkout-field">
+
+                            <label for="postal_code">
+
+                                Postal Code
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="postal_code"
+                                name="postal_code"
+                                class="checkout-input"
+                                placeholder="Optional"
+                            >
+
+                        </div>
+
+
+                        <!-- DEFAULT -->
+
+                        <div class="default-checkbox">
+
+                            <input
+                                type="checkbox"
+                                name="save_as_default"
+                                value="1"
+                                id="saveAsDefaultNoAddress"
+                            >
+
+                            <label for="saveAsDefaultNoAddress">
+
+                                Make this my default address
+
+                            </label>
+
+                        </div>
+
+                    <?php endif; ?>
+
+
+                    <!-- =================================================
+                         PAYMENT METHOD
+                    ================================================== -->
+
+                    <div class="payment-section">
+
+                        <div class="payment-section-title">
+
+                            <div class="payment-icon">
+
+                                <i class="bi bi-wallet2"></i>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    PAYMENT
+                                </span>
+
+                                <h3>
+                                    Payment Method
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="checkout-field">
+
+                            <label for="paymentMethod">
+
+                                Select Payment Method
+
+                                <span>*</span>
+
                             </label>
 
                             <select
                                 name="payment_method"
-                                class="form-select"
+                                id="paymentMethod"
+                                class="checkout-input checkout-select"
                                 required
                             >
 
@@ -1104,66 +1243,191 @@ if (
 
                         </div>
 
+                    </div>
 
-                        <!-- =================================================
-                             STOCK ERROR
-                        ================================================== -->
 
-                        <?php if ($stockError): ?>
+                    <!-- =================================================
+                         GCASH PAYMENT
+                    ================================================== -->
 
-                            <div class="alert alert-danger mt-3">
+                    <div
+                        id="gcashPaymentSection"
+                        class="gcash-payment-section"
+                    >
 
-                                <i
-                                    class="bi bi-exclamation-triangle-fill"
-                                ></i>
+                        <div class="gcash-top">
 
-                                Some items in your cart do not have enough
-                                stock. Please go back to your cart and
-                                update your quantity.
+                            <div class="gcash-logo">
+
+                                <i class="bi bi-phone-fill"></i>
 
                             </div>
 
-                        <?php endif; ?>
+                            <div>
+
+                                <span>
+                                    MOBILE PAYMENT
+                                </span>
+
+                                <h3>
+                                    GCash Payment
+                                </h3>
+
+                                <p>
+                                    Enter the GCash details used for your payment.
+                                </p>
+
+                            </div>
+
+                        </div>
 
 
-                        <!-- =================================================
-                             PLACE ORDER
-                        ================================================== -->
+                        <div class="gcash-details-box">
 
-                        <button
-                            type="submit"
-                            class="btn btn-primary w-100 py-2"
-                            <?= $stockError ? "disabled" : "" ?>
-                        >
+                            <!-- GCASH NUMBER -->
 
-                            <i class="bi bi-check-circle"></i>
+                            <div class="checkout-field">
+
+                                <label for="gcashNumber">
+
+                                    GCash Number
+
+                                    <span>*</span>
+
+                                </label>
+
+                                <div class="input-with-icon">
+
+                                    <i class="bi bi-phone"></i>
+
+                                    <input
+                                        type="text"
+                                        name="gcash_number"
+                                        id="gcashNumber"
+                                        class="checkout-input"
+                                        placeholder="09XXXXXXXXX"
+                                        maxlength="11"
+                                        minlength="11"
+                                        inputmode="numeric"
+                                        autocomplete="tel"
+                                    >
+
+                                </div>
+
+                                <small>
+                                    Enter the 11-digit GCash mobile number used for payment.
+                                </small>
+
+                            </div>
+
+
+                            <!-- REFERENCE -->
+
+                            <div class="checkout-field">
+
+                                <label for="gcashReference">
+
+                                    GCash Reference Number
+
+                                    <span>*</span>
+
+                                </label>
+
+                                <div class="input-with-icon">
+
+                                    <i class="bi bi-receipt"></i>
+
+                                    <input
+                                        type="text"
+                                        name="gcash_reference"
+                                        id="gcashReference"
+                                        class="checkout-input"
+                                        placeholder="Enter GCash reference number"
+                                        maxlength="100"
+                                        autocomplete="off"
+                                    >
+
+                                </div>
+
+                                <small>
+                                    Enter the reference number shown after your GCash payment.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         STOCK ERROR
+                    ================================================== -->
+
+                    <?php if ($stockError): ?>
+
+                        <div class="checkout-stock-error">
+
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+                            <div>
+
+                                <strong>
+                                    Insufficient Stock
+                                </strong>
+
+                                <span>
+                                    Some items in your cart do not have enough stock.
+                                    Please return to your cart and update your quantity.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    <?php endif; ?>
+
+
+                    <!-- =================================================
+                         PLACE ORDER
+                    ================================================== -->
+
+                    <button
+                        type="submit"
+                        class="place-order-button"
+                        <?= $stockError ? "disabled" : "" ?>
+                    >
+
+                        <span>
+                            <i class="bi bi-check-circle-fill"></i>
                             Place Order
+                        </span>
 
-                        </button>
+                        <strong>
+                            ₱<?= number_format($total, 2) ?>
+                        </strong>
 
-
-                        <!-- =================================================
-                             BACK TO CART
-                        ================================================== -->
-
-                        <a
-                            href="cart.php"
-                            class="btn btn-outline-secondary w-100 mt-2"
-                        >
-
-                            <i class="bi bi-arrow-left"></i>
-                            Back to Cart
-
-                        </a>
+                    </button>
 
 
-                    </form>
+                    <!-- BACK TO CART -->
 
-                </div>
+                    <a
+                        href="cart.php"
+                        class="back-cart-button"
+                    >
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Back to Cart
+
+                    </a>
+
+                </form>
 
             </div>
 
-        </div>
+        </section>
 
     </div>
 
@@ -1172,24 +1436,33 @@ if (
          BACK HOME
     ================================================== -->
 
-    <div class="text-center mt-4">
+    <div class="back-home-container">
 
         <a
             href="../index.php"
-            class="btn btn-outline-primary px-4"
+            class="back-home-button"
         >
 
-            <i class="bi bi-house"></i>
+            <i class="bi bi-house-fill"></i>
+
             Back to Home
 
         </a>
 
     </div>
 
-</div>
+</main>
 
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
 
 <script>
+
+/* =====================================================
+   ADDRESS ELEMENTS
+===================================================== */
 
 const savedAddressRadios =
     document.querySelectorAll(".address-radio");
@@ -1209,6 +1482,10 @@ const cancelNewAddress =
 const newAddressFields =
     document.querySelectorAll(".new-address-field");
 
+
+/* =====================================================
+   ENABLE NEW ADDRESS
+===================================================== */
 
 function enableNewAddress() {
 
@@ -1233,22 +1510,33 @@ function enableNewAddress() {
 
 
     savedAddressRadios.forEach(function(radio) {
+
         radio.checked = false;
+
     });
-
-
-    if (selectedAddressId) {
-        selectedAddressId.value = "";
-    }
 
 
     document
         .querySelectorAll(".address-option")
         .forEach(function(option) {
+
             option.classList.remove("selected");
+
         });
+
+
+    if (selectedAddressId) {
+
+        selectedAddressId.value = "";
+
+    }
+
 }
 
+
+/* =====================================================
+   USE SAVED ADDRESS
+===================================================== */
 
 function useSavedAddress() {
 
@@ -1272,40 +1560,60 @@ function useSavedAddress() {
         );
 
 
-    if (checked && selectedAddressId) {
+    if (
+        checked &&
+        selectedAddressId
+    ) {
 
         selectedAddressId.value =
             checked.dataset.addressId;
 
     }
+
 }
 
 
+/* =====================================================
+   SAVED ADDRESS RADIO
+===================================================== */
+
 savedAddressRadios.forEach(function(radio) {
 
-    radio.addEventListener("change", function() {
+    radio.addEventListener(
+        "change",
+        function() {
 
-        document
-            .querySelectorAll(".address-option")
-            .forEach(function(option) {
-                option.classList.remove("selected");
-            });
+            document
+                .querySelectorAll(".address-option")
+                .forEach(function(option) {
+
+                    option.classList.remove("selected");
+
+                });
 
 
-        const parent =
-            radio.closest(".address-option");
+            const parent =
+                radio.closest(".address-option");
 
-        if (parent) {
-            parent.classList.add("selected");
+
+            if (parent) {
+
+                parent.classList.add("selected");
+
+            }
+
+
+            useSavedAddress();
+
         }
-
-
-        useSavedAddress();
-
-    });
+    );
 
 });
 
+
+/* =====================================================
+   ADD NEW ADDRESS
+===================================================== */
 
 if (showNewAddress) {
 
@@ -1317,6 +1625,10 @@ if (showNewAddress) {
 }
 
 
+/* =====================================================
+   CANCEL NEW ADDRESS
+===================================================== */
+
 if (cancelNewAddress) {
 
     cancelNewAddress.addEventListener(
@@ -1327,6 +1639,7 @@ if (cancelNewAddress) {
                 document.querySelector(
                     ".address-radio"
                 );
+
 
             if (firstSaved) {
 
@@ -1345,7 +1658,7 @@ if (cancelNewAddress) {
 
 
 /* =====================================================
-   INITIAL STATE
+   INITIAL ADDRESS STATE
 ===================================================== */
 
 if (savedAddressRadios.length > 0) {
@@ -1355,11 +1668,18 @@ if (savedAddressRadios.length > 0) {
             ".address-radio:checked"
         );
 
+
     if (checked) {
 
-        checked
-            .closest(".address-option")
-            ?.classList.add("selected");
+        const parent =
+            checked.closest(".address-option");
+
+
+        if (parent) {
+
+            parent.classList.add("selected");
+
+        }
 
     }
 
@@ -1373,7 +1693,9 @@ if (savedAddressRadios.length > 0) {
             field.name !== "postal_code" &&
             field.type !== "checkbox"
         ) {
+
             field.required = true;
+
         }
 
     });
@@ -1382,11 +1704,159 @@ if (savedAddressRadios.length > 0) {
 
 
 /* =====================================================
-   FORM VALIDATION
+   PAYMENT ELEMENTS
 ===================================================== */
 
 const checkoutForm =
     document.getElementById("checkoutForm");
+
+const paymentMethod =
+    document.getElementById("paymentMethod");
+
+const gcashPaymentSection =
+    document.getElementById("gcashPaymentSection");
+
+const gcashNumber =
+    document.getElementById("gcashNumber");
+
+const gcashReference =
+    document.getElementById("gcashReference");
+
+
+/* =====================================================
+   TOGGLE GCASH
+===================================================== */
+
+function toggleGcashPayment() {
+
+    if (
+        !paymentMethod ||
+        !gcashPaymentSection
+    ) {
+        return;
+    }
+
+
+    if (paymentMethod.value === "gcash") {
+
+        gcashPaymentSection.classList.add("show");
+
+
+        if (gcashNumber) {
+            gcashNumber.required = true;
+        }
+
+
+        if (gcashReference) {
+            gcashReference.required = true;
+        }
+
+    } else {
+
+        gcashPaymentSection.classList.remove("show");
+
+
+        if (gcashNumber) {
+
+            gcashNumber.required = false;
+            gcashNumber.value = "";
+
+        }
+
+
+        if (gcashReference) {
+
+            gcashReference.required = false;
+            gcashReference.value = "";
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   PAYMENT CHANGE
+===================================================== */
+
+if (paymentMethod) {
+
+    paymentMethod.addEventListener(
+        "change",
+        toggleGcashPayment
+    );
+
+}
+
+
+/* =====================================================
+   INITIAL GCASH STATE
+===================================================== */
+
+toggleGcashPayment();
+
+
+/* =====================================================
+   GCASH NUMBER - NUMBERS ONLY
+===================================================== */
+
+if (gcashNumber) {
+
+    gcashNumber.addEventListener(
+        "input",
+        function() {
+
+            this.value =
+                this.value.replace(/\D/g, "");
+
+            if (this.value.length > 11) {
+
+                this.value =
+                    this.value.substring(0, 11);
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   PHONE NUMBER - NUMBERS ONLY
+===================================================== */
+
+const phoneInputs =
+    document.querySelectorAll(
+        'input[name="phone"]'
+    );
+
+phoneInputs.forEach(function(input) {
+
+    input.addEventListener(
+        "input",
+        function() {
+
+            this.value =
+                this.value.replace(/\D/g, "");
+
+            if (this.value.length > 11) {
+
+                this.value =
+                    this.value.substring(0, 11);
+
+            }
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   CHECKOUT FORM VALIDATION
+===================================================== */
 
 if (checkoutForm) {
 
@@ -1394,13 +1864,18 @@ if (checkoutForm) {
         "submit",
         function(event) {
 
+
+            /* ADDRESS */
+
             const savedSelected =
                 document.querySelector(
                     ".address-radio:checked"
                 );
 
+
             const hasSaved =
                 savedAddressRadios.length > 0;
+
 
             const newAddressVisible =
                 newAddressSection &&
@@ -1420,6 +1895,65 @@ if (checkoutForm) {
                 );
 
                 return;
+
+            }
+
+
+            /* GCASH */
+
+            if (
+                paymentMethod &&
+                paymentMethod.value === "gcash"
+            ) {
+
+
+                const number =
+                    gcashNumber
+                        ? gcashNumber.value.trim()
+                        : "";
+
+
+                if (
+                    !/^09\d{9}$/.test(number)
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter a valid 11-digit GCash number starting with 09."
+                    );
+
+                    if (gcashNumber) {
+                        gcashNumber.focus();
+                    }
+
+                    return;
+
+                }
+
+
+                const reference =
+                    gcashReference
+                        ? gcashReference.value.trim()
+                        : "";
+
+
+                if (reference === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter your GCash reference number."
+                    );
+
+                    if (gcashReference) {
+                        gcashReference.focus();
+                    }
+
+                    return;
+
+                }
+
             }
 
         }

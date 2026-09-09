@@ -845,3 +845,91 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+/* =====================================================
+   GCASH PAYMENT INFORMATION
+===================================================== */
+
+const paymentMethod =
+    document.getElementById("paymentMethod");
+
+const gcashPaymentSection =
+    document.getElementById("gcashPaymentSection");
+
+const gcashNumber =
+    document.getElementById("gcashNumber");
+
+const gcashReference =
+    document.getElementById("gcashReference");
+
+
+function toggleGcashPayment() {
+
+    if (!paymentMethod || !gcashPaymentSection) {
+        return;
+    }
+
+    if (paymentMethod.value === "gcash") {
+
+        gcashPaymentSection.classList.add("show");
+
+        if (gcashNumber) {
+            gcashNumber.required = true;
+        }
+
+        if (gcashReference) {
+            gcashReference.required = true;
+        }
+
+    } else {
+
+        gcashPaymentSection.classList.remove("show");
+
+        if (gcashNumber) {
+            gcashNumber.required = false;
+            gcashNumber.value = "";
+        }
+
+        if (gcashReference) {
+            gcashReference.required = false;
+            gcashReference.value = "";
+        }
+
+    }
+}
+
+
+/* PAYMENT METHOD CHANGE */
+
+if (paymentMethod) {
+
+    paymentMethod.addEventListener(
+        "change",
+        toggleGcashPayment
+    );
+
+}
+
+
+/* INITIAL STATE */
+
+toggleGcashPayment();
+
+
+/* =====================================================
+   GCASH NUMBER VALIDATION
+===================================================== */
+
+if (gcashNumber) {
+
+    gcashNumber.addEventListener(
+        "input",
+        function () {
+
+            this.value =
+                this.value.replace(/\D/g, "");
+
+        }
+    );
+
+}

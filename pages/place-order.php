@@ -3,6 +3,7 @@
 session_start();
 require_once "../db.php";
 
+
 /* =====================================================
    CUSTOMER ACCESS CHECK
    CHECK ROLE DIRECTLY FROM DATABASE
@@ -15,6 +16,7 @@ if (
     header("Location: login.php");
     exit;
 }
+
 
 $userRoleStmt = $pdo->prepare("
     SELECT role
@@ -29,23 +31,15 @@ $userRoleStmt->execute([
 
 $currentUser = $userRoleStmt->fetch();
 
-if (!$currentUser || $currentUser["role"] !== "customer") {
+
+if (
+    !$currentUser ||
+    $currentUser["role"] !== "customer"
+) {
     header("Location: ../index.php");
     exit;
 }
 
-
-/* =====================================================
-   LOGIN CHECK
-===================================================== */
-
-if (
-    !isset($_SESSION["logged_in"]) ||
-    $_SESSION["logged_in"] !== true
-) {
-    header("Location: login.php");
-    exit;
-}
 
 $user_id = $_SESSION["user_id"];
 
@@ -57,6 +51,7 @@ $user_id = $_SESSION["user_id"];
 $address_option =
     trim($_POST["address_option"] ?? "");
 
+
 $address_id =
     filter_input(
         INPUT_POST,
@@ -64,33 +59,54 @@ $address_id =
         FILTER_VALIDATE_INT
     );
 
+
 $recipient_name =
     trim($_POST["recipient_name"] ?? "");
+
 
 $phone =
     trim($_POST["phone"] ?? "");
 
+
 $address_line =
     trim($_POST["address_line"] ?? "");
+
 
 $barangay =
     trim($_POST["barangay"] ?? "");
 
+
 $city =
     trim($_POST["city"] ?? "");
+
 
 $province =
     trim($_POST["province"] ?? "");
 
+
 $postal_code =
     trim($_POST["postal_code"] ?? "");
+
 
 $payment_method =
     trim($_POST["payment_method"] ?? "");
 
+
 $save_as_default =
     isset($_POST["save_as_default"]) &&
     $_POST["save_as_default"] === "1";
+
+
+/* =====================================================
+   GET GCASH INFORMATION
+===================================================== */
+
+$gcash_number =
+    trim($_POST["gcash_number"] ?? "");
+
+
+$gcash_reference =
+    trim($_POST["gcash_reference"] ?? "");
 
 
 /* =====================================================
@@ -102,6 +118,7 @@ $allowed_payment_methods = [
     "gcash"
 ];
 
+
 if (
     !in_array(
         $payment_method,
@@ -109,7 +126,87 @@ if (
         true
     )
 ) {
-    die("Please select a valid payment method.");
+
+    die(
+        "Please select a valid payment method."
+    );
+}
+
+
+/* =====================================================
+   VALIDATE GCASH INFORMATION
+===================================================== */
+
+if ($payment_method === "gcash") {
+
+
+    /* ---------------------------------------------
+       GCASH NUMBER REQUIRED
+    --------------------------------------------- */
+
+    if ($gcash_number === "") {
+
+        die(
+            "GCash number is required."
+        );
+    }
+
+
+    /* ---------------------------------------------
+       GCASH REFERENCE REQUIRED
+    --------------------------------------------- */
+
+    if ($gcash_reference === "") {
+
+        die(
+            "GCash reference number is required."
+        );
+    }
+
+
+    /* ---------------------------------------------
+       VALIDATE GCASH NUMBER
+       PHILIPPINE MOBILE FORMAT
+       09XXXXXXXXX
+    --------------------------------------------- */
+
+    if (
+        !preg_match(
+            '/^09[0-9]{9}$/',
+            $gcash_number
+        )
+    ) {
+
+        die(
+            "Please enter a valid 11-digit GCash number."
+        );
+    }
+
+
+    /* ---------------------------------------------
+       VALIDATE REFERENCE LENGTH
+    --------------------------------------------- */
+
+    if (
+        strlen($gcash_reference) > 100
+    ) {
+
+        die(
+            "GCash reference number is too long."
+        );
+    }
+
+} else {
+
+
+    /*
+       COD DOES NOT NEED GCASH INFORMATION.
+       Store NULL instead.
+    */
+
+    $gcash_number = null;
+
+    $gcash_reference = null;
 }
 
 
@@ -130,9 +227,14 @@ $cartStmt->execute([
 
 $cart = $cartStmt->fetch();
 
+
 if (!$cart) {
-    die("Your cart is empty.");
+
+    die(
+        "Your cart is empty."
+    );
 }
+
 
 $cart_id = $cart["cart_id"];
 
@@ -162,8 +264,12 @@ $itemsStmt->execute([
 
 $items = $itemsStmt->fetchAll();
 
+
 if (!$items) {
-    die("Your cart is empty.");
+
+    die(
+        "Your cart is empty."
+    );
 }
 
 
@@ -191,6 +297,7 @@ try {
         $address_id
     ) {
 
+
         $savedAddressStmt = $pdo->prepare("
             SELECT
                 address_id,
@@ -208,10 +315,12 @@ try {
             LIMIT 1
         ");
 
+
         $savedAddressStmt->execute([
             $address_id,
             $user_id
         ]);
+
 
         $savedAddress =
             $savedAddressStmt->fetch();
@@ -289,6 +398,7 @@ try {
             LIMIT 1
         ");
 
+
         $duplicateAddressStmt->execute([
             $user_id,
             $recipient_name,
@@ -303,11 +413,13 @@ try {
             $postal_code
         ]);
 
+
         $existingAddress =
             $duplicateAddressStmt->fetch();
 
 
         if ($existingAddress) {
+
 
             /*
                Exact same address already exists.
@@ -317,6 +429,7 @@ try {
 
             $address_id =
                 (int)$existingAddress["address_id"];
+
 
         } else {
 
@@ -361,6 +474,7 @@ try {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
 
+
             $addressStmt->execute([
                 $user_id,
                 $recipient_name,
@@ -374,6 +488,7 @@ try {
                     : null,
                 $save_as_default ? 1 : 0
             ]);
+
 
             $address_id =
                 (int)$pdo->lastInsertId();
@@ -390,9 +505,11 @@ try {
                 WHERE user_id = ?
             ");
 
+
             $addressCountStmt->execute([
                 $user_id
             ]);
+
 
             $addressCount =
                 (int)$addressCountStmt->fetchColumn();
@@ -406,6 +523,7 @@ try {
                     WHERE address_id = ?
                       AND user_id = ?
                 ");
+
 
                 $makeDefaultStmt->execute([
                     $address_id,
@@ -425,6 +543,7 @@ try {
 
     foreach ($items as $item) {
 
+
         $productStmt = $pdo->prepare("
             SELECT
                 product_id,
@@ -437,9 +556,11 @@ try {
             FOR UPDATE
         ");
 
+
         $productStmt->execute([
             $item["product_id"]
         ]);
+
 
         $product = $productStmt->fetch();
 
@@ -505,16 +626,22 @@ try {
             user_id,
             address_id,
             total_amount,
+            gcash_number,
+            gcash_reference,
             status
         )
-        VALUES (?, ?, ?, 'Pending')
+        VALUES (?, ?, ?, ?, ?, 'Pending')
     ");
+
 
     $orderStmt->execute([
         $user_id,
         $address_id,
-        $total_amount
+        $total_amount,
+        $gcash_number,
+        $gcash_reference
     ]);
+
 
     $order_id =
         $pdo->lastInsertId();
@@ -527,6 +654,7 @@ try {
 
     foreach ($items as $item) {
 
+
         $productStmt = $pdo->prepare("
             SELECT
                 product_id,
@@ -538,9 +666,11 @@ try {
             FOR UPDATE
         ");
 
+
         $productStmt->execute([
             $item["product_id"]
         ]);
+
 
         $product = $productStmt->fetch();
 
@@ -556,8 +686,10 @@ try {
         $quantity =
             (int)$item["quantity"];
 
+
         $price =
             (float)$product["price"];
+
 
         $subtotal =
             $price * $quantity;
@@ -579,6 +711,7 @@ try {
             VALUES (?, ?, ?, ?, ?)
         ");
 
+
         $orderItemStmt->execute([
             $order_id,
             $product["product_id"],
@@ -598,6 +731,7 @@ try {
             WHERE product_id = ?
               AND stock >= ?
         ");
+
 
         $stockStmt->execute([
             $quantity,
@@ -622,6 +756,14 @@ try {
        CREATE PAYMENT
     ================================================= */
 
+    /*
+       For GCash:
+       transaction_reference = GCash reference number
+
+       For COD:
+       transaction_reference = NULL
+    */
+
     $paymentStmt = $pdo->prepare("
         INSERT INTO payments
         (
@@ -632,13 +774,15 @@ try {
             transaction_reference,
             paid_at
         )
-        VALUES (?, ?, ?, 'Pending', NULL, NULL)
+        VALUES (?, ?, ?, 'Pending', ?, NULL)
     ");
+
 
     $paymentStmt->execute([
         $order_id,
         $payment_method,
-        $total_amount
+        $total_amount,
+        $gcash_reference
     ]);
 
 
@@ -650,6 +794,7 @@ try {
         DELETE FROM cart_items
         WHERE cart_id = ?
     ");
+
 
     $clearCartStmt->execute([
         $cart_id
@@ -677,9 +822,16 @@ try {
 
 } catch (Exception $e) {
 
+
+    /* =================================================
+       ROLLBACK IF SOMETHING FAILS
+    ================================================= */
+
     if ($pdo->inTransaction()) {
+
         $pdo->rollBack();
     }
+
 
     die(
         "Order could not be completed: " .
@@ -688,3 +840,4 @@ try {
         )
     );
 }
+

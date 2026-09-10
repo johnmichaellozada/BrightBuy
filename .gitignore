@@ -1,0 +1,44 @@
+# ==========================================
+# BrightBuy - Git Ignore
+# ==========================================
+
+# XAMPP / local server files
+xampp/
+htdocs/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Local database backups
+*.sql
+*.sql.gz
+*.bak
+
+# PHP temporary files
+*.log
+*.tmp
+*.temp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor files
+.vscode/
+.idea/
+
+# PHP Composer
+/vendor/
+
+# Node.js
+/node_modules/
+
+# Temporary uploads
+uploads/
+
+# Local configuration
+config.local.php
+db.local.php

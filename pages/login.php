@@ -13,6 +13,54 @@
 
 session_start();
 
+
+/* =========================================================
+   PREVENT ALREADY LOGGED-IN USERS FROM OPENING LOGIN PAGE
+========================================================= */
+
+if (
+    isset($_SESSION["logged_in"]) &&
+    $_SESSION["logged_in"] === true
+) {
+
+    /* =============================================
+       CHECK USER ROLE
+    ============================================= */
+
+    if (
+        isset($_SESSION["role"]) &&
+        $_SESSION["role"] === "admin"
+    ) {
+
+        /* Admin → Admin Dashboard */
+
+        header("Location: ../admin/admin-dashboard.php");
+        exit;
+
+    } elseif (
+        isset($_SESSION["role"]) &&
+        $_SESSION["role"] === "customer"
+    ) {
+
+        /* Customer → Homepage */
+
+        header("Location: ../index.php");
+        exit;
+
+    } else {
+
+        /* =============================================
+           INVALID SESSION
+        ============================================= */
+
+        session_unset();
+        session_destroy();
+
+        /* Continue to login page */
+    }
+}
+
+
 require_once "../db.php";
 
 
@@ -83,7 +131,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
            VERIFY EMAIL AND PASSWORD
         ================================================= */
 
-        if (!$user || !password_verify($password, $user["password"])) {
+        if (
+            !$user ||
+            !password_verify(
+                $password,
+                $user["password"]
+            )
+        ) {
 
             $errors[] = "Invalid email or password.";
 
@@ -115,12 +169,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if ($user["role"] === "admin") {
 
-                header("Location: ../admin/admin-dashboard.php");
+                header(
+                    "Location: ../admin/admin-dashboard.php"
+                );
                 exit;
 
             } elseif ($user["role"] === "customer") {
 
-                header("Location: ../index.php");
+                header(
+                    "Location: ../index.php"
+                );
                 exit;
 
             } else {
@@ -130,7 +188,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 session_unset();
                 session_destroy();
 
-                $errors[] = "Your account has an invalid user role.";
+                $errors[] =
+                    "Your account has an invalid user role.";
             }
         }
     }
@@ -139,6 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -241,8 +301,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <?php foreach ($errors as $error): ?>
 
                                 <div>
-                                    <i class="bi bi-exclamation-circle-fill me-1"></i>
+
+                                    <i
+                                        class="bi bi-exclamation-circle-fill me-1"
+                                    ></i>
+
                                     <?= htmlspecialchars($error) ?>
+
                                 </div>
 
                             <?php endforeach; ?>
@@ -270,7 +335,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 for="email"
                                 class="form-label"
                             >
+
                                 Email
+
                             </label>
 
 
@@ -303,7 +370,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 for="password"
                                 class="form-label"
                             >
+
                                 Password
+
                             </label>
 
 
@@ -352,7 +421,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         Don't have an account?
 
                         <a href="register.php">
+
                             Register
+
                         </a>
 
                     </div>
@@ -366,7 +437,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                         <small class="text-muted">
 
-                            <i class="bi bi-shield-check me-1"></i>
+                            <i
+                                class="bi bi-shield-check me-1"
+                            ></i>
 
                             Customers and administrators use the same login.
 

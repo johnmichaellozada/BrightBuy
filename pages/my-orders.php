@@ -3,6 +3,7 @@
 session_start();
 require_once "../db.php";
 
+
 /* =====================================================
    LOGIN + CUSTOMER CHECK
 ===================================================== */
@@ -17,7 +18,7 @@ if (
     exit;
 }
 
-$user_id = $_SESSION["user_id"];
+$user_id = (int)$_SESSION["user_id"];
 
 
 /* =====================================================
@@ -32,10 +33,20 @@ $orderStmt = $pdo->prepare("
         o.gcash_number,
         o.gcash_reference,
         o.status,
-        o.created_at
+        o.created_at,
+
+        pay.payment_method,
+        pay.payment_status,
+        pay.transaction_reference,
+        pay.paid_at
+
     FROM orders o
+
+    LEFT JOIN payments pay
+        ON pay.order_id = o.order_id
+
     WHERE o.user_id = ?
-      AND LOWER(TRIM(o.status)) <> 'cancelled'
+
     ORDER BY o.created_at DESC
 ");
 
@@ -96,6 +107,7 @@ if ($orders) {
 
 
     <!-- Bootstrap -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -103,6 +115,7 @@ if ($orders) {
 
 
     <!-- Bootstrap Icons -->
+
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -110,6 +123,7 @@ if ($orders) {
 
 
     <!-- Poppins -->
+
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
@@ -117,6 +131,7 @@ if ($orders) {
 
 
     <!-- Main CSS -->
+
     <link
         rel="stylesheet"
         href="../css/styles.css"
@@ -137,7 +152,9 @@ if ($orders) {
     <div class="orders-header-content">
 
         <div class="orders-header-icon">
+
             <i class="bi bi-bag-check-fill"></i>
+
         </div>
 
         <div class="orders-header-text">
@@ -178,7 +195,9 @@ if ($orders) {
     <section class="orders-empty">
 
         <div class="orders-empty-icon">
+
             <i class="bi bi-bag-x"></i>
+
         </div>
 
         <span class="orders-eyebrow">
@@ -198,8 +217,11 @@ if ($orders) {
             href="../index.php"
             class="orders-primary-btn"
         >
+
             <i class="bi bi-shop"></i>
+
             Start Shopping
+
         </a>
 
     </section>
@@ -234,7 +256,9 @@ if ($orders) {
         <div class="orders-count">
 
             <div class="orders-count-icon">
+
                 <i class="bi bi-bag-check"></i>
+
             </div>
 
             <div class="orders-count-text">
@@ -244,7 +268,10 @@ if ($orders) {
                 </strong>
 
                 <span>
-                    <?= count($orders) === 1 ? "Order" : "Orders" ?>
+                    <?= count($orders) === 1
+                        ? "Order"
+                        : "Orders"
+                    ?>
                 </span>
 
             </div>
@@ -265,9 +292,18 @@ if ($orders) {
 
         <?php
 
+        /* =============================================
+           NORMALIZE STATUS
+        ============================================== */
+
         $status = strtolower(
             trim($order["status"] ?? "pending")
         );
+
+
+        /* =============================================
+           STATUS DESIGN
+        ============================================== */
 
         $statusClass = "status-pending";
         $statusIcon = "bi-clock-fill";
@@ -289,13 +325,52 @@ if ($orders) {
         }
 
 
+        /* =============================================
+           ORDER ITEMS
+        ============================================== */
+
         $currentOrderItems =
             $orderItems[$order["order_id"]] ?? [];
 
 
+        /* =============================================
+           PAYMENT
+        ============================================== */
+
         $isGcash =
+    (
+        isset($order["payment_method"]) &&
+        strtolower(trim($order["payment_method"])) === "gcash"
+    )
+    ||
+    (
+        empty($order["payment_method"]) &&
+        (
             !empty($order["gcash_number"]) ||
-            !empty($order["gcash_reference"]);
+            !empty($order["gcash_reference"])
+        )
+    );
+
+$paymentStatus = strtolower(
+    trim($order["payment_status"] ?? "pending")
+);
+
+$paymentStatusLabel = match ($paymentStatus) {
+    "paid" => "Paid",
+    "completed" => "Paid",
+    "submitted" => "Submitted",
+    "failed" => "Failed",
+    "cancelled" => "Cancelled",
+    default => "Pending"
+};
+
+$paymentStatusClass = match ($paymentStatus) {
+    "paid", "completed" => "payment-paid",
+    "submitted" => "payment-submitted",
+    "failed" => "payment-failed",
+    "cancelled" => "payment-cancelled",
+    default => "payment-pending"
+};
 
         ?>
 
@@ -319,18 +394,23 @@ if ($orders) {
                         href="track-order.php?order_id=<?= (int)$order["order_id"] ?>"
                         class="order-number"
                     >
+
                         Order #<?= (int)$order["order_id"] ?>
+
                     </a>
+
 
                     <div class="order-date">
 
                         <i class="bi bi-calendar3"></i>
 
                         <span>
+
                             <?= date(
                                 "F d, Y h:i A",
                                 strtotime($order["created_at"])
                             ) ?>
+
                         </span>
 
                     </div>
@@ -345,9 +425,11 @@ if ($orders) {
                     <i class="bi <?= $statusIcon ?>"></i>
 
                     <span>
+
                         <?= htmlspecialchars(
                             ucfirst($status)
                         ) ?>
+
                     </span>
 
                 </div>
@@ -364,7 +446,9 @@ if ($orders) {
                 <div class="order-products-title">
 
                     <div class="section-icon">
+
                         <i class="bi bi-box-seam"></i>
+
                     </div>
 
                     <div class="section-title-text">
@@ -374,10 +458,14 @@ if ($orders) {
                         </strong>
 
                         <span>
+
                             <?= count($currentOrderItems) ?>
+
                             <?= count($currentOrderItems) === 1
                                 ? "item"
-                                : "items" ?>
+                                : "items"
+                            ?>
+
                         </span>
 
                     </div>
@@ -407,7 +495,9 @@ if ($orders) {
                                 <?php else: ?>
 
                                     <div class="product-placeholder">
+
                                         <i class="bi bi-image"></i>
+
                                     </div>
 
                                 <?php endif; ?>
@@ -420,10 +510,13 @@ if ($orders) {
                             <div class="order-product-info">
 
                                 <h3>
+
                                     <?= htmlspecialchars(
                                         $item["product_name"]
                                     ) ?>
+
                                 </h3>
+
 
                                 <div class="product-price">
 
@@ -452,10 +545,12 @@ if ($orders) {
                                 </span>
 
                                 <strong>
+
                                     ₱<?= number_format(
                                         $item["subtotal"],
                                         2
                                     ) ?>
+
                                 </strong>
 
                             </div>
@@ -467,6 +562,7 @@ if ($orders) {
 
                 <?php else: ?>
 
+
                     <div class="order-no-items">
 
                         <i class="bi bi-box"></i>
@@ -476,6 +572,7 @@ if ($orders) {
                         </span>
 
                     </div>
+
 
                 <?php endif; ?>
 
@@ -492,8 +589,11 @@ if ($orders) {
                 <div class="payment-section-heading">
 
                     <div class="payment-icon">
+
                         <i class="bi bi-wallet2"></i>
+
                     </div>
+
 
                     <div class="payment-heading-text">
 
@@ -502,25 +602,41 @@ if ($orders) {
                         </span>
 
                         <h3>
+
                             <?= $isGcash
                                 ? "GCash Payment"
-                                : "Cash on Delivery" ?>
+                                : "Cash on Delivery"
+                            ?>
+
                         </h3>
 
                     </div>
 
 
-                    <div class="payment-method-badge <?= $isGcash
-                        ? "gcash-badge"
-                        : "cod-badge" ?>">
+                    <div
+                        class="
+                            payment-method-badge
+                            <?= $isGcash
+                                ? "gcash-badge"
+                                : "cod-badge"
+                            ?>
+                        "
+                    >
 
-                        <i class="bi <?= $isGcash
-                            ? "bi-phone-fill"
-                            : "bi-cash-stack" ?>"></i>
+                        <i
+                            class="
+                                bi
+                                <?= $isGcash
+                                    ? "bi-phone-fill"
+                                    : "bi-cash-stack"
+                                ?>
+                            "
+                        ></i>
 
                         <?= $isGcash
                             ? "GCash"
-                            : "COD" ?>
+                            : "COD"
+                        ?>
 
                     </div>
 
@@ -530,7 +646,9 @@ if ($orders) {
                 <?php if ($isGcash): ?>
 
 
-                    <!-- GCASH -->
+                    <!-- =====================================
+                         GCASH
+                    ====================================== -->
 
                     <div class="order-gcash-information">
 
@@ -539,7 +657,9 @@ if ($orders) {
                             <div class="gcash-brand">
 
                                 <div class="gcash-brand-icon">
+
                                     <i class="bi bi-phone-fill"></i>
+
                                 </div>
 
                                 <div>
@@ -556,13 +676,11 @@ if ($orders) {
 
                             </div>
 
-                            <div class="gcash-verified">
 
-                                <i class="bi bi-shield-check"></i>
-
-                                Payment Submitted
-
-                            </div>
+                            <div class="gcash-verified <?= $paymentStatusClass ?>">
+    <i class="bi bi-shield-check"></i>
+    <?= htmlspecialchars($paymentStatusLabel) ?>
+</div>
 
                         </div>
 
@@ -575,7 +693,9 @@ if ($orders) {
                                 <div class="order-gcash-row">
 
                                     <div class="gcash-row-icon">
+
                                         <i class="bi bi-phone"></i>
+
                                     </div>
 
                                     <div class="gcash-row-content">
@@ -585,12 +705,15 @@ if ($orders) {
                                         </span>
 
                                         <strong>
+
                                             <?= htmlspecialchars(
                                                 $order["gcash_number"]
                                             ) ?>
+
                                         </strong>
 
                                     </div>
+
 
                                     <button
                                         type="button"
@@ -601,7 +724,9 @@ if ($orders) {
                                         ) ?>"
                                         title="Copy GCash number"
                                     >
+
                                         <i class="bi bi-copy"></i>
+
                                     </button>
 
                                 </div>
@@ -613,8 +738,15 @@ if ($orders) {
 
                                 <div class="order-gcash-row">
 
-                                    <div class="gcash-row-icon reference-icon">
+                                    <div
+                                        class="
+                                            gcash-row-icon
+                                            reference-icon
+                                        "
+                                    >
+
                                         <i class="bi bi-receipt"></i>
+
                                     </div>
 
                                     <div class="gcash-row-content">
@@ -624,12 +756,15 @@ if ($orders) {
                                         </span>
 
                                         <strong>
+
                                             <?= htmlspecialchars(
                                                 $order["gcash_reference"]
                                             ) ?>
+
                                         </strong>
 
                                     </div>
+
 
                                     <button
                                         type="button"
@@ -640,7 +775,9 @@ if ($orders) {
                                         ) ?>"
                                         title="Copy reference number"
                                     >
+
                                         <i class="bi bi-copy"></i>
+
                                     </button>
 
                                 </div>
@@ -656,12 +793,16 @@ if ($orders) {
                 <?php else: ?>
 
 
-                    <!-- COD -->
+                    <!-- =====================================
+                         COD
+                    ====================================== -->
 
                     <div class="cod-payment-information">
 
                         <div class="cod-payment-icon">
+
                             <i class="bi bi-cash-stack"></i>
+
                         </div>
 
                         <div>
@@ -699,10 +840,12 @@ if ($orders) {
                     </span>
 
                     <strong>
+
                         ₱<?= number_format(
                             $order["total_amount"],
                             2
                         ) ?>
+
                     </strong>
 
                 </div>
@@ -711,18 +854,26 @@ if ($orders) {
                 <div class="order-action-buttons">
 
 
-                    <!-- TRACK -->
+                    <!-- =====================================
+                         TRACK ORDER
+                    ====================================== -->
 
                     <a
                         href="track-order.php?order_id=<?= (int)$order["order_id"] ?>"
                         class="track-order-btn"
                     >
+
                         <i class="bi bi-eye"></i>
+
                         Track Order
+
                     </a>
 
 
-                    <!-- CANCEL -->
+                    <!-- =====================================
+                         CANCEL ORDER
+                         ONLY PENDING
+                    ====================================== -->
 
                     <?php if ($status === "pending"): ?>
 
@@ -738,15 +889,40 @@ if ($orders) {
                                 value="<?= (int)$order["order_id"] ?>"
                             >
 
+
                             <button
                                 type="submit"
                                 class="cancel-order-btn"
                             >
+
                                 <i class="bi bi-x-circle"></i>
+
                                 Cancel Order
+
                             </button>
 
                         </form>
+
+                    <?php endif; ?>
+
+
+                    <!-- =====================================
+                         PRINT RECEIPT
+                         ONLY WHEN DELIVERED
+                    ====================================== -->
+
+                    <?php if ($status === "delivered"): ?>
+
+                        <a
+                            href="receipt.php?order_id=<?= (int)$order["order_id"] ?>"
+                            class="receipt-order-btn"
+                        >
+
+                            <i class="bi bi-receipt"></i>
+
+                            Print Receipt
+
+                        </a>
 
                     <?php endif; ?>
 
@@ -777,16 +953,23 @@ if ($orders) {
         href="account.php"
         class="orders-outline-btn"
     >
+
         <i class="bi bi-person"></i>
+
         My Account
+
     </a>
+
 
     <a
         href="../index.php"
         class="orders-primary-btn"
     >
+
         <i class="bi bi-house"></i>
+
         Back to BrightBuy
+
     </a>
 
 </div>

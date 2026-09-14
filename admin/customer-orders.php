@@ -973,57 +973,126 @@ function getPaymentMethod($order)
                         <?php endif; ?>
 
 
-                        <!-- PAYMENT STATUS -->
+                        <!-- =================================================
+     PAYMENT STATUS
+================================================= -->
 
-                        <?php if (
-                            !empty(
-                                $order["payment_status"]
-                            )
-                        ): ?>
+<div class="payment-detail-row">
 
-                            <div class="payment-detail-row">
+    <div class="payment-detail-icon">
+        <i class="bi bi-check-circle"></i>
+    </div>
 
-                                <div class="payment-detail-icon">
+    <div class="payment-detail-content">
 
-                                    <i class="bi bi-check-circle"></i>
+        <span>
+            Payment Status
+        </span>
 
-                                </div>
+        <?php
+        $currentPaymentStatus =
+            $order["payment_status"] ?? "Pending";
+        ?>
+
+        <strong
+            class="
+                payment-status
+                <?= strtolower($currentPaymentStatus) === "paid"
+                    ? "payment-paid"
+                    : "payment-pending"
+                ?>
+            "
+        >
+            <?= htmlspecialchars($currentPaymentStatus) ?>
+        </strong>
+
+    </div>
+
+</div>
 
 
-                                <div class="payment-detail-content">
+<!-- =================================================
+     UPDATE PAYMENT STATUS
+================================================= -->
 
-                                    <span>
-                                        Payment Status
-                                    </span>
+<div class="payment-status-control">
 
+    <form
+        method="POST"
+        action="update-payment-status.php"
+        class="payment-status-form"
+    >
 
-                                    <strong
-                                        class="
-                                            payment-status
-                                            <?= strtolower(
-                                                $order[
-                                                    "payment_status"
-                                                ]
-                                            ) === "paid"
-                                                ? "payment-paid"
-                                                : "payment-pending"
-                                            ?>
-                                        "
-                                    >
+        <input
+            type="hidden"
+            name="order_id"
+            value="<?= (int)$order["order_id"] ?>"
+        >
 
-                                        <?= htmlspecialchars(
-                                            $order[
-                                                "payment_status"
-                                            ]
-                                        ) ?>
+        <input
+            type="hidden"
+            name="customer_id"
+            value="<?= (int)$customer["user_id"] ?>"
+        >
 
-                                    </strong>
+        <select
+            name="payment_status"
+            required
+        >
 
-                                </div>
+            <option
+                value="Pending"
+                <?= $currentPaymentStatus === "Pending"
+                    ? "selected"
+                    : ""
+                ?>
+            >
+                Pending
+            </option>
 
-                            </div>
+            <option
+                value="Paid"
+                <?= $currentPaymentStatus === "Paid"
+                    ? "selected"
+                    : ""
+                ?>
+            >
+                Paid
+            </option>
 
-                        <?php endif; ?>
+            <option
+                value="Failed"
+                <?= $currentPaymentStatus === "Failed"
+                    ? "selected"
+                    : ""
+                ?>
+            >
+                Failed
+            </option>
+
+            <option
+                value="Cancelled"
+                <?= $currentPaymentStatus === "Cancelled"
+                    ? "selected"
+                    : ""
+                ?>
+            >
+                Cancelled
+            </option>
+
+        </select>
+
+        <button
+            type="submit"
+            class="payment-update-btn"
+        >
+            <i class="bi bi-credit-card"></i>
+            Update Payment
+        </button>
+
+    </form>
+
+</div>
 
 
                     <?php else: ?>

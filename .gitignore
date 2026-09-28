@@ -1,3 +1,6 @@
+# ==========================================
+# BrightBuy - Symfony 7.4
+# ==========================================
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -18,3 +21,41 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+
+# ==========================================
+# BrightBuy / Local Development
+# ==========================================
+
+# XAMPP / local server files
+xampp/
+htdocs/
+
+# Local database backups
+*.sql
+*.sql.gz
+*.bak
+
+# PHP temporary files
+*.log
+*.tmp
+*.temp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor files
+.vscode/
+.idea/
+
+# Node.js
+/node_modules/
+
+# Temporary uploads
+uploads/
+
+# Local configuration
+config.local.php
+db.local.php

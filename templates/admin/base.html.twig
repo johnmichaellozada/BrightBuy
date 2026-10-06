@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}Admin Dashboard | BrightBuy{% endblock %}
+    </title>
+
+
+    <!-- Bootstrap 5.3.3 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- Poppins -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <style>
+
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+
+            font-family: "Poppins", sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f4f8ff 0%,
+                    #eef4ff 50%,
+                    #f8fbff 100%
+                );
+
+            color: #1f2937;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================================================
+           ADMIN LAYOUT
+        ========================================================= */
+
+        .admin-layout {
+            min-height: 100vh;
+
+            display: flex;
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .admin-sidebar {
+
+            width: 250px;
+
+            min-height: 100vh;
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            z-index: 1000;
+
+            padding: 28px 18px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #06185f 0%,
+                    #0b3fa5 100%
+                );
+
+            color: #ffffff;
+
+            box-shadow:
+                4px 0 20px rgba(4, 24, 95, 0.15);
+        }
+
+
+        /* Sidebar Brand */
+
+        .sidebar-brand {
+
+            padding: 0 12px 28px;
+
+            margin-bottom: 15px;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.15);
+        }
+
+        .sidebar-brand h2 {
+
+            margin: 0;
+
+            color: #ffffff;
+
+            font-size: 25px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+        }
+
+
+        /* Sidebar Navigation */
+
+        .sidebar-nav {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .sidebar-nav a {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 14px;
+
+            border-radius: 10px;
+
+            color:
+                rgba(255,255,255,0.88);
+
+            font-size: 14px;
+
+            font-weight: 500;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        .sidebar-nav a i {
+
+            width: 21px;
+
+            text-align: center;
+
+            font-size: 17px;
+        }
+
+
+        .sidebar-nav a:hover {
+
+            background:
+                rgba(255,255,255,0.12);
+
+            color: #ffffff;
+
+            transform: translateX(3px);
+        }
+
+
+        .sidebar-nav a:first-child {
+
+            background: #ffbf00;
+
+            color: #06185f;
+
+            font-weight: 700;
+
+            box-shadow:
+                0 5px 14px
+                rgba(255,191,0,0.20);
+        }
+
+
+        .sidebar-nav a:first-child:hover {
+
+            background: #ffd04d;
+
+            color: #06185f;
+        }
+
+
+        /* =========================================================
+           MAIN ADMIN AREA
+        ========================================================= */
+
+        .admin-page {
+
+            width: calc(100% - 250px);
+
+            margin-left: 250px;
+
+            min-height: 100vh;
+        }
+
+
+        /* =========================================================
+           ADMIN HEADER
+        ========================================================= */
+
+        .admin-header {
+
+            min-height: 78px;
+
+            padding: 16px 35px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0d47a1,
+                    #1264e8
+                );
+
+            color: #ffffff;
+
+            box-shadow:
+                0 4px 18px
+                rgba(13,71,161,0.20);
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 900;
+        }
+
+
+        /* Admin Brand */
+
+        .admin-brand {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 1px;
+        }
+
+
+        .admin-brand h1 {
+
+            margin: 0;
+
+            color: #ffffff;
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+            line-height: 1.2;
+        }
+
+
+        .admin-brand p {
+
+            margin: 0;
+
+            color:
+                rgba(255,255,255,0.80);
+
+            font-size: 12px;
+
+            font-weight: 400;
+        }
+
+
+        /* Header Buttons */
+
+        .admin-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .admin-actions .btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            padding: 9px 15px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .admin-actions .btn-inventory {
+
+            background: #ffbf00;
+
+            border: 1px solid #ffbf00;
+
+            color: #172554;
+        }
+
+
+        .admin-actions .btn-inventory:hover {
+
+            background: #ffd04d;
+
+            border-color: #ffd04d;
+
+            color: #172554;
+
+            transform: translateY(-1px);
+        }
+
+
+        .admin-actions .btn-logout {
+
+            background: transparent;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.55);
+
+            color: #ffffff;
+        }
+
+
+        .admin-actions .btn-logout:hover {
+
+            background: #ffffff;
+
+            color: #0d47a1;
+
+            border-color: #ffffff;
+        }
+
+
+        /* =========================================================
+           ADMIN CONTENT
+        ========================================================= */
+
+        .admin-content {
+
+            width: 100%;
+
+            min-height:
+                calc(100vh - 78px);
+
+            padding: 0;
+        }
+
+
+        /* =========================================================
+           DASHBOARD CONTAINER
+        ========================================================= */
+
+        .dashboard-container {
+
+            width: 100%;
+
+            max-width: 1350px;
+
+            margin: 0 auto;
+
+            padding: 42px 30px 60px;
+        }
+
+
+        /* =========================================================
+           WELCOME SECTION
+        ========================================================= */
+
+        .welcome-section {
+
+            margin-bottom: 32px;
+        }
+
+
+        .welcome-section h1 {
+
+            margin: 0;
+
+            color: #06185f;
+
+            font-size: 38px;
+
+            font-weight: 800;
+
+            line-height: 1.2;
+        }
+
+
+        .welcome-section p {
+
+            margin: 8px 0 0;
+
+            color: #71809b;
+
+            font-size: 16px;
+        }
+
+
+        /* =========================================================
+           SECTION HEADINGS
+        ========================================================= */
+
+        .section-heading {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 18px;
+        }
+
+
+        .section-heading h2,
+        .section-heading h3 {
+
+            margin: 0;
+
+            color: #06185f;
+
+            font-weight: 800;
+        }
+
+
+        .section-heading h2 {
+
+            font-size: 26px;
+        }
+
+
+        .section-heading h3 {
+
+            font-size: 26px;
+        }
+
+
+        .section-heading p {
+
+            margin: 5px 0 0;
+
+            color: #71809b;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           INCOME SECTION
+        ========================================================= */
+
+        .income-section {
+
+            margin-bottom: 34px;
+        }
+
+
+        .income-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .income-card {
+
+            position: relative;
+
+            min-height: 185px;
+
+            padding: 27px;
+
+            overflow: hidden;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 8px 20px
+                rgba(4,24,91,0.08);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .income-card:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 12px 28px
+                rgba(4,24,91,0.12);
+        }
+
+
+        .income-card-content {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+        }
+
+
+        .income-icon {
+
+            width: 58px;
+
+            height: 58px;
+
+            min-width: 58px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 15px;
+
+            background: #e6ecfa;
+
+            color: #1264e8;
+
+            font-size: 25px;
+        }
+
+
+        .income-label {
+
+            display: block;
+
+            color: #71809b;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            letter-spacing: 0.4px;
+        }
+
+
+        .income-card h2 {
+
+            margin: 7px 0;
+
+            color: #06185f;
+
+            font-size: 32px;
+
+            font-weight: 800;
+        }
+
+
+        .income-card p {
+
+            margin: 0;
+
+            color: #71809b;
+
+            font-size: 13px;
+        }
+
+
+        .income-decoration {
+
+            position: absolute;
+
+            right: 25px;
+
+            bottom: 15px;
+
+            color:
+                rgba(13,71,161,0.06);
+
+            font-size: 55px;
+        }
+
+
+        /* =========================================================
+           STATISTICS
+        ========================================================= */
+
+        .statistics-section {
+
+            margin-bottom: 34px;
+        }
+
+
+        .stats-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .stat-card {
+
+            position: relative;
+
+            min-height: 190px;
+
+            padding: 27px;
+
+            overflow: hidden;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 8px 20px
+                rgba(4,24,91,0.08);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .stat-card:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 12px 28px
+                rgba(4,24,91,0.12);
+        }
+
+
+        .stat-icon {
+
+            width: 58px;
+
+            height: 58px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 20px;
+
+            border-radius: 15px;
+
+            background: #e6ecfa;
+
+            color: #1264e8;
+
+            font-size: 25px;
+        }
+
+
+        .stat-card:nth-child(2)
+        .stat-icon {
+
+            background: #fff4cc;
+
+            color: #9a7200;
+        }
+
+
+        .stat-card:nth-child(3)
+        .stat-icon {
+
+            background: #dceaff;
+
+            color: #1264e8;
+        }
+
+
+        .stat-number {
+
+            margin: 0;
+
+            color: #06185f;
+
+            font-size: 34px;
+
+            font-weight: 800;
+
+            line-height: 1;
+        }
+
+
+        .stat-label {
+
+            margin-top: 8px;
+
+            color: #71809b;
+
+            font-size: 15px;
+
+            font-weight: 500;
+        }
+
+
+        /* =========================================================
+           ORDER STATUS
+        ========================================================= */
+
+        .status-breakdown {
+
+            margin-top: 2px;
+        }
+
+
+        .status-item {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 4px 0;
+
+            font-size: 12px;
+        }
+
+
+        .status-name {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #71809b;
+        }
+
+
+        .status-count {
+
+            color: #06185f;
+
+            font-weight: 700;
+        }
+
+
+        .status-dot {
+
+            width: 8px;
+
+            height: 8px;
+
+            display: inline-block;
+
+            border-radius: 50%;
+        }
+
+
+        .status-dot.pending {
+
+            background: #ffc107;
+        }
+
+
+        .status-dot.processing {
+
+            background: #1264e8;
+        }
+
+
+        .status-dot.shipped {
+
+            background: #6f42c1;
+        }
+
+
+        .status-dot.delivered {
+
+            background: #198754;
+        }
+
+
+        .status-dot.cancelled {
+
+            background: #dc3545;
+        }
+
+
+        /* =========================================================
+           CUSTOMERS
+        ========================================================= */
+
+        .customers-card {
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 8px 20px
+                rgba(4,24,91,0.08);
+        }
+
+
+        .customers-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 24px 28px;
+
+            border-bottom:
+                1px solid #edf0f5;
+        }
+
+
+        .customers-header h2,
+        .customers-header h4 {
+
+            margin: 0;
+
+            color: #06185f;
+
+            font-size: 24px;
+
+            font-weight: 800;
+        }
+
+
+        .customers-header i {
+
+            color: #ffbf00;
+        }
+
+
+        .customers-count {
+
+            padding: 7px 14px;
+
+            border-radius: 20px;
+
+            background: #e6ecfa;
+
+            color: #1264e8;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        .customer-list {
+
+            padding: 0;
+        }
+
+
+        .customer-row {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+            padding: 22px 28px;
+
+            border-bottom:
+                1px solid #edf0f5;
+
+            transition:
+                background 0.2s ease;
+        }
+
+
+        .customer-row:last-child {
+
+            border-bottom: none;
+        }
+
+
+        .customer-row:hover {
+
+            background: #f8faff;
+        }
+
+
+        .customer-avatar {
+
+            width: 58px;
+
+            height: 58px;
+
+            min-width: 58px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #e6ecfa;
+
+            color: #1264e8;
+
+            border:
+                2px solid #ffbf00;
+
+            font-size: 22px;
+
+            font-weight: 800;
+        }
+
+
+        .customer-info {
+
+            flex: 1;
+
+            min-width: 0;
+        }
+
+
+        .customer-name {
+
+            margin: 0;
+
+            color: #06185f;
+
+            font-size: 16px;
+
+            font-weight: 700;
+        }
+
+
+        .customer-email {
+
+            margin: 3px 0 0;
+
+            color: #71809b;
+
+            font-size: 13px;
+        }
+
+
+        .customer-order-count {
+
+            padding: 8px 13px;
+
+            border-radius: 20px;
+
+            background: #f0f4fc;
+
+            color: #1264e8;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+
+        .view-orders-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            padding: 10px 17px;
+
+            border-radius: 9px;
+
+            background: #1264e8;
+
+            color: #ffffff;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            transition: 0.2s ease;
+        }
+
+
+        .view-orders-btn:hover {
+
+            background: #06185f;
+
+            color: #ffffff;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        .empty-customers {
+
+            padding: 70px 25px;
+
+            text-align: center;
+        }
+
+
+        .empty-customers i {
+
+            display: block;
+
+            margin-bottom: 15px;
+
+            color: #8d98a8;
+
+            font-size: 52px;
+        }
+
+
+        .empty-customers h4,
+        .empty-customers h5 {
+
+            margin-bottom: 7px;
+
+            color: #06185f;
+
+            font-weight: 800;
+        }
+
+
+        .empty-customers p {
+
+            margin: 0;
+
+            color: #71809b;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .admin-sidebar {
+
+                width: 220px;
+            }
+
+            .admin-page {
+
+                width:
+                    calc(100% - 220px);
+
+                margin-left: 220px;
+            }
+
+            .stats-grid {
+
+                grid-template-columns:
+                    1fr 1fr;
+            }
+        }
+
+
+        @media (max-width: 768px) {
+
+            .admin-sidebar {
+
+                width: 75px;
+
+                padding: 20px 10px;
+            }
+
+
+            .sidebar-brand {
+
+                padding:
+                    0 0 20px;
+
+                text-align: center;
+            }
+
+
+            .sidebar-brand h2 {
+
+                font-size: 0;
+
+            }
+
+
+            .sidebar-brand h2::after {
+
+                content: "BB";
+
+                font-size: 21px;
+
+                font-weight: 800;
+            }
+
+
+            .sidebar-nav a {
+
+                justify-content: center;
+
+                padding: 13px 8px;
+            }
+
+
+            .sidebar-nav a i {
+
+                margin: 0;
+
+                font-size: 19px;
+            }
+
+
+            .sidebar-nav a {
+
+                font-size: 0;
+            }
+
+
+            .admin-page {
+
+                width:
+                    calc(100% - 75px);
+
+                margin-left: 75px;
+            }
+
+
+            .admin-header {
+
+                padding: 15px 18px;
+            }
+
+
+            .admin-brand h1 {
+
+                font-size: 18px;
+            }
+
+
+            .admin-brand p {
+
+                font-size: 10px;
+            }
+
+
+            .admin-actions .btn {
+
+                padding:
+                    7px 9px;
+
+                font-size: 11px;
+            }
+
+
+            .dashboard-container {
+
+                padding:
+                    30px 18px 45px;
+            }
+
+
+            .welcome-section h1 {
+
+                font-size: 29px;
+            }
+
+
+            .welcome-section p {
+
+                font-size: 14px;
+            }
+
+
+            .income-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .stats-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .customers-header {
+
+                padding: 20px;
+            }
+
+
+            .customer-row {
+
+                flex-wrap: wrap;
+
+                padding: 20px;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .admin-header {
+
+                align-items: flex-start;
+            }
+
+
+            .admin-actions {
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+
+            .admin-actions .btn {
+
+                width: 100%;
+            }
+
+
+            .section-heading {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 8px;
+            }
+        }
+
+    </style>
+
+
+    {% block stylesheets %}{% endblock %}
+
+</head>
+
+
+<body>
+
+    <div class="admin-layout">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        {% include 'admin/partials/sidebar.html.twig' %}
+
+
+        <!-- =====================================================
+             MAIN ADMIN AREA
+        ====================================================== -->
+
+        <div class="admin-page">
+
+
+            <!-- ADMIN HEADER -->
+
+            {% include 'admin/partials/header.html.twig' %}
+
+
+            <!-- PAGE CONTENT -->
+
+            <main class="admin-content">
+
+                {% block body %}{% endblock %}
+
+            </main>
+
+
+        </div>
+
+    </div>
+
+
+    {% block javascripts %}{% endblock %}
+
+</body>
+
+</html>

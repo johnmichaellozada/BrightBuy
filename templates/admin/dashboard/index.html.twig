@@ -1,0 +1,388 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Admin Dashboard | BrightBuy{% endblock %}
+
+{% block body %}
+
+<div class="dashboard-container">
+
+    <!-- =====================================================
+         WELCOME
+    ====================================================== -->
+
+    <section class="welcome-section">
+
+        <span class="dashboard-eyebrow">
+            ADMINISTRATION
+        </span>
+
+        <h1>
+            Welcome, Admin!
+        </h1>
+
+        <p>
+            Manage your BrightBuy customers, orders, sales, and inventory.
+        </p>
+
+    </section>
+
+
+    <!-- =====================================================
+         INCOME SECTION
+    ====================================================== -->
+
+    <section class="income-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    SALES OVERVIEW
+                </span>
+
+                <h3>
+                    Income
+                </h3>
+
+            </div>
+
+
+            <div class="income-date">
+
+                <i class="bi bi-calendar3"></i>
+
+                October 06, 2026
+
+            </div>
+
+        </div>
+
+
+        <div class="income-grid">
+
+
+            <!-- TODAY INCOME -->
+
+            <div class="income-card today-income-card">
+
+                <div class="income-card-content">
+
+                    <div class="income-icon">
+
+                        <i class="bi bi-cash-stack"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="income-label">
+                            TOTAL INCOME TODAY
+                        </span>
+
+                        <h2>
+                            ₱0.00
+                        </h2>
+
+                        <p>
+                            Completed orders for today
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="income-decoration">
+
+                    <i class="bi bi-graph-up-arrow"></i>
+
+                </div>
+
+            </div>
+
+
+            <!-- MONTH INCOME -->
+
+            <div class="income-card month-income-card">
+
+                <div class="income-card-content">
+
+                    <div class="income-icon">
+
+                        <i class="bi bi-bar-chart-fill"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="income-label">
+                            TOTAL INCOME THIS MONTH
+                        </span>
+
+                        <h2>
+                            ₱0.00
+                        </h2>
+
+                        <p>
+                            Completed orders for October 2026
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="income-decoration">
+
+                    <i class="bi bi-calendar-check"></i>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ORDER STATISTICS
+    ====================================================== -->
+
+    <section class="statistics-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    STORE OVERVIEW
+                </span>
+
+                <h3>
+                    Dashboard Statistics
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="stats-grid">
+
+
+            <!-- TOTAL CUSTOMERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="bi bi-people-fill"></i>
+
+                </div>
+
+                <p class="stat-number">
+                    0
+                </p>
+
+                <div class="stat-label">
+                    Total Customers
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL ORDERS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="bi bi-bag-check-fill"></i>
+
+                </div>
+
+                <p class="stat-number">
+                    0
+                </p>
+
+                <div class="stat-label">
+                    Total Orders
+                </div>
+
+            </div>
+
+
+            <!-- ORDER STATUS -->
+
+            <div class="stat-card order-status-card">
+
+                <div class="stat-icon">
+
+                    <i class="bi bi-hourglass-split"></i>
+
+                </div>
+
+
+                <div class="status-breakdown">
+
+
+                    <div class="status-item">
+
+                        <span class="status-name">
+
+                            <span class="status-dot pending"></span>
+
+                            Pending
+
+                        </span>
+
+                        <span class="status-count">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="status-item">
+
+                        <span class="status-name">
+
+                            <span class="status-dot processing"></span>
+
+                            Processing
+
+                        </span>
+
+                        <span class="status-count">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="status-item">
+
+                        <span class="status-name">
+
+                            <span class="status-dot shipped"></span>
+
+                            Shipped
+
+                        </span>
+
+                        <span class="status-count">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="status-item">
+
+                        <span class="status-name">
+
+                            <span class="status-dot delivered"></span>
+
+                            Delivered
+
+                        </span>
+
+                        <span class="status-count">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="status-item">
+
+                        <span class="status-name">
+
+                            <span class="status-dot cancelled"></span>
+
+                            Cancelled
+
+                        </span>
+
+                        <span class="status-count">
+                            0
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="stat-label">
+                    Order Status
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CUSTOMERS
+    ====================================================== -->
+
+    <section class="customers-card">
+
+
+        <div class="customers-header">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    CUSTOMER MANAGEMENT
+                </span>
+
+                <h4>
+
+                    <i class="bi bi-people-fill"></i>
+
+                    Customers
+
+                </h4>
+
+            </div>
+
+
+            <span class="customers-count">
+
+                0 customers
+
+            </span>
+
+        </div>
+
+
+        <div class="empty-customers">
+
+            <i class="bi bi-people"></i>
+
+            <h5>
+                No customers found
+            </h5>
+
+            <p>
+                Registered customers will appear here.
+            </p>
+
+        </div>
+
+
+    </section>
+
+</div>
+
+{% endblock %}

@@ -4,28 +4,33 @@
     </div>
 
     <nav class="sidebar-nav">
-        <a href="#">
+        <a href="{{ path('admin_dashboard') }}"
+        class="{{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}">
             <i class="bi bi-speedometer2"></i>
             Dashboard
         </a>
 
-        <a href="#">
+        <a href="{{ path('admin_products') }}"
+        class="{{ app.request.attributes.get('_route') == 'admin_products' ? 'active' : '' }}">
             <i class="bi bi-box-seam"></i>
             Products
         </a>
 
-        <a href="#">
+        <a href="{{ path('admin_orders') }}"
+        class="{{ app.request.attributes.get('_route') == 'admin_orders' ? 'active' : '' }}">
             <i class="bi bi-cart-check"></i>
             Orders
         </a>
 
-        <a href="#">
-            <i class="bi bi-people"></i>
+        <a href="{{ path('admin_customers') }}"
+        class="{{ app.request.attributes.get('_route') == 'admin_customers' ? 'active' : '' }}">
+            <i class="bi bi-cart-check"></i>
             Customers
         </a>
 
-        <a href="#">
-            <i class="bi bi-credit-card"></i>
+        <a href="{{ path('admin_payments') }}"
+        class="{{ app.request.attributes.get('_route') == 'admin_payments' ? 'active' : '' }}">
+            <i class="bi bi-cart-check"></i>
             Payments
         </a>
     </nav>

@@ -1,0 +1,178 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Customers | BrightBuy Admin{% endblock %}
+
+{% block body %}
+
+<div class="dashboard-container">
+
+    <!-- PAGE HEADER -->
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">
+            CUSTOMER MANAGEMENT
+        </span>
+
+        <h1>
+            Customers
+        </h1>
+
+        <p>
+            Manage your BrightBuy customers and their account information.
+        </p>
+    </section>
+
+    <!-- CUSTOMER MANAGEMENT -->
+    <section class="customers-card">
+
+        <div class="customers-header">
+            <div>
+                <span class="section-eyebrow">
+                    REGISTERED CUSTOMERS
+                </span>
+
+                <h4>
+                    <i class="bi bi-people-fill"></i>
+                    Customer List
+                </h4>
+            </div>
+
+            <span class="customers-count">
+                0 customers
+            </span>
+        </div>
+
+        <!-- SEARCH / FILTER -->
+        <div class="p-4 border-bottom">
+
+            <div class="row g-3">
+
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Search customer name or email..."
+                        >
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <select class="form-select">
+                        <option selected>All Account Status</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CUSTOMER TABLE -->
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Orders</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+
+                                <div
+                                    class="bg-light rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 48px; height: 48px;"
+                                >
+                                    <i class="bi bi-person-fill text-secondary fs-5"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Sample Customer</strong>
+                                    <div class="text-muted small">
+                                        Customer #001
+                                    </div>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            customer@example.com
+                        </td>
+
+                        <td>
+                            09XX XXX XXXX
+                        </td>
+
+                        <td>
+                            0
+                        </td>
+
+                        <td>
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                title="View Customer"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                title="Edit Customer"
+                            >
+                                <i class="bi bi-pencil"></i>
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- PLACEHOLDER NOTE -->
+        <div class="text-center py-4 text-muted">
+
+            <i class="bi bi-info-circle"></i>
+
+            <p class="mb-0 mt-2">
+                Customer data will be connected to the BrightBuy database later.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

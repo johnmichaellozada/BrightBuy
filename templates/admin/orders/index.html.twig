@@ -1,0 +1,197 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Orders | BrightBuy Admin{% endblock %}
+
+{% block body %}
+
+<div class="dashboard-container">
+
+    <!-- PAGE HEADER -->
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">
+            ORDER MANAGEMENT
+        </span>
+
+        <h1>
+            Orders
+        </h1>
+
+        <p>
+            Manage customer orders, payment status, and order fulfillment.
+        </p>
+    </section>
+
+    <!-- ORDER MANAGEMENT -->
+    <section class="customers-card">
+
+        <div class="customers-header">
+            <div>
+                <span class="section-eyebrow">
+                    STORE ORDERS
+                </span>
+
+                <h4>
+                    <i class="bi bi-cart-check-fill"></i>
+                    Order List
+                </h4>
+            </div>
+
+            <span class="customers-count">
+                0 orders
+            </span>
+        </div>
+
+        <!-- SEARCH / FILTER -->
+        <div class="p-4 border-bottom">
+
+            <div class="row g-3">
+
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Search order or customer..."
+                        >
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option selected>All Order Status</option>
+                        <option>Pending</option>
+                        <option>Processing</option>
+                        <option>Shipped</option>
+                        <option>Delivered</option>
+                        <option>Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option selected>All Payment Status</option>
+                        <option>Pending</option>
+                        <option>Paid</option>
+                        <option>Failed</option>
+                        <option>Refunded</option>
+                    </select>
+                </div>
+
+                <div class="col-md-1">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary w-100"
+                        title="Filter"
+                    >
+                        <i class="bi bi-funnel"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ORDER TABLE -->
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>
+                            <strong>#ORD-0001</strong>
+                        </td>
+
+                        <td>
+                            <div>
+                                <strong>Sample Customer</strong>
+                                <div class="text-muted small">
+                                    customer@example.com
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            October 07, 2026
+                        </td>
+
+                        <td>
+                            ₱0.00
+                        </td>
+
+                        <td>
+                            <span class="badge bg-secondary">
+                                Pending
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge bg-warning text-dark">
+                                Pending
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                title="View Order"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-secondary"
+                                title="Update Status"
+                            >
+                                <i class="bi bi-pencil"></i>
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- PLACEHOLDER NOTE -->
+        <div class="text-center py-4 text-muted">
+
+            <i class="bi bi-info-circle"></i>
+
+            <p class="mb-0 mt-2">
+                Order data will be connected to the BrightBuy database later.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

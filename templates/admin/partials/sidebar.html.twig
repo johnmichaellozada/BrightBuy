@@ -1,3 +1,4 @@
+
 <aside class="admin-sidebar">
     <div class="sidebar-brand">
         <h2>BrightBuy</h2>
@@ -5,32 +6,38 @@
 
     <nav class="sidebar-nav">
         <a href="{{ path('admin_dashboard') }}"
-        class="{{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}">
+           class="{{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}">
             <i class="bi bi-speedometer2"></i>
             Dashboard
         </a>
 
         <a href="{{ path('admin_products') }}"
-        class="{{ app.request.attributes.get('_route') == 'admin_products' ? 'active' : '' }}">
+           class="{{ app.request.attributes.get('_route') == 'admin_products' ? 'active' : '' }}">
             <i class="bi bi-box-seam"></i>
             Products
         </a>
 
+        <a href="{{ path('app_category_index') }}"
+           class="{{ app.request.attributes.get('_route') starts with 'app_category_' ? 'active' : '' }}">
+            <i class="bi bi-tags"></i>
+            Categories
+        </a>
+
         <a href="{{ path('admin_orders') }}"
-        class="{{ app.request.attributes.get('_route') == 'admin_orders' ? 'active' : '' }}">
+           class="{{ app.request.attributes.get('_route') == 'admin_orders' ? 'active' : '' }}">
             <i class="bi bi-cart-check"></i>
             Orders
         </a>
 
         <a href="{{ path('admin_customers') }}"
-        class="{{ app.request.attributes.get('_route') == 'admin_customers' ? 'active' : '' }}">
-            <i class="bi bi-cart-check"></i>
+           class="{{ app.request.attributes.get('_route') == 'admin_customers' ? 'active' : '' }}">
+            <i class="bi bi-people"></i>
             Customers
         </a>
 
         <a href="{{ path('admin_payments') }}"
-        class="{{ app.request.attributes.get('_route') == 'admin_payments' ? 'active' : '' }}">
-            <i class="bi bi-cart-check"></i>
+           class="{{ app.request.attributes.get('_route') == 'admin_payments' ? 'active' : '' }}">
+            <i class="bi bi-credit-card"></i>
             Payments
         </a>
     </nav>

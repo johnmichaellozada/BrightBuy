@@ -1,0 +1,41 @@
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Add Category | BrightBuy Admin{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">PRODUCT MANAGEMENT</span>
+        <h1>Add Category</h1>
+        <p>Create a new category to organize your BrightBuy products.</p>
+    </section>
+
+    <section class="customers-card">
+
+        <div class="customers-header">
+            <div>
+                <span class="section-eyebrow">STORE ORGANIZATION</span>
+                <h4>
+                    <i class="bi bi-tags-fill"></i>
+                    Category Information
+                </h4>
+            </div>
+        </div>
+
+        <div class="p-4">
+            {{ include('category/_form.html.twig') }}
+
+            <div class="mt-4">
+                <a href="{{ path('app_category_index') }}"
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Categories
+                </a>
+            </div>
+        </div>
+
+    </section>
+</div>
+{% endblock %}

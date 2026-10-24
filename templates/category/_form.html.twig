@@ -1,0 +1,40 @@
+
+{{ form_start(form) }}
+
+    <div class="mb-4">
+        {{ form_label(form.name, 'Category Name', {
+            'label_attr': {'class': 'form-label fw-semibold'}
+        }) }}
+
+        {{ form_widget(form.name, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'Enter category name'
+            }
+        }) }}
+
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.description, 'Description', {
+            'label_attr': {'class': 'form-label fw-semibold'}
+        }) }}
+
+        {{ form_widget(form.description, {
+            'attr': {
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Enter category description'
+            }
+        }) }}
+
+        {{ form_errors(form.description) }}
+    </div>
+
+    <button type="submit" class="btn btn-warning px-4 fw-semibold">
+        <i class="bi bi-check-circle me-1"></i>
+        {{ button_label|default('Save Category') }}
+    </button>
+
+{{ form_end(form) }}

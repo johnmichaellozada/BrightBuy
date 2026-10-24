@@ -7,9 +7,11 @@ services:
     restart: unless-stopped
     environment:
       APP_ENV: dev
-      DATABASE_URL: "mysql://root:root@database:3306/brightbuy_symfony?charset=utf8mb4"
+      DATABASE_URL: "${DATABASE_URL}"
     ports:
       - "8080:80"
+    volumes:
+      - .:/var/www/html
     depends_on:
       database:
         condition: service_healthy

@@ -1,0 +1,9 @@
+﻿/.git
+/.env.local
+/.env.*.local
+/vendor/
+/var/
+/node_modules/
+/public/bundles/
+/.idea/
+/.vscode/

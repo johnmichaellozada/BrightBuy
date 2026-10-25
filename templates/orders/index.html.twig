@@ -6,30 +6,31 @@
 
 <div class="dashboard-container">
 
-    <!-- PAGE HEADER -->
     <section class="welcome-section">
-        <span class="dashboard-eyebrow">
-            ORDER MANAGEMENT
-        </span>
-
-        <h1>
-            Orders
-        </h1>
-
-        <p>
-            Manage customer orders, payment status, and order fulfillment.
-        </p>
+        <span class="dashboard-eyebrow">ORDER MANAGEMENT</span>
+        <h1>Orders</h1>
+        <p>Manage customer orders, payment status, and order fulfillment.</p>
     </section>
 
-    <!-- ORDER MANAGEMENT -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
     <section class="customers-card">
 
         <div class="customers-header">
             <div>
-                <span class="section-eyebrow">
-                    STORE ORDERS
-                </span>
-
+                <span class="section-eyebrow">STORE ORDERS</span>
                 <h4>
                     <i class="bi bi-cart-check-fill"></i>
                     Order List
@@ -37,71 +38,60 @@
             </div>
 
             <span class="customers-count">
-                0 orders
+                {{ ordersCount }} {{ ordersCount == 1 ? 'order' : 'orders' }}
             </span>
         </div>
 
-        <!-- SEARCH / FILTER -->
-        <div class="p-4 border-bottom">
-
+        <form method="get" action="{{ path('app_orders') }}" class="p-4 border-bottom">
             <div class="row g-3">
-
                 <div class="col-md-5">
+                    <label for="order-search" class="visually-hidden">Search orders</label>
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="bi bi-search"></i>
                         </span>
-
                         <input
-                            type="text"
+                            id="order-search"
+                            type="search"
+                            name="search"
                             class="form-control"
                             placeholder="Search order or customer..."
+                            value="{{ search }}"
                         >
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <select class="form-select">
-                        <option selected>All Order Status</option>
-                        <option>Pending</option>
-                        <option>Processing</option>
-                        <option>Shipped</option>
-                        <option>Delivered</option>
-                        <option>Cancelled</option>
+                    <label for="order-status" class="visually-hidden">Order status</label>
+                    <select id="order-status" name="status" class="form-select">
+                        <option value="" {{ selectedStatus == '' ? 'selected' : '' }}>All Order Status</option>
+                        {% for option in ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] %}
+                            <option value="{{ option }}" {{ selectedStatus == option ? 'selected' : '' }}>{{ option }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
                 <div class="col-md-3">
-                    <select class="form-select">
-                        <option selected>All Payment Status</option>
-                        <option>Pending</option>
-                        <option>Paid</option>
-                        <option>Failed</option>
-                        <option>Refunded</option>
+                    <label for="payment-status" class="visually-hidden">Payment status</label>
+                    <select id="payment-status" name="paymentStatus" class="form-select">
+                        <option value="" {{ selectedPaymentStatus == '' ? 'selected' : '' }}>All Payment Status</option>
+                        {% for option in ['Pending', 'Paid', 'Failed', 'Refunded'] %}
+                            <option value="{{ option }}" {{ selectedPaymentStatus == option ? 'selected' : '' }}>{{ option }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
                 <div class="col-md-1">
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary w-100"
-                        title="Filter"
-                    >
+                    <button type="submit" class="btn btn-outline-secondary w-100" title="Apply search and filters">
                         <i class="bi bi-funnel"></i>
                     </button>
                 </div>
-
             </div>
+        </form>
 
-        </div>
-
-        <!-- ORDER TABLE -->
         <div class="table-responsive">
-
             <table class="table table-hover align-middle mb-0">
-
                 <thead class="table-light">
-
                     <tr>
                         <th>Order</th>
                         <th>Customer</th>
@@ -111,83 +101,76 @@
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
-
                 </thead>
 
                 <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td><strong>#{{ order.orderNumber }}</strong></td>
 
-                    <tr>
-
-                        <td>
-                            <strong>#ORD-0001</strong>
-                        </td>
-
-                        <td>
-                            <div>
-                                <strong>Sample Customer</strong>
-                                <div class="text-muted small">
-                                    customer@example.com
+                            <td>
+                                <div>
+                                    <strong>{{ order.customerName }}</strong>
+                                    <div class="text-muted small">{{ order.customerEmail }}</div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
 
-                        <td>
-                            October 07, 2026
-                        </td>
+                            <td>{{ order.createdAt ? order.createdAt|date('F d, Y') : '—' }}</td>
+                            <td>₱{{ order.totalAmount|number_format(2, '.', ',') }}</td>
 
-                        <td>
-                            ₱0.00
-                        </td>
+                            <td>
+                                {% set paymentClass = {
+                                    'Pending': 'bg-secondary',
+                                    'Paid': 'bg-success',
+                                    'Failed': 'bg-danger',
+                                    'Refunded': 'bg-info text-dark'
+                                } %}
+                                <span class="badge {{ paymentClass[order.paymentStatus]|default('bg-secondary') }}">
+                                    {{ order.paymentStatus }}
+                                </span>
+                            </td>
 
-                        <td>
-                            <span class="badge bg-secondary">
-                                Pending
-                            </span>
-                        </td>
+                            <td>
+                                {% set statusClass = {
+                                    'Pending': 'bg-warning text-dark',
+                                    'Processing': 'bg-primary',
+                                    'Shipped': 'bg-info text-dark',
+                                    'Delivered': 'bg-success',
+                                    'Cancelled': 'bg-danger'
+                                } %}
+                                <span class="badge {{ statusClass[order.status]|default('bg-secondary') }}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
 
-                        <td>
-                            <span class="badge bg-warning text-dark">
-                                Pending
-                            </span>
-                        </td>
-
-                        <td class="text-end">
-
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                title="View Order"
-                            >
-                                <i class="bi bi-eye"></i>
-                            </button>
-
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-secondary"
-                                title="Update Status"
-                            >
-                                <i class="bi bi-pencil"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
+                            <td class="text-end">
+                                <a href="{{ path('app_order_show', {id: order.id}) }}" class="btn btn-sm btn-outline-primary" title="View order details" aria-label="View order details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form method="post" action="{{ path('app_order_update_status', {id: order.id}) }}" class="d-inline-flex align-items-center gap-1">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('update_order_status_' ~ order.id) }}">
+                                    <label for="order-status-{{ order.id }}" class="visually-hidden">Update status for order {{ order.orderNumber }}</label>
+                                    <select id="order-status-{{ order.id }}" name="status" class="form-select form-select-sm" aria-label="Order status" required>
+                                        {% for option in ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] %}
+                                            <option value="{{ option }}" {{ order.status == option ? 'selected' : '' }}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Save order status" aria-label="Save order status">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="bi bi-inbox fs-2 text-muted"></i>
+                                <p class="mb-0 mt-2 text-muted">No orders found in the database yet.</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
-
             </table>
-
-        </div>
-
-        <!-- PLACEHOLDER NOTE -->
-        <div class="text-center py-4 text-muted">
-
-            <i class="bi bi-info-circle"></i>
-
-            <p class="mb-0 mt-2">
-                Order data will be connected to the BrightBuy database later.
-            </p>
-
         </div>
 
     </section>

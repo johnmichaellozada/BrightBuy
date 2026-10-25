@@ -1,18 +1,18 @@
-
+﻿
 <aside class="admin-sidebar">
     <div class="sidebar-brand">
         <h2>BrightBuy</h2>
     </div>
 
     <nav class="sidebar-nav">
-        <a href="{{ path('admin_dashboard') }}"
-           class="{{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}">
+        <a href="{{ path('app_dashboard') }}"
+           class="{{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}">
             <i class="bi bi-speedometer2"></i>
             Dashboard
         </a>
 
-        <a href="{{ path('admin_products') }}"
-           class="{{ app.request.attributes.get('_route') == 'admin_products' ? 'active' : '' }}">
+        <a href="{{ path('app_product_index') }}"
+           class="{{ app.request.attributes.get('_route') starts with 'app_product_' ? 'active' : '' }}">
             <i class="bi bi-box-seam"></i>
             Products
         </a>
@@ -23,22 +23,23 @@
             Categories
         </a>
 
-        <a href="{{ path('admin_orders') }}"
-           class="{{ app.request.attributes.get('_route') == 'admin_orders' ? 'active' : '' }}">
+        <a href="{{ path('app_orders') }}"
+           class="{{ app.request.attributes.get('_route') == 'app_orders' ? 'active' : '' }}">
             <i class="bi bi-cart-check"></i>
             Orders
         </a>
 
-        <a href="{{ path('admin_customers') }}"
-           class="{{ app.request.attributes.get('_route') == 'admin_customers' ? 'active' : '' }}">
+        <a href="{{ path('app_customers') }}"
+           class="{{ app.request.attributes.get('_route') == 'app_customers' ? 'active' : '' }}">
             <i class="bi bi-people"></i>
             Customers
         </a>
 
-        <a href="{{ path('admin_payments') }}"
-           class="{{ app.request.attributes.get('_route') == 'admin_payments' ? 'active' : '' }}">
+        <a href="{{ path('app_payments') }}"
+           class="{{ app.request.attributes.get('_route') == 'app_payments' ? 'active' : '' }}">
             <i class="bi bi-credit-card"></i>
             Payments
         </a>
     </nav>
 </aside>
+

@@ -1,0 +1,47 @@
+﻿
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Product | BrightBuy Admin{% endblock %}
+
+{% block body %}
+
+<div class="dashboard-container">
+
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">PRODUCT MANAGEMENT</span>
+        <h1>Edit Product</h1>
+        <p>Update product information, category, pricing, and inventory.</p>
+    </section>
+
+    <section class="customers-card">
+
+        <div class="customers-header">
+            <div>
+                <span class="section-eyebrow">STORE INVENTORY</span>
+                <h4>
+                    <i class="bi bi-pencil-square"></i>
+                    Product Information
+                </h4>
+            </div>
+        </div>
+
+        <div class="p-4">
+            {{ include('product/_form.html.twig', {
+                'button_label': 'Save Changes'
+            }) }}
+
+            <div class="mt-4">
+                <a href="{{ path('app_product_index') }}"
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Back to Products
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
+

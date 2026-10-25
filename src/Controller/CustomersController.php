@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class PaymentsController extends AbstractController
+final class CustomersController extends AbstractController
 {
-    #[Route('/admin/payments', name: 'admin_payments')]
+    #[Route('/customers', name: 'app_customers', methods: ['GET'])]
     public function index(): Response
     {
-        return $this->render('admin/payments/index.html.twig');
+        return $this->render('customers/index.html.twig');
     }
 }

@@ -1,0 +1,86 @@
+
+{{ form_start(form) }}
+
+    <div class="mb-4">
+        {{ form_label(form.name, 'Product Name', {
+            'label_attr': {'class': 'form-label fw-semibold'}
+        }) }}
+
+        {{ form_widget(form.name, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'Enter product name'
+            }
+        }) }}
+
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.category, 'Category', {
+            'label_attr': {'class': 'form-label fw-semibold'}
+        }) }}
+
+        {{ form_widget(form.category, {
+            'attr': {'class': 'form-select'}
+        }) }}
+
+        {{ form_errors(form.category) }}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.description, 'Description', {
+            'label_attr': {'class': 'form-label fw-semibold'}
+        }) }}
+
+        {{ form_widget(form.description, {
+            'attr': {
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Enter product description'
+            }
+        }) }}
+
+        {{ form_errors(form.description) }}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.price, 'Price (₱)', {
+            'label_attr': {'class': 'form-label fw-semibold'}
+        }) }}
+
+        {{ form_widget(form.price, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': '0.00',
+                'min': '0',
+                'step': '0.01'
+            }
+        }) }}
+
+        {{ form_errors(form.price) }}
+    </div>
+
+    <div class="mb-4">
+        {{ form_label(form.stock, 'Stock Quantity', {
+            'label_attr': {'class': 'form-label fw-semibold'}
+        }) }}
+
+        {{ form_widget(form.stock, {
+            'attr': {
+                'class': 'form-control',
+                'placeholder': 'Enter available quantity',
+                'min': '0'
+            }
+        }) }}
+
+        {{ form_errors(form.stock) }}
+    </div>
+
+    <button type="submit" class="btn btn-warning px-4 fw-semibold">
+        <i class="bi bi-check-circle me-1"></i>
+        {{ button_label|default('Save Product') }}
+    </button>
+
+{{ form_end(form) }}
+

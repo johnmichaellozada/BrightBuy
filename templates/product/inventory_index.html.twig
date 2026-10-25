@@ -1,0 +1,235 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Central Inventory | BrightBuy{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">BRIGHTBUY ADMIN</span>
+        <h1>Central Inventory Management</h1>
+        <p>Monitor product quantities, manage stock, and identify products that need replenishment.</p>
+    </section>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="customers-card p-4 h-100">
+                <div class="text-muted small mb-2">TOTAL PRODUCTS</div>
+                <h2 class="mb-0">{{ products|length }}</h2>
+                <div class="small text-muted mt-2">Products in the catalog</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="customers-card p-4 h-100">
+                <div class="text-muted small mb-2">LOW STOCK</div>
+                <h2 class="mb-0 text-warning">{{ lowStockCount }}</h2>
+                <div class="small text-muted mt-2">
+                    1–{{ lowStockThreshold }} units remaining
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="customers-card p-4 h-100">
+                <div class="text-muted small mb-2">OUT OF STOCK</div>
+                <h2 class="mb-0 text-danger">{{ outOfStockCount }}</h2>
+                <div class="small text-muted mt-2">Products with zero units</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="customers-card p-4">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <span class="section-eyebrow">STOCK OVERVIEW</span>
+                <h3 class="mb-1">Product Inventory</h3>
+                <p class="text-muted mb-0">Review quantities and update stock for each product.</p>
+            </div>
+
+            <a href="{{ path('app_product_index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-box-seam me-1"></i>
+                Manage Products
+            </a>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-lg-4 col-md-6">
+                <label for="inventorySearch" class="form-label fw-semibold">
+                    Search Products
+                </label>
+                <input
+                    type="search"
+                    id="inventorySearch"
+                    class="form-control"
+                    placeholder="Search by product name or ID..."
+                >
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <label for="inventoryCategory" class="form-label fw-semibold">
+                    Filter by Category
+                </label>
+                <select id="inventoryCategory" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.name|lower }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <label for="inventoryStatus" class="form-label fw-semibold">
+                    Filter by Stock Status
+                </label>
+                <select id="inventoryStatus" class="form-select">
+                    <option value="">All Stock Status</option>
+                    <option value="in-stock">In Stock</option>
+                    <option value="low-stock">Low Stock</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock Quantity</th>
+                        <th>Stock Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="inventoryTableBody">
+                {% for product in products %}
+                    {% set stock = product.stock ?? 0 %}
+                    {% set categoryName = product.category ? product.category.name : 'Uncategorized' %}
+
+                    {% if stock <= 0 %}
+                        {% set stockStatus = 'out-of-stock' %}
+                    {% elseif stock <= lowStockThreshold %}
+                        {% set stockStatus = 'low-stock' %}
+                    {% else %}
+                        {% set stockStatus = 'in-stock' %}
+                    {% endif %}
+
+                    <tr
+                        class="inventory-row"
+                        data-search="{{ (product.name ~ ' ' ~ product.id)|lower }}"
+                        data-category="{{ categoryName|lower }}"
+                        data-status="{{ stockStatus }}"
+                    >
+                        <td>
+                            <div class="fw-semibold">{{ product.name }}</div>
+                            <small class="text-muted">
+                                Product #{{ '%03d'|format(product.id) }}
+                            </small>
+                        </td>
+
+                        <td>{{ categoryName }}</td>
+
+                        <td>₱{{ product.price|number_format(2, '.', ',') }}</td>
+
+                        <td>
+                            <span class="fw-semibold">{{ stock }}</span>
+                            <span class="text-muted small">units</span>
+                        </td>
+
+                        <td>
+                            {% if stockStatus == 'out-of-stock' %}
+                                <span class="badge bg-danger">Out of Stock</span>
+                            {% elseif stockStatus == 'low-stock' %}
+                                <span class="badge bg-warning text-dark">Low Stock</span>
+                            {% else %}
+                                <span class="badge bg-success">In Stock</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end">
+                            <a
+                                href="{{ path('app_product_inventory', {'id': product.id}) }}"
+                                class="btn btn-sm btn-warning"
+                            >
+                                <i class="bi bi-box-seam me-1"></i>
+                                Adjust Stock
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            No products found. Add a product to begin managing inventory.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="inventoryNoResults" class="alert alert-light text-center d-none mb-0">
+            No products match your search or selected filters.
+        </div>
+    </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('inventorySearch');
+    const categoryFilter = document.getElementById('inventoryCategory');
+    const statusFilter = document.getElementById('inventoryStatus');
+    const rows = document.querySelectorAll('.inventory-row');
+    const noResults = document.getElementById('inventoryNoResults');
+
+    function filterInventory() {
+        const search = searchInput.value.trim().toLowerCase();
+        const category = categoryFilter.value.toLowerCase();
+        const status = statusFilter.value;
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+            const searchText = row.dataset.search || '';
+            const rowCategory = row.dataset.category || '';
+            const rowStatus = row.dataset.status || '';
+
+            const matchesSearch = searchText.includes(search);
+            const matchesCategory = category === '' || rowCategory === category;
+            const matchesStatus = status === '' || rowStatus === status;
+
+            const visible = matchesSearch && matchesCategory && matchesStatus;
+
+            row.classList.toggle('d-none', !visible);
+
+            if (visible) {
+                visibleCount++;
+            }
+        });
+
+        noResults.classList.toggle('d-none', visibleCount > 0);
+    }
+
+    searchInput.addEventListener('input', filterInventory);
+    categoryFilter.addEventListener('change', filterInventory);
+    statusFilter.addEventListener('change', filterInventory);
+});
+</script>
+{% endblock %}

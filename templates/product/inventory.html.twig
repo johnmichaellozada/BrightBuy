@@ -1,0 +1,112 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Inventory Adjustment | BrightBuy{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">INVENTORY MANAGEMENT</span>
+        <h1>Adjust Stock</h1>
+        <p>Update the inventory quantity for this product.</p>
+    </section>
+
+    <section class="customers-card p-4">
+
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+            <div>
+                <span class="section-eyebrow">PRODUCT DETAILS</span>
+                <h4 class="mb-1">{{ product.name }}</h4>
+                <div class="text-muted small">
+                    Product #{{ '%03d'|format(product.id) }}
+                </div>
+            </div>
+
+            <a href="{{ path('app_product_index') }}"
+               class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i>
+                Back to Products
+            </a>
+        </div>
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 h-100">
+                    <div class="text-muted small">Current Stock</div>
+                    <h3 class="mb-0">{{ product.stock }}</h3>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 h-100">
+                    <div class="text-muted small">Stock Status</div>
+
+                    {% if product.stock <= 0 %}
+                        <span class="badge bg-secondary">Out of Stock</span>
+                    {% elseif product.stock <= lowStockThreshold %}
+                        <span class="badge bg-warning text-dark">Low Stock</span>
+                    {% else %}
+                        <span class="badge bg-success">In Stock</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="border rounded p-3 h-100">
+                    <div class="text-muted small">Low-stock Threshold</div>
+                    <h3 class="mb-0">{{ lowStockThreshold }}</h3>
+                    <div class="text-muted small">Units or fewer</div>
+                </div>
+            </div>
+
+        </div>
+
+        {% for message in app.flashes('danger') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {{ form_start(form) }}
+
+            <div class="mb-3">
+                {{ form_label(form.action) }}
+                {{ form_widget(form.action, {
+                    attr: {'class': 'form-select'}
+                }) }}
+                {{ form_errors(form.action) }}
+            </div>
+
+            <div class="mb-4">
+                {{ form_label(form.quantity) }}
+                {{ form_widget(form.quantity, {
+                    attr: {'class': 'form-control'}
+                }) }}
+                {{ form_errors(form.quantity) }}
+                <div class="form-text">
+                    Use a positive number for Add Stock and Reduce Stock.
+                    Set Exact Quantity can set the stock to zero.
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="submit" class="btn btn-warning">
+                    <i class="bi bi-check-lg"></i>
+                    Save Stock Adjustment
+                </button>
+
+                <a href="{{ path('app_product_index') }}"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+            </div>
+
+        {{ form_end(form) }}
+
+    </section>
+</div>
+{% endblock %}

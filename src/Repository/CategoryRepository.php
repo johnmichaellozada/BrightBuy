@@ -16,28 +16,43 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-//    /**
-//     * @return Category[] Returns an array of Category objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Search categories by name.
+     *
+     * @return Category[]
+     */
+    public function searchCategories(string $search): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.name LIKE :search')
+            ->setParameter('search', '%' . $search . '%')
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?Category
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * Find categories ordered alphabetically.
+     *
+     * @return Category[]
+     */
+    public function findAllOrderedByName(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find a category by its exact name.
+     */
+    public function findByName(string $name): ?Category
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.name = :name')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

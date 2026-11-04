@@ -23,26 +23,13 @@ final class ProductController extends AbstractController
         ProductRepository $productRepository,
         CategoryRepository $categoryRepository
     ): Response {
-        $products = $productRepository->findAll();
-
-        $lowStockCount = 0;
-        $outOfStockCount = 0;
-
-        foreach ($products as $product) {
-            $stock = $product->getStock() ?? 0;
-
-            if ($stock <= 0) {
-                $outOfStockCount++;
-            } elseif ($stock <= self::LOW_STOCK_THRESHOLD) {
-                $lowStockCount++;
-            }
-        }
-
         return $this->render('product/index.html.twig', [
-            'products' => $products,
-            'categories' => $categoryRepository->findAll(),
-            'lowStockCount' => $lowStockCount,
-            'outOfStockCount' => $outOfStockCount,
+            'products' => $productRepository->findAll(),
+            'categories' => $categoryRepository->findAllOrderedByName(),
+            'lowStockCount' => $productRepository->countLowStock(
+                self::LOW_STOCK_THRESHOLD
+            ),
+            'outOfStockCount' => $productRepository->countOutOfStock(),
             'lowStockThreshold' => self::LOW_STOCK_THRESHOLD,
         ]);
     }
@@ -52,26 +39,13 @@ final class ProductController extends AbstractController
         ProductRepository $productRepository,
         CategoryRepository $categoryRepository
     ): Response {
-        $products = $productRepository->findAll();
-
-        $lowStockCount = 0;
-        $outOfStockCount = 0;
-
-        foreach ($products as $product) {
-            $stock = $product->getStock() ?? 0;
-
-            if ($stock <= 0) {
-                $outOfStockCount++;
-            } elseif ($stock <= self::LOW_STOCK_THRESHOLD) {
-                $lowStockCount++;
-            }
-        }
-
         return $this->render('product/inventory_index.html.twig', [
-            'products' => $products,
-            'categories' => $categoryRepository->findAll(),
-            'lowStockCount' => $lowStockCount,
-            'outOfStockCount' => $outOfStockCount,
+            'products' => $productRepository->findAll(),
+            'categories' => $categoryRepository->findAllOrderedByName(),
+            'lowStockCount' => $productRepository->countLowStock(
+                self::LOW_STOCK_THRESHOLD
+            ),
+            'outOfStockCount' => $productRepository->countOutOfStock(),
             'lowStockThreshold' => self::LOW_STOCK_THRESHOLD,
         ]);
     }
@@ -166,7 +140,10 @@ final class ProductController extends AbstractController
             }
 
             if (!in_array($action, ['add', 'reduce', 'set'], true)) {
-                $this->addFlash('danger', 'Please select a valid stock action.');
+                $this->addFlash(
+                    'danger',
+                    'Please select a valid stock action.'
+                );
             } elseif ($quantity === 0 && $action !== 'set') {
                 $this->addFlash(
                     'danger',

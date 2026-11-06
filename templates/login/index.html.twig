@@ -1,0 +1,274 @@
+
+{% extends 'public_base.html.twig' %}
+
+{% block title %}Login | BrightBuy{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .auth-card {
+        max-width: 460px !important;
+        border: 1px solid rgba(18, 100, 232, .10);
+        border-radius: 22px;
+        box-shadow: 0 22px 55px rgba(0, 0, 0, .22);
+    }
+
+    .auth-card-body {
+        padding: 42px 38px;
+    }
+
+    .login-icon {
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 22px;
+        background: linear-gradient(135deg, #1264e8, #063a91);
+        color: white;
+        font-size: 34px;
+        box-shadow: 0 8px 20px rgba(18, 100, 232, .25);
+    }
+
+    .auth-heading {
+        color: #102c50;
+        font-size: 29px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .auth-subheading {
+        color: #71809b;
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 28px;
+    }
+
+    .login-label {
+        color: #243b5a;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 9px;
+    }
+
+    .login-input-group {
+        position: relative;
+    }
+
+    .login-input-group .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #1264e8;
+        z-index: 5;
+        font-size: 17px;
+    }
+
+    .login-input {
+        height: 52px;
+        padding-left: 45px !important;
+        border: 1px solid #dce4f0 !important;
+        border-radius: 10px !important;
+        background: #f9fbff !important;
+        font-size: 14px;
+        transition: .2s ease;
+    }
+
+    .login-input:focus {
+        background: #fff !important;
+        border-color: #1264e8 !important;
+        box-shadow: 0 0 0 4px rgba(18, 100, 232, .10) !important;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #71809b;
+        z-index: 6;
+        padding: 5px;
+    }
+
+    .password-toggle:hover {
+        color: #1264e8;
+    }
+
+    .auth-button {
+        min-height: 52px;
+        border-radius: 10px;
+        font-size: 15px;
+        box-shadow: 0 7px 16px rgba(255, 201, 40, .25);
+        transition: .2s ease;
+    }
+
+    .auth-button:hover {
+        box-shadow: 0 10px 22px rgba(255, 201, 40, .35);
+    }
+
+    .auth-footer {
+        color: #71809b;
+        font-size: 13px;
+    }
+
+    .auth-footer a {
+        color: #1264e8;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .auth-footer a:hover {
+        color: #063a91;
+        text-decoration: underline;
+    }
+
+    .auth-divider {
+        height: 1px;
+        background: #edf1f7;
+        margin: 25px 0 20px;
+    }
+
+    @media (max-width: 480px) {
+        .auth-card-body {
+            padding: 32px 23px;
+        }
+
+        .auth-heading {
+            font-size: 25px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="auth-card">
+    <div class="auth-card-body">
+
+        <div class="text-center">
+            <div class="login-icon">
+                <i class="bi bi-person-fill-lock"></i>
+            </div>
+
+            <h2 class="auth-heading">Welcome Back!</h2>
+
+            <p class="auth-subheading">
+                Sign in to your account and enjoy shopping with BrightBuy.
+            </p>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger rounded-3 small">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                Invalid email or password. Please try again.
+            </div>
+        {% endif %}
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success rounded-3 small">
+                 <i class="bi bi-check-circle-fill me-2"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <form method="post" action="{{ path('app_login') }}">
+
+            <div class="mb-4">
+                <label for="email" class="form-label login-label">
+                    Email Address
+                </label>
+
+                <div class="login-input-group">
+                    <i class="bi bi-envelope input-icon"></i>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="_username"
+                        class="form-control login-input"
+                        value="{{ last_username }}"
+                        placeholder="Enter your email address"
+                        autocomplete="email"
+                        required
+                        autofocus
+                    >
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label login-label">
+                    Password
+                </label>
+
+                <div class="login-input-group">
+                    <i class="bi bi-lock input-icon"></i>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="_password"
+                        class="form-control login-input"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        id="togglePassword"
+                        aria-label="Show password"
+                    >
+                        <i class="bi bi-eye" id="passwordIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <input
+                type="hidden"
+                name="_csrf_token"
+                value="{{ csrf_token('authenticate') }}"
+            >
+
+            <button type="submit" class="btn auth-button w-100 mt-4">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Sign In
+            </button>
+
+        </form>
+
+        <div class="auth-divider"></div>
+
+        <div class="text-center auth-footer">
+            Don't have an account?
+            <a href="{{ path('app_register') }}">Create Account</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const password = document.getElementById('password');
+        const toggle = document.getElementById('togglePassword');
+        const icon = document.getElementById('passwordIcon');
+
+        if (password && toggle && icon) {
+            toggle.addEventListener('click', function () {
+                const isHidden = password.type === 'password';
+
+                password.type = isHidden ? 'text' : 'password';
+                icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+                toggle.setAttribute(
+                    'aria-label',
+                    isHidden ? 'Hide password' : 'Show password'
+                );
+            });
+        }
+    });
+</script>
+{% endblock %}

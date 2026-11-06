@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BrightBuy{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(36,104,190,.35), transparent 35%),
+                radial-gradient(circle at 85% 80%, rgba(20,74,145,.35), transparent 35%),
+                linear-gradient(135deg, #071a35, #0b2c55, #06152d);
+            color: #17243a;
+        }
+
+        .public-header {
+            min-height: 75px;
+            padding: 15px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            color: #fff;
+            font-size: 25px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .brand span { color: #ffc928; }
+
+        .back-home {
+            color: #fff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .back-home:hover { color: #ffc928; }
+
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 16px 55px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 480px;
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+        }
+
+        .auth-card-body { padding: 35px; }
+
+        .auth-button {
+            width: 100%;
+            border: none;
+            border-radius: 9px;
+            padding: 13px;
+            background: #ffc928;
+            color: #14243c;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .auth-button:hover {
+            background: #f0b900;
+            transform: translateY(-1px);
+        }
+
+        .auth-card .form-control {
+            min-height: 46px;
+            border-radius: 8px;
+        }
+
+        .auth-card .form-control:focus {
+            border-color: #2365b5;
+            box-shadow: 0 0 0 .2rem rgba(35,101,181,.15);
+        }
+
+        @media (max-width: 576px) {
+            .auth-card-body { padding: 25px 20px; }
+            .public-header { padding: 15px 20px; }
+        }
+
+	/* Hide browser's native password reveal icon */
+	input[type="password"]::-ms-reveal,
+	input[type="password"]::-ms-clear {
+   	 display: none;
+	}
+    </style>
+
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body>
+
+    <main class="auth-wrapper">
+        {% block body %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

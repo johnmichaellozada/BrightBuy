@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -70,9 +72,14 @@ class User
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->email = strtolower(trim($email));
 
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email ?? '';
     }
 
     public function getPassword(): ?string
@@ -106,9 +113,20 @@ class User
 
     public function setRole(string $role): static
     {
-        $this->role = $role;
+        $this->role = strtolower(trim($role));
 
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        $role = strtoupper(trim($this->role ?? 'CUSTOMER'));
+
+        if (!str_starts_with($role, 'ROLE_')) {
+            $role = 'ROLE_' . $role;
+        }
+
+        return array_unique(['ROLE_USER', $role]);
     }
 
     public function getCreatedAt(): ?\DateTime
@@ -121,5 +139,10 @@ class User
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // No temporary sensitive data to clear.
     }
 }

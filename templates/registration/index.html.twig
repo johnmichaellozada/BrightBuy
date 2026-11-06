@@ -1,0 +1,376 @@
+
+{% extends 'public_base.html.twig' %}
+
+{% block title %}Create Account | BrightBuy{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .auth-card {
+        max-width: 540px !important;
+        border: 1px solid rgba(18, 100, 232, .10);
+        border-radius: 22px;
+        box-shadow: 0 22px 55px rgba(0, 0, 0, .22);
+    }
+
+    .auth-card-body {
+        padding: 38px 40px;
+    }
+
+    .register-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 21px;
+        background: linear-gradient(135deg, #1264e8, #063a91);
+        color: white;
+        font-size: 32px;
+        box-shadow: 0 8px 20px rgba(18, 100, 232, .25);
+    }
+
+    .auth-heading {
+        color: #102c50;
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .auth-subheading {
+        color: #71809b;
+        font-size: 13px;
+        line-height: 1.7;
+        margin-bottom: 27px;
+    }
+
+    .register-label {
+        color: #243b5a;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .register-input-group {
+        position: relative;
+    }
+
+    .register-input-group .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #1264e8;
+        z-index: 5;
+        font-size: 16px;
+    }
+
+    .register-input {
+        min-height: 48px;
+        padding-left: 42px !important;
+        padding-right: 43px !important;
+        border: 1px solid #dce4f0 !important;
+        border-radius: 10px !important;
+        background: #f9fbff !important;
+        font-size: 13px;
+        transition: .2s ease;
+    }
+
+    .register-input:focus {
+        background: #fff !important;
+        border-color: #1264e8 !important;
+        box-shadow: 0 0 0 4px rgba(18, 100, 232, .10) !important;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #71809b;
+        z-index: 6;
+        padding: 5px;
+    }
+
+    .password-toggle:hover {
+        color: #1264e8;
+    }
+
+    .register-input-group .form-control.is-invalid {
+        background-image: none;
+    }
+
+    .register-error {
+        font-size: 11px;
+        margin-top: 5px;
+    }
+
+    .auth-button {
+        min-height: 51px;
+        border-radius: 10px;
+        font-size: 14px;
+        box-shadow: 0 7px 16px rgba(255, 201, 40, .25);
+        transition: .2s ease;
+    }
+
+    .auth-button:hover {
+        box-shadow: 0 10px 22px rgba(255, 201, 40, .35);
+    }
+
+    .auth-footer {
+        color: #71809b;
+        font-size: 12px;
+    }
+
+    .auth-footer a {
+        color: #1264e8;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .auth-footer a:hover {
+        color: #063a91;
+        text-decoration: underline;
+    }
+
+    .register-divider {
+        height: 1px;
+        background: #edf1f7;
+        margin: 22px 0 18px;
+    }
+
+    @media (max-width: 576px) {
+        .auth-card-body {
+            padding: 30px 22px;
+        }
+
+        .auth-heading {
+            font-size: 24px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="auth-card">
+    <div class="auth-card-body">
+
+        <div class="text-center">
+            <div class="register-icon">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+
+            <h2 class="auth-heading">Create Your Account</h2>
+
+            <p class="auth-subheading">
+                Join BrightBuy and discover quality products at prices you'll love.
+            </p>
+        </div>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success rounded-3 small">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {{ form_start(registrationForm) }}
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.firstName, null, {
+                        label_attr: {class: 'form-label register-label'}
+                    }) }}
+
+                    <div class="register-input-group">
+                        <i class="bi bi-person input-icon"></i>
+
+                        {{ form_widget(registrationForm.firstName, {
+                            attr: {
+                                class: 'form-control register-input',
+                                placeholder: 'First name'
+                            }
+                        }) }}
+                    </div>
+
+                    <div class="text-danger register-error">
+                        {{ form_errors(registrationForm.firstName) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    {{ form_label(registrationForm.lastName, null, {
+                        label_attr: {class: 'form-label register-label'}
+                    }) }}
+
+                    <div class="register-input-group">
+                        <i class="bi bi-person input-icon"></i>
+
+                        {{ form_widget(registrationForm.lastName, {
+                            attr: {
+                                class: 'form-control register-input',
+                                placeholder: 'Last name'
+                            }
+                        }) }}
+                    </div>
+
+                    <div class="text-danger register-error">
+                        {{ form_errors(registrationForm.lastName) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.email, null, {
+                    label_attr: {class: 'form-label register-label'}
+                }) }}
+
+                <div class="register-input-group">
+                    <i class="bi bi-envelope input-icon"></i>
+
+                    {{ form_widget(registrationForm.email, {
+                        attr: {
+                            class: 'form-control register-input',
+                            placeholder: 'Enter your email address'
+                        }
+                    }) }}
+                </div>
+
+                <div class="text-danger register-error">
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.phone, null, {
+                    label_attr: {class: 'form-label register-label'}
+                }) }}
+
+                <div class="register-input-group">
+                    <i class="bi bi-telephone input-icon"></i>
+
+                    {{ form_widget(registrationForm.phone, {
+                        attr: {
+                            class: 'form-control register-input',
+                            placeholder: 'Enter phone number'
+                        }
+                    }) }}
+                </div>
+
+                <div class="text-danger register-error">
+                    {{ form_errors(registrationForm.phone) }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.plainPassword.first, null, {
+                    label_attr: {class: 'form-label register-label'}
+                }) }}
+
+                <div class="register-input-group">
+                    <i class="bi bi-lock input-icon"></i>
+
+                    {{ form_widget(registrationForm.plainPassword.first, {
+                        attr: {
+                            id: 'registerPassword',
+                            class: 'form-control register-input',
+                            placeholder: 'Create password',
+                            autocomplete: 'new-password'
+                        }
+                    }) }}
+
+                    <button type="button"
+                            class="password-toggle"
+                            data-toggle-password="registerPassword"
+                            aria-label="Show password">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_label(registrationForm.plainPassword.second, null, {
+                    label_attr: {class: 'form-label register-label'}
+                }) }}
+
+                <div class="register-input-group">
+                    <i class="bi bi-shield-lock input-icon"></i>
+
+                    {{ form_widget(registrationForm.plainPassword.second, {
+                        attr: {
+                            id: 'confirmPassword',
+                            class: 'form-control register-input',
+                            placeholder: 'Confirm your password',
+                            autocomplete: 'new-password'
+                        }
+                    }) }}
+
+                    <button type="button"
+                            class="password-toggle"
+                            data-toggle-password="confirmPassword"
+                            aria-label="Show password">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+
+                <div class="text-danger register-error">
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn auth-button w-100 mt-3">
+                <i class="bi bi-person-check-fill me-2"></i>
+                Create Account
+            </button>
+
+        {{ form_end(registrationForm) }}
+
+        <div class="register-divider"></div>
+
+        <div class="text-center auth-footer">
+            Already have an account?
+            <a href="{{ path('app_login') }}">Sign In</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.querySelectorAll('[data-toggle-password]').forEach(function (button) {
+
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const group = button.closest('.register-input-group');
+                const password = group ? group.querySelector('input') : null;
+                const icon = button.querySelector('i');
+
+                if (!password || !icon) {
+                    return;
+                }
+
+                const isHidden = password.type === 'password';
+
+                password.type = isHidden ? 'text' : 'password';
+
+                icon.className = isHidden
+                    ? 'bi bi-eye-slash'
+                    : 'bi bi-eye';
+
+                button.setAttribute(
+                    'aria-label',
+                    isHidden ? 'Hide password' : 'Show password'
+                );
+            });
+
+        });
+
+    });
+</script>
+{% endblock %}

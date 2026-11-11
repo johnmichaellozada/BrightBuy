@@ -5,41 +5,57 @@
     </div>
 
     <nav class="sidebar-nav">
+
+        {# Dashboard #}
         <a href="{{ path('app_dashboard') }}"
            class="{{ app.request.attributes.get('_route') == 'app_dashboard' ? 'active' : '' }}">
             <i class="bi bi-speedometer2"></i>
             Dashboard
         </a>
 
+        {# Products #}
         <a href="{{ path('app_product_index') }}"
            class="{{ app.request.attributes.get('_route') starts with 'app_product_' ? 'active' : '' }}">
             <i class="bi bi-box-seam"></i>
             Products
         </a>
 
+        {# Categories #}
         <a href="{{ path('app_category_index') }}"
            class="{{ app.request.attributes.get('_route') starts with 'app_category_' ? 'active' : '' }}">
             <i class="bi bi-tags"></i>
             Categories
         </a>
 
+        {# Orders #}
         <a href="{{ path('app_orders') }}"
            class="{{ app.request.attributes.get('_route') == 'app_orders' ? 'active' : '' }}">
             <i class="bi bi-cart-check"></i>
             Orders
         </a>
 
+        {# Customers #}
         <a href="{{ path('app_customers') }}"
            class="{{ app.request.attributes.get('_route') == 'app_customers' ? 'active' : '' }}">
             <i class="bi bi-people"></i>
             Customers
         </a>
 
+        {# User Management - Admin Only #}
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_user_management') }}"
+               class="{{ app.request.attributes.get('_route') starts with 'app_user_management' ? 'active' : '' }}">
+                <i class="bi bi-person-gear"></i>
+                User Management
+            </a>
+        {% endif %}
+
+        {# Payments #}
         <a href="{{ path('app_payments') }}"
            class="{{ app.request.attributes.get('_route') == 'app_payments' ? 'active' : '' }}">
             <i class="bi bi-credit-card"></i>
             Payments
         </a>
+
     </nav>
 </aside>
-

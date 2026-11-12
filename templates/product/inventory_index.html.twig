@@ -4,89 +4,559 @@
 {% block title %}Central Inventory | BrightBuy{% endblock %}
 
 {% block body %}
-<div class="dashboard-container">
 
-    <section class="welcome-section">
-        <span class="dashboard-eyebrow">BRIGHTBUY ADMIN</span>
-        <h1>Central Inventory Management</h1>
+<style>
+    .inventory-container {
+        position: relative;
+        isolation: isolate;
+        width: 100%;
+        max-width: 1350px;
+        margin: auto;
+        padding: 42px 30px 60px;
+    }
+
+    .inventory-container::before,
+    .inventory-container::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+        border-radius: 50%;
+    }
+
+    .inventory-container::before {
+        width: 300px;
+        height: 300px;
+        top: 35px;
+        right: -110px;
+        border: 28px solid rgba(25, 112, 220, .07);
+    }
+
+    .inventory-container::after {
+        width: 230px;
+        height: 230px;
+        bottom: -100px;
+        left: -65px;
+        border: 24px solid rgba(255, 191, 0, .08);
+    }
+
+    .inventory-heading {
+        margin-bottom: 30px;
+    }
+
+    .inventory-heading h1 {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: #071b55;
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -.6px;
+        margin: 0;
+    }
+
+    .inventory-heading h1::before {
+        content: "";
+        width: 7px;
+        height: 34px;
+        flex: 0 0 7px;
+        border-radius: 8px;
+        background: #ffbf00;
+    }
+
+    .inventory-heading p {
+        color: #71809b;
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
+    .inventory-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .inventory-stat-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 25px;
+        background: rgba(255,255,255,.97);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 20px;
+        box-shadow: 0 10px 26px rgba(8,44,105,.10);
+        transition: transform .2s ease, box-shadow .2s ease;
+        overflow: hidden;
+    }
+
+    .inventory-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 30px rgba(8,44,105,.14);
+    }
+
+    .inventory-stat-card::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 58px;
+        height: 19px;
+        background: #ffbf00;
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    .inventory-stat-icon {
+        width: 58px;
+        height: 58px;
+        min-width: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        font-size: 25px;
+    }
+
+    .inventory-stat-icon.total {
+        background: #e6ecfa;
+        color: #1264e8;
+    }
+
+    .inventory-stat-icon.low {
+        background: #fff1cc;
+        color: #d18b00;
+    }
+
+    .inventory-stat-icon.out {
+        background: #ffe1e1;
+        color: #dc3545;
+    }
+
+    .inventory-stat-card h2 {
+        color: #06185f;
+        font-size: 30px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .inventory-stat-card p {
+        color: #71809b;
+        font-size: 13px;
+        margin: 4px 0 0;
+    }
+
+    .inventory-panel {
+        background: rgba(255,255,255,.98);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 22px;
+        box-shadow: 0 10px 26px rgba(8,44,105,.10);
+        overflow: hidden;
+    }
+
+    .inventory-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 28px;
+        border-bottom: 1px solid #edf0f5;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .inventory-panel-header h2 {
+        color: #071b55;
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .inventory-panel-header h2 i {
+        color: #1264e8;
+    }
+
+    .inventory-panel-header p {
+        color: #71809b;
+        font-size: 13px;
+        margin: 6px 0 0;
+    }
+
+    .inventory-eyebrow {
+        display: inline-block;
+        color: #1264e8;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 7px;
+    }
+
+    .inventory-manage-btn {
+        padding: 10px 17px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .inventory-filters {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 22px 28px;
+        background: #f6f9ff;
+        border-bottom: 1px solid #e6edf8;
+    }
+
+    .inventory-filters label {
+        display: block;
+        color: #526b91;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .inventory-filters input,
+    .inventory-filters select {
+        width: 100%;
+        min-height: 43px;
+        padding: 10px 13px;
+        border: 1px solid #dce3ef;
+        border-radius: 10px;
+        outline: none;
+        font-family: inherit;
+        font-size: 13px;
+        color: #334155;
+        background: #ffffff;
+    }
+
+    .inventory-filters input:focus,
+    .inventory-filters select:focus {
+        border-color: #1264e8;
+        box-shadow: 0 0 0 3px rgba(18,100,232,.10);
+    }
+
+    .inventory-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .inventory-table {
+        width: 100%;
+        min-width: 900px;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .inventory-table thead {
+        background: #edf3ff;
+    }
+
+    .inventory-table th {
+        padding: 16px 20px;
+        text-align: left;
+        color: #526b91;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        white-space: nowrap;
+    }
+
+    .inventory-table td {
+        padding: 17px 20px;
+        border-bottom: 1px solid #edf0f5;
+        color: #263f6d;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .inventory-table tbody tr {
+        transition: background .18s ease;
+    }
+
+    .inventory-table tbody tr:hover {
+        background: #f1f6ff;
+    }
+
+    .inventory-product-name {
+        color: #06185f;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .inventory-product-id {
+        display: block;
+        color: #8a96a9;
+        font-size: 11px;
+        margin-top: 4px;
+    }
+
+    .inventory-category {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        background: #e6ecfa;
+        color: #2458b5;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .inventory-price {
+        color: #06185f;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .inventory-quantity {
+        color: #06185f;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .inventory-units {
+        color: #8a96a9;
+        font-size: 11px;
+        margin-left: 3px;
+    }
+
+    .inventory-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .inventory-status.in-stock {
+        background: #d9f7e8;
+        color: #198754;
+    }
+
+    .inventory-status.low-stock {
+        background: #fff1cc;
+        color: #936500;
+    }
+
+    .inventory-status.out-of-stock {
+        background: #ffe1e1;
+        color: #dc3545;
+    }
+
+    .inventory-adjust-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 13px;
+        border: 1px solid #ffbf00;
+        border-radius: 9px;
+        background: #ffbf00;
+        color: #06185f;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: .2s ease;
+    }
+
+    .inventory-adjust-btn:hover {
+        background: #e6aa00;
+        border-color: #e6aa00;
+        color: #06185f;
+        transform: translateY(-1px);
+    }
+
+    .inventory-view-only {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 12px;
+        border: 1px solid #dce3ef;
+        border-radius: 9px;
+        background: #f6f9ff;
+        color: #71809b;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .inventory-empty {
+        padding: 60px 20px !important;
+        text-align: center;
+        color: #71809b !important;
+    }
+
+    .inventory-empty i {
+        display: block;
+        color: #a5b1c3;
+        font-size: 43px;
+        margin-bottom: 12px;
+    }
+
+    .inventory-empty strong {
+        display: block;
+        color: #06185f;
+        font-size: 17px;
+        margin-bottom: 6px;
+    }
+
+    .inventory-no-results {
+        margin: 18px 28px;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+
+    .inventory-footer {
+        padding: 18px 28px;
+        color: #526b91;
+        font-size: 12px;
+        font-weight: 500;
+        background: #f6f9ff;
+        border-top: 1px solid #e6edf8;
+    }
+
+    .inventory-alert {
+        margin-bottom: 20px;
+        border-radius: 12px;
+        font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+        .inventory-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .inventory-filters {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .inventory-container {
+            padding: 28px 15px 40px;
+        }
+
+        .inventory-heading h1 {
+            font-size: 27px;
+        }
+
+        .inventory-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .inventory-filters {
+            grid-template-columns: 1fr;
+        }
+
+        .inventory-panel-header {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="inventory-container">
+
+    {# Page Heading #}
+    <div class="inventory-heading">
+        <h1>Central Inventory</h1>
         <p>Monitor product quantities, manage stock, and identify products that need replenishment.</p>
-    </section>
+    </div>
 
+    {# Flash Messages #}
     {% for message in app.flashes('success') %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show inventory-alert" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endfor %}
 
     {% for message in app.flashes('danger') %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show inventory-alert" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endfor %}
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="customers-card p-4 h-100">
-                <div class="text-muted small mb-2">TOTAL PRODUCTS</div>
-                <h2 class="mb-0">{{ products|length }}</h2>
-                <div class="small text-muted mt-2">Products in the catalog</div>
+    {# Inventory Summary Cards #}
+    <div class="inventory-stats">
+
+        <div class="inventory-stat-card">
+            <div class="inventory-stat-icon total">
+                <i class="bi bi-box-seam-fill"></i>
+            </div>
+            <div>
+                <h2>{{ products|length }}</h2>
+                <p>Total Products</p>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="customers-card p-4 h-100">
-                <div class="text-muted small mb-2">LOW STOCK</div>
-                <h2 class="mb-0 text-warning">{{ lowStockCount }}</h2>
-                <div class="small text-muted mt-2">
-                    1–{{ lowStockThreshold }} units remaining
-                </div>
+        <div class="inventory-stat-card">
+            <div class="inventory-stat-icon low">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div>
+                <h2>{{ lowStockCount }}</h2>
+                <p>Low Stock (1–{{ lowStockThreshold }} units)</p>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="customers-card p-4 h-100">
-                <div class="text-muted small mb-2">OUT OF STOCK</div>
-                <h2 class="mb-0 text-danger">{{ outOfStockCount }}</h2>
-                <div class="small text-muted mt-2">Products with zero units</div>
+        <div class="inventory-stat-card">
+            <div class="inventory-stat-icon out">
+                <i class="bi bi-box2-fill"></i>
+            </div>
+            <div>
+                <h2>{{ outOfStockCount }}</h2>
+                <p>Out of Stock</p>
             </div>
         </div>
+
     </div>
 
-    <section class="customers-card p-4">
+    {# Main Inventory Panel #}
+    <section class="inventory-panel">
 
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div class="inventory-panel-header">
             <div>
-                <span class="section-eyebrow">STOCK OVERVIEW</span>
-                <h3 class="mb-1">Product Inventory</h3>
-                <p class="text-muted mb-0">Review quantities and update stock for each product.</p>
+                <span class="inventory-eyebrow">STOCK OVERVIEW</span>
+                <h2>
+                    <i class="bi bi-boxes me-2"></i>
+                    Product Inventory
+                </h2>
+                <p>Review all product quantities and manage stock assigned to your account.</p>
             </div>
 
-            <a href="{{ path('app_product_index') }}" class="btn btn-outline-secondary">
+            <a href="{{ path('app_product_index') }}"
+               class="btn btn-outline-primary inventory-manage-btn">
                 <i class="bi bi-box-seam me-1"></i>
                 Manage Products
             </a>
         </div>
 
-        <div class="row g-3 mb-4">
-            <div class="col-lg-4 col-md-6">
-                <label for="inventorySearch" class="form-label fw-semibold">
+        {# Search and Filters #}
+        <div class="inventory-filters">
+
+            <div>
+                <label for="inventorySearch">
+                    <i class="bi bi-search me-1"></i>
                     Search Products
                 </label>
                 <input
                     type="search"
                     id="inventorySearch"
-                    class="form-control"
                     placeholder="Search by product name or ID..."
                 >
             </div>
 
-            <div class="col-lg-4 col-md-6">
-                <label for="inventoryCategory" class="form-label fw-semibold">
+            <div>
+                <label for="inventoryCategory">
+                    <i class="bi bi-tags me-1"></i>
                     Filter by Category
                 </label>
-                <select id="inventoryCategory" class="form-select">
+                <select id="inventoryCategory">
                     <option value="">All Categories</option>
                     {% for category in categories %}
                         <option value="{{ category.name|lower }}">{{ category.name }}</option>
@@ -94,21 +564,26 @@
                 </select>
             </div>
 
-            <div class="col-lg-4 col-md-12">
-                <label for="inventoryStatus" class="form-label fw-semibold">
+            <div>
+                <label for="inventoryStatus">
+                    <i class="bi bi-funnel me-1"></i>
                     Filter by Stock Status
                 </label>
-                <select id="inventoryStatus" class="form-select">
+                <select id="inventoryStatus">
                     <option value="">All Stock Status</option>
                     <option value="in-stock">In Stock</option>
                     <option value="low-stock">Low Stock</option>
                     <option value="out-of-stock">Out of Stock</option>
                 </select>
             </div>
+
         </div>
 
-        <div class="table-responsive">
-            <table class="table align-middle">
+        {# Product Inventory Table #}
+        <div class="inventory-table-wrapper">
+
+            <table class="inventory-table">
+
                 <thead>
                     <tr>
                         <th>Product</th>
@@ -121,9 +596,17 @@
                 </thead>
 
                 <tbody id="inventoryTableBody">
+
                 {% for product in products %}
+
                     {% set stock = product.stock ?? 0 %}
                     {% set categoryName = product.category ? product.category.name : 'Uncategorized' %}
+
+                    {# Determine whether current user owns this product #}
+                    {% set isProductOwner = product.createdBy and app.user and product.createdBy.id == app.user.id %}
+
+                    {# Admin can manage all products. Staff can manage only their own. #}
+                    {% set canManageProduct = is_granted('ROLE_ADMIN') or (is_granted('ROLE_STAFF') and isProductOwner) %}
 
                     {% if stock <= 0 %}
                         {% set stockStatus = 'out-of-stock' %}
@@ -139,97 +622,171 @@
                         data-category="{{ categoryName|lower }}"
                         data-status="{{ stockStatus }}"
                     >
+
                         <td>
-                            <div class="fw-semibold">{{ product.name }}</div>
-                            <small class="text-muted">
+                            <div class="inventory-product-name">
+                                {{ product.name }}
+                            </div>
+
+                            <span class="inventory-product-id">
                                 Product #{{ '%03d'|format(product.id) }}
-                            </small>
+                            </span>
                         </td>
 
-                        <td>{{ categoryName }}</td>
-
-                        <td>₱{{ product.price|number_format(2, '.', ',') }}</td>
+                        <td>
+                            <span class="inventory-category">
+                                {{ categoryName }}
+                            </span>
+                        </td>
 
                         <td>
-                            <span class="fw-semibold">{{ stock }}</span>
-                            <span class="text-muted small">units</span>
+                            <span class="inventory-price">
+                                ₱{{ product.price|number_format(2, '.', ',') }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="inventory-quantity">{{ stock }}</span>
+                            <span class="inventory-units">units</span>
                         </td>
 
                         <td>
                             {% if stockStatus == 'out-of-stock' %}
-                                <span class="badge bg-danger">Out of Stock</span>
+                                <span class="inventory-status out-of-stock">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    Out of Stock
+                                </span>
+
                             {% elseif stockStatus == 'low-stock' %}
-                                <span class="badge bg-warning text-dark">Low Stock</span>
+                                <span class="inventory-status low-stock">
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                    Low Stock
+                                </span>
+
                             {% else %}
-                                <span class="badge bg-success">In Stock</span>
+                                <span class="inventory-status in-stock">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    In Stock
+                                </span>
                             {% endif %}
                         </td>
 
                         <td class="text-end">
-                            <a
-                                href="{{ path('app_product_inventory', {'id': product.id}) }}"
-                                class="btn btn-sm btn-warning"
-                            >
-                                <i class="bi bi-box-seam me-1"></i>
-                                Adjust Stock
-                            </a>
+
+                            {% if canManageProduct %}
+
+                                <a
+                                    href="{{ path('app_product_inventory', {'id': product.id}) }}"
+                                    class="inventory-adjust-btn"
+                                    title="Adjust stock for {{ product.name }}"
+                                >
+                                    <i class="bi bi-box-seam"></i>
+                                    Adjust Stock
+                                </a>
+
+                            {% else %}
+
+                                <span class="inventory-view-only"
+                                      title="You can view this product but cannot adjust its stock.">
+                                    <i class="bi bi-eye"></i>
+                                    View only
+                                </span>
+
+                            {% endif %}
+
                         </td>
+
                     </tr>
+
                 {% else %}
+
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-5">
-                            No products found. Add a product to begin managing inventory.
+                        <td colspan="6" class="inventory-empty">
+                            <i class="bi bi-box-seam"></i>
+                            <strong>No Products Found</strong>
+                            Add a product to begin managing inventory.
                         </td>
                     </tr>
+
                 {% endfor %}
+
                 </tbody>
+
             </table>
+
         </div>
 
-        <div id="inventoryNoResults" class="alert alert-light text-center d-none mb-0">
+        {# No Search Results Message #}
+        <div id="inventoryNoResults"
+             class="alert alert-light text-center inventory-no-results d-none">
+
+            <i class="bi bi-search me-2"></i>
             No products match your search or selected filters.
+
         </div>
+
+        <div class="inventory-footer">
+            <i class="bi bi-info-circle me-1"></i>
+            Showing {{ products|length }} product(s) in the inventory.
+        </div>
+
     </section>
+
 </div>
 
+{# Inventory Search and Filter Script #}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     const searchInput = document.getElementById('inventorySearch');
     const categoryFilter = document.getElementById('inventoryCategory');
     const statusFilter = document.getElementById('inventoryStatus');
+
     const rows = document.querySelectorAll('.inventory-row');
     const noResults = document.getElementById('inventoryNoResults');
 
     function filterInventory() {
+
         const search = searchInput.value.trim().toLowerCase();
         const category = categoryFilter.value.toLowerCase();
         const status = statusFilter.value;
+
         let visibleCount = 0;
 
         rows.forEach(function (row) {
+
             const searchText = row.dataset.search || '';
             const rowCategory = row.dataset.category || '';
             const rowStatus = row.dataset.status || '';
 
             const matchesSearch = searchText.includes(search);
-            const matchesCategory = category === '' || rowCategory === category;
-            const matchesStatus = status === '' || rowStatus === status;
 
-            const visible = matchesSearch && matchesCategory && matchesStatus;
+            const matchesCategory =
+                category === '' || rowCategory === category;
+
+            const matchesStatus =
+                status === '' || rowStatus === status;
+
+            const visible =
+                matchesSearch && matchesCategory && matchesStatus;
 
             row.classList.toggle('d-none', !visible);
 
             if (visible) {
                 visibleCount++;
             }
+
         });
 
         noResults.classList.toggle('d-none', visibleCount > 0);
+
     }
 
     searchInput.addEventListener('input', filterInventory);
     categoryFilter.addEventListener('change', filterInventory);
     statusFilter.addEventListener('change', filterInventory);
+
 });
 </script>
+
 {% endblock %}

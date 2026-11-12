@@ -1,104 +1,508 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Payments | BrightBuy Admin{% endblock %}
 
 {% block body %}
 
-<div class="dashboard-container">
+<style>
+    .payments-container {
+        position: relative;
+        isolation: isolate;
+        width: 100%;
+        max-width: 1350px;
+        margin: auto;
+        padding: 42px 30px 60px;
+    }
 
-    <!-- PAGE HEADER -->
-    <section class="welcome-section">
-        <span class="dashboard-eyebrow">
-            PAYMENT MANAGEMENT
-        </span>
+    .payments-container::before,
+    .payments-container::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+        border-radius: 50%;
+    }
 
-        <h1>
-            Payments
-        </h1>
+    .payments-container::before {
+        width: 300px;
+        height: 300px;
+        top: 35px;
+        right: -110px;
+        border: 28px solid rgba(25, 112, 220, .07);
+    }
 
-        <p>
-            Manage customer payments, transactions, and payment status.
-        </p>
-    </section>
+    .payments-container::after {
+        width: 230px;
+        height: 230px;
+        bottom: -100px;
+        left: -65px;
+        border: 24px solid rgba(255, 191, 0, .08);
+    }
 
-    <!-- PAYMENT MANAGEMENT -->
-    <section class="customers-card">
+    /* PAGE HEADING */
+    .payments-heading {
+        margin-bottom: 30px;
+    }
 
-        <div class="customers-header">
+    .payments-heading h1 {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: #071b55;
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -.6px;
+        margin: 0;
+    }
+
+    .payments-heading h1::before {
+        content: "";
+        width: 7px;
+        height: 34px;
+        flex: 0 0 7px;
+        border-radius: 8px;
+        background: #ffbf00;
+    }
+
+    .payments-heading p {
+        color: #71809b;
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
+    /* SUMMARY CARD */
+    .payments-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .payments-stat-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 25px;
+        background: rgba(255,255,255,.97);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 20px;
+        box-shadow: 0 10px 26px rgba(8,44,105,.10);
+        transition: transform .2s ease, box-shadow .2s ease;
+        overflow: hidden;
+    }
+
+    .payments-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 30px rgba(8,44,105,.14);
+    }
+
+    .payments-stat-card::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 58px;
+        height: 19px;
+        background: #ffbf00;
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    .payments-stat-icon {
+        width: 58px;
+        height: 58px;
+        min-width: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        background: #e6ecfa;
+        color: #1264e8;
+        font-size: 25px;
+    }
+
+    .payments-stat-card h2 {
+        color: #06185f;
+        font-size: 30px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .payments-stat-card p {
+        color: #71809b;
+        font-size: 13px;
+        margin: 4px 0 0;
+    }
+
+    /* PAYMENT PANEL */
+    .payments-panel {
+        background: rgba(255,255,255,.98);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 22px;
+        box-shadow: 0 10px 26px rgba(8,44,105,.10);
+        overflow: hidden;
+    }
+
+    .payments-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 28px;
+        border-bottom: 1px solid #edf0f5;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .payments-panel-header h2 {
+        color: #071b55;
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .payments-panel-header h2 i {
+        color: #1264e8;
+    }
+
+    .payments-panel-header p {
+        color: #71809b;
+        font-size: 13px;
+        margin: 6px 0 0;
+    }
+
+    .payments-eyebrow {
+        display: inline-block;
+        color: #1264e8;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 7px;
+    }
+
+    .payments-count {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 20px;
+        background: #e6ecfa;
+        color: #1264e8;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    /* SEARCH AND FILTERS */
+    .payments-search-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 15px;
+        padding: 22px 28px;
+        background: #f6f9ff;
+        border-bottom: 1px solid #e6edf8;
+    }
+
+    .payments-search-section label {
+        display: block;
+        color: #526b91;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .payments-search-section input,
+    .payments-search-section select {
+        width: 100%;
+        min-height: 43px;
+        padding: 10px 13px;
+        border: 1px solid #dce3ef;
+        border-radius: 10px;
+        outline: none;
+        font-family: inherit;
+        font-size: 13px;
+        color: #334155;
+        background: #ffffff;
+    }
+
+    .payments-search-section input:focus,
+    .payments-search-section select:focus {
+        border-color: #1264e8;
+        box-shadow: 0 0 0 3px rgba(18,100,232,.08);
+    }
+
+    /* TABLE */
+    .payments-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .payments-table {
+        width: 100%;
+        min-width: 1000px;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .payments-table thead {
+        background: #edf3ff;
+    }
+
+    .payments-table th {
+        padding: 16px 20px;
+        text-align: left;
+        color: #526b91;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        white-space: nowrap;
+    }
+
+    .payments-table td {
+        padding: 17px 20px;
+        border-bottom: 1px solid #edf0f5;
+        color: #263f6d;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .payments-table tbody tr:hover {
+        background: #f1f6ff;
+    }
+
+    .payment-id {
+        color: #06185f;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .payment-date {
+        color: #8a96a9;
+        font-size: 11px;
+        margin-top: 4px;
+    }
+
+    .payment-customer {
+        color: #06185f;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .payment-email {
+        color: #526b91;
+        font-size: 11px;
+        margin-top: 4px;
+    }
+
+    .payment-amount {
+        color: #06185f;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* PAYMENT STATUS */
+    .payment-status {
+        display: inline-block;
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .payment-status.pending {
+        background: #fff3cd;
+        color: #997404;
+    }
+
+    .payment-status.paid {
+        background: #d9f7e8;
+        color: #198754;
+    }
+
+    .payment-status.failed {
+        background: #fde2e2;
+        color: #dc3545;
+    }
+
+    .payment-status.refunded {
+        background: #e6ecfa;
+        color: #1264e8;
+    }
+
+    /* ACTION BUTTONS */
+    .payment-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 7px;
+    }
+
+    .payment-actions .btn {
+        width: 35px;
+        height: 35px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+    }
+
+    /* INFORMATION NOTE */
+    .payments-note {
+        padding: 18px 28px;
+        background: #f6f9ff;
+        border-top: 1px solid #e6edf8;
+        color: #526b91;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .payments-note i {
+        color: #1264e8;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1000px) {
+        .payments-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .payments-search-section {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .payments-container {
+            padding: 28px 15px 40px;
+        }
+
+        .payments-heading h1 {
+            font-size: 27px;
+        }
+
+        .payments-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .payments-search-section {
+            grid-template-columns: 1fr;
+        }
+
+        .payments-panel-header {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="payments-container">
+
+    <!-- PAGE HEADING -->
+    <div class="payments-heading">
+        <h1>Payments</h1>
+        <p>Manage customer payments, transactions, and payment status.</p>
+    </div>
+
+    <!-- PAYMENT SUMMARY -->
+    <div class="payments-stats">
+
+        <div class="payments-stat-card">
+
+            <div class="payments-stat-icon">
+                <i class="bi bi-credit-card-fill"></i>
+            </div>
+
             <div>
-                <span class="section-eyebrow">
+                <h2>0</h2>
+                <p>Total Payments</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PAYMENT MANAGEMENT PANEL -->
+    <section class="payments-panel">
+
+        <div class="payments-panel-header">
+
+            <div>
+
+                <span class="payments-eyebrow">
                     STORE PAYMENTS
                 </span>
 
-                <h4>
-                    <i class="bi bi-credit-card-fill"></i>
+                <h2>
+                    <i class="bi bi-credit-card-fill me-2"></i>
                     Payment List
-                </h4>
+                </h2>
+
+                <p>View customer transactions and payment information.</p>
+
             </div>
 
-            <span class="customers-count">
-                0 payments
+            <span class="payments-count">
+                0 Payments
             </span>
+
         </div>
 
-        <!-- SEARCH / FILTER -->
-        <div class="p-4 border-bottom">
+        <!-- SEARCH AND FILTERS -->
+        <div class="payments-search-section">
 
-            <div class="row g-3">
+            <div>
 
-                <div class="col-md-5">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
-                        </span>
+                <label for="paymentSearch">
+                    <i class="bi bi-search me-1"></i>
+                    Search Payments
+                </label>
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            placeholder="Search payment or customer..."
-                        >
-                    </div>
-                </div>
+                <input
+                    type="search"
+                    id="paymentSearch"
+                    placeholder="Search payment, order, or customer..."
+                >
 
-                <div class="col-md-3">
-                    <select class="form-select">
-                        <option selected>All Payment Status</option>
-                        <option>Pending</option>
-                        <option>Paid</option>
-                        <option>Failed</option>
-                        <option>Refunded</option>
-                    </select>
-                </div>
+            </div>
 
-                <div class="col-md-3">
-                    <select class="form-select">
-                        <option selected>All Payment Methods</option>
-                        <option>Cash on Delivery</option>
-                        <option>GCash</option>
-                        <option>Credit / Debit Card</option>
-                    </select>
-                </div>
+            <div>
 
-                <div class="col-md-1">
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary w-100"
-                        title="Filter"
-                    >
-                        <i class="bi bi-funnel"></i>
-                    </button>
-                </div>
+                <label for="paymentStatus">
+                    <i class="bi bi-funnel me-1"></i>
+                    Payment Status
+                </label>
+
+                <select id="paymentStatus">
+                    <option selected>All Payment Status</option>
+                    <option>Pending</option>
+                    <option>Paid</option>
+                    <option>Failed</option>
+                    <option>Refunded</option>
+                </select>
+
+            </div>
+
+            <div>
+
+                <label for="paymentMethod">
+                    <i class="bi bi-credit-card me-1"></i>
+                    Payment Method
+                </label>
+
+                <select id="paymentMethod">
+                    <option selected>All Payment Methods</option>
+                    <option>Cash on Delivery</option>
+                    <option>GCash</option>
+                    <option>Credit / Debit Card</option>
+                </select>
 
             </div>
 
         </div>
 
         <!-- PAYMENT TABLE -->
-        <div class="table-responsive">
+        <div class="payments-table-wrapper">
 
-            <table class="table table-hover align-middle mb-0">
+            <table class="payments-table">
 
-                <thead class="table-light">
+                <thead>
 
                     <tr>
                         <th>Payment</th>
@@ -117,8 +521,11 @@
                     <tr>
 
                         <td>
-                            <strong>#PAY-0001</strong>
-                            <div class="text-muted small">
+                            <div class="payment-id">
+                                #PAY-0001
+                            </div>
+
+                            <div class="payment-date">
                                 October 07, 2026
                             </div>
                         </td>
@@ -128,16 +535,19 @@
                         </td>
 
                         <td>
-                            <div>
-                                <strong>Sample Customer</strong>
-                                <div class="text-muted small">
-                                    customer@example.com
-                                </div>
+                            <div class="payment-customer">
+                                Sample Customer
+                            </div>
+
+                            <div class="payment-email">
+                                customer@example.com
                             </div>
                         </td>
 
                         <td>
-                            ₱0.00
+                            <span class="payment-amount">
+                                ₱0.00
+                            </span>
                         </td>
 
                         <td>
@@ -145,28 +555,32 @@
                         </td>
 
                         <td>
-                            <span class="badge bg-secondary">
+                            <span class="payment-status pending">
                                 Pending
                             </span>
                         </td>
 
-                        <td class="text-end">
+                        <td>
 
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                title="View Payment"
-                            >
-                                <i class="bi bi-eye"></i>
-                            </button>
+                            <div class="payment-actions">
 
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-secondary"
-                                title="Update Payment"
-                            >
-                                <i class="bi bi-pencil"></i>
-                            </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="View Payment"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    title="Update Payment"
+                                >
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+
+                            </div>
 
                         </td>
 
@@ -178,14 +592,12 @@
 
         </div>
 
-        <!-- PLACEHOLDER NOTE -->
-        <div class="text-center py-4 text-muted">
+        <!-- DATABASE CONNECTION NOTICE -->
+        <div class="payments-note">
 
-            <i class="bi bi-info-circle"></i>
+            <i class="bi bi-info-circle-fill me-1"></i>
 
-            <p class="mb-0 mt-2">
-                Payment data will be connected to the BrightBuy database later.
-            </p>
+            Payment data will be connected to the BrightBuy database later.
 
         </div>
 

@@ -1,19 +1,64 @@
 ﻿
 <header class="admin-header">
     <div class="admin-brand">
-        <h1>BrightBuy Admin</h1>
-        <p>Administrator Dashboard</p>
+        <h1>
+            <span class="brand-bright">Bright</span><span class="brand-buy">Buy</span>
+            {% if is_granted('ROLE_ADMIN') %}
+                Admin
+            {% elseif is_granted('ROLE_STAFF') %}
+                Staff
+            {% else %}
+                Account
+            {% endif %}
+        </h1>
+
+        <p>
+            {% if is_granted('ROLE_ADMIN') %}
+                Administrator Dashboard
+            {% elseif is_granted('ROLE_STAFF') %}
+                Staff Dashboard
+            {% else %}
+                My Account
+            {% endif %}
+        </p>
     </div>
 
     <div class="admin-actions">
-        <a href="{{ path('app_inventory_index') }}" class="btn btn-inventory">
-            <i class="bi bi-box-seam"></i>
-            Inventory
-        </a>
 
-        <a href="#" class="btn btn-logout">
+        {# My Account Dropdown #}
+        <div class="dropdown">
+            <button
+                class="btn btn-account dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                <i class="bi bi-person-circle"></i>
+                My Account
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li>
+                    <a class="dropdown-item" href="{{ path('app_account_profile') }}">
+                        <i class="bi bi-person me-2"></i>
+                        My Profile
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="{{ path('app_account_change_password') }}">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        Change Password
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        {# Logout #}
+        <a href="{{ path('app_logout') }}" class="btn btn-logout">
             <i class="bi bi-box-arrow-right"></i>
             Logout
         </a>
+
     </div>
 </header>

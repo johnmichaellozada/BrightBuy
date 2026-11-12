@@ -1,0 +1,221 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Customer Details | BrightBuy Admin{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">CUSTOMER MANAGEMENT</span>
+        <h1>Customer Details</h1>
+        <p>Review customer account information and purchase history.</p>
+
+        <a href="{{ path('app_customers') }}" class="btn btn-outline-secondary mt-2">
+            <i class="bi bi-arrow-left"></i> Back to Customers
+        </a>
+    </section>
+
+    {# Customer Information #}
+    <section class="customers-card mb-4">
+
+        <div class="customers-header">
+            <div>
+                <span class="section-eyebrow">CUSTOMER PROFILE</span>
+                <h4>
+                    <i class="bi bi-person-circle"></i>
+                    {{ customer.firstName }} {{ customer.lastName }}
+                </h4>
+            </div>
+
+            {% if customer.isActive %}
+                <span class="customer-status">
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                    Active
+                </span>
+            {% else %}
+                <span class="customer-status disabled">
+                    <i class="bi bi-x-circle-fill me-1"></i>
+                    Disabled
+                </span>
+            {% endif %}
+        </div>
+
+        <div class="p-4">
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <h5>Personal Information</h5>
+
+                    <p class="mb-2">
+                        <strong>Customer ID:</strong>
+                        #{{ customer.id }}
+                    </p>
+
+                    <p class="mb-2">
+                        <strong>Full Name:</strong>
+                        {{ customer.firstName }} {{ customer.lastName }}
+                    </p>
+
+                    <p class="mb-2">
+                        <strong>Email:</strong>
+                        {{ customer.email }}
+                    </p>
+
+                    <p class="mb-2">
+                        <strong>Phone:</strong>
+                        {{ customer.phone ?: 'Not provided' }}
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Registration Date:</strong>
+                        {{ customer.createdAt ? customer.createdAt|date('F d, Y h:i A') : 'Not available' }}
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <h5>Account Management</h5>
+
+                    <p class="mb-3">
+                        <strong>Account Status:</strong>
+                        {{ customer.isActive ? 'Active' : 'Disabled' }}
+                    </p>
+
+                    <form
+                        method="post"
+                        action="{{ path('app_customer_toggle_status', {id: customer.id}) }}"
+                        onsubmit="return confirm('Are you sure you want to {{ customer.isActive ? 'disable' : 'enable' }} this customer account?');"
+                    >
+                        <input
+                            type="hidden"
+                            name="_token"
+                            value="{{ csrf_token('toggle_customer_status_' ~ customer.id) }}"
+                        >
+
+                        {% if customer.isActive %}
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-person-x me-1"></i>
+                                Disable Customer
+                            </button>
+                        {% else %}
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-person-check me-1"></i>
+                                Enable Customer
+                            </button>
+                        {% endif %}
+                    </form>
+
+                    <p class="text-muted small mt-3 mb-0">
+                        Admin can only manage the customer's account status.
+                        Personal information and password remain under the customer's control.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {# Customer Order History #}
+    <section class="customers-card">
+
+        <div class="customers-header">
+            <div>
+                <span class="section-eyebrow">PURCHASE ACTIVITY</span>
+                <h4>
+                    <i class="bi bi-bag-check"></i>
+                    Order History
+                </h4>
+            </div>
+
+            <span class="customers-count">
+                {{ orders|length }}
+                {{ orders|length == 1 ? 'Order' : 'Orders' }}
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Order Date</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>
+                                <strong>#{{ order.orderNumber }}</strong>
+                            </td>
+
+                            <td>
+                                {{ order.createdAt ? order.createdAt|date('M d, Y') : '—' }}
+                            </td>
+
+                            <td>
+                                {% set paymentClass = {
+                                    'Pending': 'bg-secondary',
+                                    'Paid': 'bg-success',
+                                    'Failed': 'bg-danger',
+                                    'Refunded': 'bg-info text-dark'
+                                } %}
+
+                                <span class="badge {{ paymentClass[order.paymentStatus]|default('bg-secondary') }}">
+                                    {{ order.paymentStatus }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% set statusClass = {
+                                    'Pending': 'bg-warning text-dark',
+                                    'Processing': 'bg-primary',
+                                    'Shipped': 'bg-info text-dark',
+                                    'Delivered': 'bg-success',
+                                    'Cancelled': 'bg-danger'
+                                } %}
+
+                                <span class="badge {{ statusClass[order.status]|default('bg-secondary') }}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <strong>
+                                    &#8369;{{ order.totalAmount|number_format(2, '.', ',') }}
+                                </strong>
+                            </td>
+
+                            <td class="text-end">
+                                <a
+                                    href="{{ path('app_order_show', {id: order.id}) }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="View Order Details"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="bi bi-inbox fs-2 text-muted"></i>
+                                <p class="mb-0 mt-2 text-muted">
+                                    This customer has no recorded orders yet.
+                                </p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

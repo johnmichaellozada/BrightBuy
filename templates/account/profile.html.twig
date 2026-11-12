@@ -1,0 +1,168 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}My Profile | BrightBuy{% endblock %}
+
+{% block body %}
+
+{% set roleLabel = 'Customer' %}
+{% set roleIcon = 'bi-person' %}
+{% set roleClass = 'bg-success' %}
+
+{% if is_granted('ROLE_ADMIN') %}
+    {% set roleLabel = 'Administrator' %}
+    {% set roleIcon = 'bi-person-gear' %}
+    {% set roleClass = 'bg-primary' %}
+{% elseif is_granted('ROLE_STAFF') %}
+    {% set roleLabel = 'Staff' %}
+    {% set roleIcon = 'bi-person-badge' %}
+    {% set roleClass = 'bg-info text-dark' %}
+{% elseif is_granted('ROLE_CUSTOMER') %}
+    {% set roleLabel = 'Customer' %}
+    {% set roleIcon = 'bi-person' %}
+    {% set roleClass = 'bg-success' %}
+{% endif %}
+
+<div class="dashboard-container">
+
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">ACCOUNT SETTINGS</span>
+        <h1>My Profile</h1>
+        <p>View your personal information and BrightBuy account details.</p>
+    </section>
+
+    <div class="row g-4">
+
+        {# Profile Information #}
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+
+                <div class="card-header bg-white border-0 px-4 pt-4">
+                    <h4 class="fw-bold mb-1">
+                        <i class="bi bi-person-circle text-primary me-2"></i>
+                        Personal Information
+                    </h4>
+                    <p class="text-muted small mb-0">
+                        Your registered BrightBuy account information.
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold">FIRST NAME</label>
+                            <div class="profile-value">
+                                {{ user.firstName }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold">LAST NAME</label>
+                            <div class="profile-value">
+                                {{ user.lastName }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold">EMAIL ADDRESS</label>
+                            <div class="profile-value">
+                                {{ user.email }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-semibold">PHONE NUMBER</label>
+                            <div class="profile-value">
+                                {{ user.phone ?: 'Not provided' }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {# Account Details #}
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+
+                <div class="card-header bg-white border-0 px-4 pt-4">
+                    <h4 class="fw-bold mb-1">
+                        <i class="bi bi-shield-check text-primary me-2"></i>
+                        Account Details
+                    </h4>
+                    <p class="text-muted small mb-0">
+                        Your BrightBuy account status and role.
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="mb-4">
+                        <label class="text-muted small fw-semibold">ACCOUNT ROLE</label>
+                        <div class="mt-2">
+                            <span class="badge {{ roleClass }} px-3 py-2">
+                                <i class="bi {{ roleIcon }} me-1"></i>
+                                {{ roleLabel }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-muted small fw-semibold">ACCOUNT STATUS</label>
+                        <div class="mt-2">
+                            {% if user.isActive %}
+                                <span class="badge bg-success px-3 py-2">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Active
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger px-3 py-2">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Disabled
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-muted small fw-semibold">ACCOUNT CREATED</label>
+                        <div class="profile-value">
+                            {{ user.createdAt ? user.createdAt|date('F d, Y') : 'Not available' }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <a href="{{ path('app_account_change_password') }}"
+                       class="btn btn-primary w-100">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        Change Password
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+    .profile-value {
+        margin-top: 8px;
+        padding: 12px 14px;
+        background: #f5f8fc;
+        border: 1px solid #e8edf5;
+        border-radius: 9px;
+        color: #26344a;
+        font-weight: 500;
+        min-height: 45px;
+        overflow-wrap: anywhere;
+    }
+</style>
+
+{% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,6 +15,17 @@ class ProductRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
+    }
+
+    /**
+     * Count all products.
+     */
+    public function countAllProducts(): int
+    {
+        return (int) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**
@@ -44,6 +56,63 @@ class ProductRepository extends ServiceEntityRepository
             ->orderBy('p.name', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Find products created by a specific user.
+     *
+     * @return Product[]
+     */
+    public function findByCreator(User $user): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.createdBy = :user')
+            ->setParameter('user', $user)
+            ->orderBy('p.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find a product only if it belongs to the specified user.
+     */
+    public function findOneByIdAndCreator(int $id, User $user): ?Product
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.id = :id')
+            ->andWhere('p.createdBy = :user')
+            ->setParameter('id', $id)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Count products created by a specific user.
+     */
+    public function countByCreator(User $user): int
+    {
+        return (int) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->andWhere('p.createdBy = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Permanently delete all products created by a specific user.
+     * Historical order items are preserved by the database ON DELETE SET NULL
+     * relationship from order_item.product_id to product.id.
+     */
+    public function deleteByCreator(User $user): int
+    {
+        return $this->createQueryBuilder('p')
+            ->delete()
+            ->andWhere('p.createdBy = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->execute();
     }
 
     /**

@@ -159,10 +159,10 @@
             </p>
         </div>
 
-        {% if error %}
+            {% if error %}
             <div class="alert alert-danger rounded-3 small">
                 <i class="bi bi-exclamation-circle me-2"></i>
-                Invalid email or password. Please try again.
+                {{ error.messageKey|trans(error.messageData, 'security') }}
             </div>
         {% endif %}
 

@@ -1,97 +1,700 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Orders | BrightBuy Admin{% endblock %}
 
 {% block body %}
 
-<div class="dashboard-container">
+{% set pendingCount = 0 %}
+{% set processingCount = 0 %}
+{% set deliveredCount = 0 %}
+{% set cancelledCount = 0 %}
 
-    <section class="welcome-section">
-        <span class="dashboard-eyebrow">ORDER MANAGEMENT</span>
+{% for order in orders %}
+    {% if order.status == 'Pending' %}
+        {% set pendingCount = pendingCount + 1 %}
+    {% elseif order.status == 'Processing' %}
+        {% set processingCount = processingCount + 1 %}
+    {% elseif order.status == 'Delivered' %}
+        {% set deliveredCount = deliveredCount + 1 %}
+    {% elseif order.status == 'Cancelled' %}
+        {% set cancelledCount = cancelledCount + 1 %}
+    {% endif %}
+{% endfor %}
+
+{% set isAdmin = is_granted('ROLE_ADMIN') %}
+
+<style>
+    .orders-container {
+        position: relative;
+        isolation: isolate;
+        width: 100%;
+        max-width: 1350px;
+        margin: auto;
+        padding: 42px 30px 60px;
+    }
+
+    .orders-container::before,
+    .orders-container::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+        border-radius: 50%;
+    }
+
+    .orders-container::before {
+        width: 300px;
+        height: 300px;
+        top: 35px;
+        right: -110px;
+        border: 28px solid rgba(25, 112, 220, .07);
+    }
+
+    .orders-container::after {
+        width: 230px;
+        height: 230px;
+        bottom: -100px;
+        left: -65px;
+        border: 24px solid rgba(255, 191, 0, .08);
+    }
+
+    .orders-heading {
+        margin-bottom: 30px;
+    }
+
+    .orders-heading h1 {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: #071b55;
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -.6px;
+        margin: 0;
+    }
+
+    .orders-heading h1::before {
+        content: "";
+        width: 7px;
+        height: 34px;
+        flex: 0 0 7px;
+        border-radius: 8px;
+        background: #ffbf00;
+    }
+
+    .orders-heading p {
+        color: #71809b;
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
+    .orders-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 30px;
+    }
+
+    .orders-stat-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 22px;
+        background: rgba(255,255,255,.97);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 20px;
+        box-shadow: 0 10px 26px rgba(8,44,105,.10);
+        transition: transform .2s ease, box-shadow .2s ease;
+        overflow: hidden;
+    }
+
+    .orders-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 30px rgba(8,44,105,.14);
+    }
+
+    .orders-stat-card::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 50px;
+        height: 17px;
+        background: #ffbf00;
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    .orders-stat-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-size: 22px;
+    }
+
+    .orders-stat-icon.total {
+        background: #e6ecfa;
+        color: #1264e8;
+    }
+
+    .orders-stat-icon.pending {
+        background: #fff1cc;
+        color: #d18b00;
+    }
+
+    .orders-stat-icon.processing {
+        background: #e5edff;
+        color: #2458b5;
+    }
+
+    .orders-stat-icon.delivered {
+        background: #d9f7e8;
+        color: #198754;
+    }
+
+    .orders-stat-card h2 {
+        color: #06185f;
+        font-size: 27px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .orders-stat-card p {
+        color: #71809b;
+        font-size: 12px;
+        margin: 4px 0 0;
+    }
+
+    .orders-alert {
+        border-radius: 12px;
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .orders-panel {
+        background: rgba(255,255,255,.98);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 22px;
+        box-shadow: 0 10px 26px rgba(8,44,105,.10);
+        overflow: hidden;
+    }
+
+    .orders-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 28px;
+        border-bottom: 1px solid #edf0f5;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .orders-panel-header h2 {
+        color: #071b55;
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .orders-panel-header h2 i {
+        color: #1264e8;
+    }
+
+    .orders-panel-header p {
+        color: #71809b;
+        font-size: 13px;
+        margin: 6px 0 0;
+    }
+
+    .orders-eyebrow {
+        display: inline-block;
+        color: #1264e8;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 7px;
+    }
+
+    .orders-count {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 20px;
+        background: #e6ecfa;
+        color: #1264e8;
+        font-size: 11px;
+        font-weight: 700;
+        margin-left: 8px;
+    }
+
+    .orders-filters {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 13px;
+        align-items: end;
+        padding: 22px 28px;
+        background: #f6f9ff;
+        border-bottom: 1px solid #e6edf8;
+    }
+
+    .orders-filters label {
+        display: block;
+        color: #526b91;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .orders-filters input,
+    .orders-filters select {
+        width: 100%;
+        min-height: 43px;
+        padding: 10px 13px;
+        border: 1px solid #dce3ef;
+        border-radius: 10px;
+        outline: none;
+        font-family: inherit;
+        font-size: 13px;
+        color: #334155;
+        background: #ffffff;
+    }
+
+    .orders-filters input:focus,
+    .orders-filters select:focus {
+        border-color: #1264e8;
+        box-shadow: 0 0 0 3px rgba(18,100,232,.10);
+    }
+
+    .orders-filter-btn {
+        min-height: 43px;
+        padding: 10px 17px;
+        border: 1px solid #1264e8;
+        border-radius: 10px;
+        background: #1264e8;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .orders-filter-btn:hover {
+        background: #06185f;
+        border-color: #06185f;
+    }
+
+    .orders-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .orders-table {
+        width: 100%;
+        min-width: 1050px;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .orders-table thead {
+        background: #edf3ff;
+    }
+
+    .orders-table th {
+        padding: 16px 18px;
+        text-align: left;
+        color: #526b91;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        white-space: nowrap;
+    }
+
+    .orders-table td {
+        padding: 17px 18px;
+        border-bottom: 1px solid #edf0f5;
+        color: #263f6d;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .orders-table tbody tr {
+        transition: background .18s ease;
+    }
+
+    .orders-table tbody tr:hover {
+        background: #f1f6ff;
+    }
+
+    .order-number {
+        color: #06185f;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .order-customer-name {
+        color: #06185f;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .order-customer-email {
+        color: #8a96a9;
+        font-size: 11px;
+        margin-top: 4px;
+    }
+
+    .order-date {
+        color: #526b91;
+        white-space: nowrap;
+    }
+
+    .order-total {
+        color: #06185f;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .order-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .payment-pending {
+        background: #fff1cc;
+        color: #936500;
+    }
+
+    .payment-paid {
+        background: #d9f7e8;
+        color: #198754;
+    }
+
+    .payment-failed {
+        background: #ffe1e1;
+        color: #dc3545;
+    }
+
+    .payment-refunded {
+        background: #e5edff;
+        color: #2458b5;
+    }
+
+    .status-pending {
+        background: #fff1cc;
+        color: #936500;
+    }
+
+    .status-processing {
+        background: #e5edff;
+        color: #2458b5;
+    }
+
+    .status-shipped {
+        background: #dff4fa;
+        color: #087990;
+    }
+
+    .status-delivered {
+        background: #d9f7e8;
+        color: #198754;
+    }
+
+    .status-cancelled {
+        background: #ffe1e1;
+        color: #dc3545;
+    }
+
+    .order-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .order-view-btn {
+        width: 35px;
+        height: 35px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+    }
+
+    .order-status-form {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+    }
+
+    .order-status-form select {
+        min-width: 120px;
+        min-height: 35px;
+        padding: 5px 25px 5px 9px;
+        border: 1px solid #dce3ef;
+        border-radius: 8px;
+        background-color: #fff;
+        color: #334155;
+        font-size: 11px;
+    }
+
+    .order-save-btn {
+        width: 35px;
+        height: 35px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+    }
+
+    .orders-empty {
+        padding: 60px 20px !important;
+        text-align: center;
+    }
+
+    .orders-empty i {
+        display: block;
+        color: #a5b1c3;
+        font-size: 45px;
+        margin-bottom: 12px;
+    }
+
+    .orders-empty h3 {
+        color: #06185f;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .orders-empty p {
+        color: #71809b;
+        font-size: 13px;
+    }
+
+    .orders-footer {
+        padding: 18px 28px;
+        color: #526b91;
+        font-size: 12px;
+        font-weight: 500;
+        background: #f6f9ff;
+        border-top: 1px solid #e6edf8;
+    }
+
+    @media (max-width: 1100px) {
+        .orders-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .orders-filters {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .orders-container {
+            padding: 28px 15px 40px;
+        }
+
+        .orders-heading h1 {
+            font-size: 27px;
+        }
+
+        .orders-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .orders-filters {
+            grid-template-columns: 1fr;
+        }
+
+        .orders-panel-header {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="orders-container">
+
+    <div class="orders-heading">
         <h1>Orders</h1>
-        <p>Manage customer orders, payment status, and order fulfillment.</p>
-    </section>
+        <p>
+            {% if isAdmin %}
+                Manage customer orders, payment status, and order fulfillment.
+            {% else %}
+                View customer orders, payment status, and order fulfillment.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="orders-stats">
+
+        <div class="orders-stat-card">
+            <div class="orders-stat-icon total">
+                <i class="bi bi-cart-check-fill"></i>
+            </div>
+            <div>
+                <h2>{{ ordersCount }}</h2>
+                <p>Total Orders</p>
+            </div>
+        </div>
+
+        <div class="orders-stat-card">
+            <div class="orders-stat-icon pending">
+                <i class="bi bi-clock-fill"></i>
+            </div>
+            <div>
+                <h2>{{ pendingCount }}</h2>
+                <p>Pending Orders</p>
+            </div>
+        </div>
+
+        <div class="orders-stat-card">
+            <div class="orders-stat-icon processing">
+                <i class="bi bi-arrow-repeat"></i>
+            </div>
+            <div>
+                <h2>{{ processingCount }}</h2>
+                <p>Processing Orders</p>
+            </div>
+        </div>
+
+        <div class="orders-stat-card">
+            <div class="orders-stat-icon delivered">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div>
+                <h2>{{ deliveredCount }}</h2>
+                <p>Delivered Orders</p>
+            </div>
+        </div>
+
+    </div>
 
     {% for message in app.flashes('success') %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show orders-alert" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endfor %}
 
     {% for message in app.flashes('danger') %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show orders-alert" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endfor %}
 
-    <section class="customers-card">
+    <section class="orders-panel">
 
-        <div class="customers-header">
+        <div class="orders-panel-header">
             <div>
-                <span class="section-eyebrow">STORE ORDERS</span>
-                <h4>
-                    <i class="bi bi-cart-check-fill"></i>
-                    Order List
-                </h4>
-            </div>
+                <span class="orders-eyebrow">STORE ORDERS</span>
 
-            <span class="customers-count">
-                {{ ordersCount }} {{ ordersCount == 1 ? 'order' : 'orders' }}
-            </span>
+                <div class="d-flex align-items-center flex-wrap">
+                    <h2>
+                        <i class="bi bi-cart-check-fill me-2"></i>
+                        Order List
+                    </h2>
+
+                    <span class="orders-count">
+                        {{ ordersCount }} {{ ordersCount == 1 ? 'Order' : 'Orders' }}
+                    </span>
+                </div>
+
+                <p>
+                    {% if isAdmin %}
+                        Review customer purchases and manage order fulfillment.
+                    {% else %}
+                        Review customer purchases and order information.
+                    {% endif %}
+                </p>
+            </div>
         </div>
 
-        <form method="get" action="{{ path('app_orders') }}" class="p-4 border-bottom">
-            <div class="row g-3">
-                <div class="col-md-5">
-                    <label for="order-search" class="visually-hidden">Search orders</label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input
-                            id="order-search"
-                            type="search"
-                            name="search"
-                            class="form-control"
-                            placeholder="Search order or customer..."
-                            value="{{ search }}"
-                        >
-                    </div>
-                </div>
+        <form method="get"
+              action="{{ path('app_orders') }}"
+              class="orders-filters">
 
-                <div class="col-md-3">
-                    <label for="order-status" class="visually-hidden">Order status</label>
-                    <select id="order-status" name="status" class="form-select">
-                        <option value="" {{ selectedStatus == '' ? 'selected' : '' }}>All Order Status</option>
-                        {% for option in ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] %}
-                            <option value="{{ option }}" {{ selectedStatus == option ? 'selected' : '' }}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+            <div>
+                <label for="order-search">
+                    <i class="bi bi-search me-1"></i>
+                    Search Orders
+                </label>
 
-                <div class="col-md-3">
-                    <label for="payment-status" class="visually-hidden">Payment status</label>
-                    <select id="payment-status" name="paymentStatus" class="form-select">
-                        <option value="" {{ selectedPaymentStatus == '' ? 'selected' : '' }}>All Payment Status</option>
-                        {% for option in ['Pending', 'Paid', 'Failed', 'Refunded'] %}
-                            <option value="{{ option }}" {{ selectedPaymentStatus == option ? 'selected' : '' }}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="col-md-1">
-                    <button type="submit" class="btn btn-outline-secondary w-100" title="Apply search and filters">
-                        <i class="bi bi-funnel"></i>
-                    </button>
-                </div>
+                <input
+                    id="order-search"
+                    type="search"
+                    name="search"
+                    placeholder="Search order or customer..."
+                    value="{{ search }}"
+                >
             </div>
+
+            <div>
+                <label for="order-status">
+                    <i class="bi bi-truck me-1"></i>
+                    Order Status
+                </label>
+
+                <select id="order-status" name="status">
+                    <option value="" {{ selectedStatus == '' ? 'selected' : '' }}>
+                        All Order Status
+                    </option>
+
+                    {% for option in ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] %}
+                        <option value="{{ option }}" {{ selectedStatus == option ? 'selected' : '' }}>
+                            {{ option }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="payment-status">
+                    <i class="bi bi-credit-card me-1"></i>
+                    Payment Status
+                </label>
+
+                <select id="payment-status" name="paymentStatus">
+                    <option value="" {{ selectedPaymentStatus == '' ? 'selected' : '' }}>
+                        All Payment Status
+                    </option>
+
+                    {% for option in ['Pending', 'Paid', 'Failed', 'Refunded'] %}
+                        <option value="{{ option }}" {{ selectedPaymentStatus == option ? 'selected' : '' }}>
+                            {{ option }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <button type="submit" class="orders-filter-btn">
+                    <i class="bi bi-funnel-fill me-1"></i>
+                    Filter
+                </button>
+            </div>
+
         </form>
 
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+        <div class="orders-table-wrapper">
+
+            <table class="orders-table">
+
+                <thead>
                     <tr>
                         <th>Order</th>
                         <th>Customer</th>
@@ -104,73 +707,165 @@
                 </thead>
 
                 <tbody>
+
                     {% for order in orders %}
+
+                        {% set paymentClass = {
+                            'Pending': 'payment-pending',
+                            'Paid': 'payment-paid',
+                            'Failed': 'payment-failed',
+                            'Refunded': 'payment-refunded'
+                        } %}
+
+                        {% set statusClass = {
+                            'Pending': 'status-pending',
+                            'Processing': 'status-processing',
+                            'Shipped': 'status-shipped',
+                            'Delivered': 'status-delivered',
+                            'Cancelled': 'status-cancelled'
+                        } %}
+
                         <tr>
-                            <td><strong>#{{ order.orderNumber }}</strong></td>
+
+                            <td>
+                                <span class="order-number">
+                                    #{{ order.orderNumber }}
+                                </span>
+                            </td>
 
                             <td>
                                 <div>
-                                    <strong>{{ order.customerName }}</strong>
-                                    <div class="text-muted small">{{ order.customerEmail }}</div>
+                                    <div class="order-customer-name">
+                                        {{ order.customerName }}
+                                    </div>
+
+                                    <div class="order-customer-email">
+                                        {{ order.customerEmail }}
+                                    </div>
                                 </div>
                             </td>
 
-                            <td>{{ order.createdAt ? order.createdAt|date('F d, Y') : '—' }}</td>
-                            <td>₱{{ order.totalAmount|number_format(2, '.', ',') }}</td>
+                            <td>
+                                <span class="order-date">
+                                    {{ order.createdAt ? order.createdAt|date('F d, Y') : '—' }}
+                                </span>
+                            </td>
 
                             <td>
-                                {% set paymentClass = {
-                                    'Pending': 'bg-secondary',
-                                    'Paid': 'bg-success',
-                                    'Failed': 'bg-danger',
-                                    'Refunded': 'bg-info text-dark'
-                                } %}
-                                <span class="badge {{ paymentClass[order.paymentStatus]|default('bg-secondary') }}">
+                                <span class="order-total">
+                                    ₱{{ order.totalAmount|number_format(2, '.', ',') }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="order-badge {{ paymentClass[order.paymentStatus]|default('payment-pending') }}">
+                                    {% if order.paymentStatus == 'Paid' %}
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    {% elseif order.paymentStatus == 'Failed' %}
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    {% elseif order.paymentStatus == 'Refunded' %}
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    {% else %}
+                                        <i class="bi bi-clock-fill"></i>
+                                    {% endif %}
+
                                     {{ order.paymentStatus }}
                                 </span>
                             </td>
 
                             <td>
-                                {% set statusClass = {
-                                    'Pending': 'bg-warning text-dark',
-                                    'Processing': 'bg-primary',
-                                    'Shipped': 'bg-info text-dark',
-                                    'Delivered': 'bg-success',
-                                    'Cancelled': 'bg-danger'
-                                } %}
-                                <span class="badge {{ statusClass[order.status]|default('bg-secondary') }}">
+                                <span class="order-badge {{ statusClass[order.status]|default('status-pending') }}">
                                     {{ order.status }}
                                 </span>
                             </td>
 
                             <td class="text-end">
-                                <a href="{{ path('app_order_show', {id: order.id}) }}" class="btn btn-sm btn-outline-primary" title="View order details" aria-label="View order details">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <form method="post" action="{{ path('app_order_update_status', {id: order.id}) }}" class="d-inline-flex align-items-center gap-1">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('update_order_status_' ~ order.id) }}">
-                                    <label for="order-status-{{ order.id }}" class="visually-hidden">Update status for order {{ order.orderNumber }}</label>
-                                    <select id="order-status-{{ order.id }}" name="status" class="form-select form-select-sm" aria-label="Order status" required>
-                                        {% for option in ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] %}
-                                            <option value="{{ option }}" {{ order.status == option ? 'selected' : '' }}>{{ option }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Save order status" aria-label="Save order status">
-                                        <i class="bi bi-check-lg"></i>
-                                    </button>
-                                </form>
+
+                                <div class="order-actions">
+
+                                    <a
+                                        href="{{ path('app_order_show', {id: order.id}) }}"
+                                        class="btn btn-sm btn-outline-primary order-view-btn"
+                                        title="View order details"
+                                        aria-label="View order details"
+                                    >
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    {% if isAdmin %}
+                                        <form
+                                            method="post"
+                                            action="{{ path('app_order_update_status', {id: order.id}) }}"
+                                            class="order-status-form"
+                                        >
+
+                                            <input
+                                                type="hidden"
+                                                name="_token"
+                                                value="{{ csrf_token('update_order_status_' ~ order.id) }}"
+                                            >
+
+                                            <label
+                                                for="order-status-{{ order.id }}"
+                                                class="visually-hidden"
+                                            >
+                                                Update status for order {{ order.orderNumber }}
+                                            </label>
+
+                                            <select
+                                                id="order-status-{{ order.id }}"
+                                                name="status"
+                                                aria-label="Order status"
+                                                required
+                                            >
+                                                {% for option in ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] %}
+                                                    <option value="{{ option }}" {{ order.status == option ? 'selected' : '' }}>
+                                                        {{ option }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-sm btn-outline-success order-save-btn"
+                                                title="Save order status"
+                                                aria-label="Save order status"
+                                            >
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+
+                                        </form>
+                                    {% endif %}
+
+                                </div>
+
                             </td>
+
                         </tr>
+
                     {% else %}
+
                         <tr>
-                            <td colspan="7" class="text-center py-5">
-                                <i class="bi bi-inbox fs-2 text-muted"></i>
-                                <p class="mb-0 mt-2 text-muted">No orders found in the database yet.</p>
+                            <td colspan="7" class="orders-empty">
+                                <i class="bi bi-inbox"></i>
+                                <h3>No Orders Found</h3>
+                                <p class="mb-0">
+                                    No orders match your search or filters.
+                                </p>
                             </td>
                         </tr>
+
                     {% endfor %}
+
                 </tbody>
+
             </table>
+
+        </div>
+
+        <div class="orders-footer">
+            <i class="bi bi-info-circle me-1"></i>
+            Displaying {{ ordersCount }} {{ ordersCount == 1 ? 'order' : 'orders' }}.
         </div>
 
     </section>

@@ -1,0 +1,181 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Account | BrightBuy Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Create Account</h2>
+            <p class="text-muted mb-0">
+                Create a new Administrator or Staff account.
+            </p>
+        </div>
+
+        <a href="{{ path('app_user_management') }}"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to User Management
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 pt-4 px-4">
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-person-plus-fill text-primary me-2"></i>
+                Account Information
+            </h5>
+            <p class="text-muted small mb-0">
+                Fill in the required information below.
+            </p>
+        </div>
+
+        <div class="card-body p-4">
+
+            {{ form_start(userForm, {
+                attr: {
+                    class: 'row g-4'
+                }
+            }) }}
+
+                {% if not userForm.vars.valid %}
+                    <div class="col-12">
+                        <div class="alert alert-danger">
+                            <strong>Please review the form.</strong>
+                            {{ form_errors(userForm) }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.firstName, null, {
+                        label_attr: {class: 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(userForm.firstName, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Enter first name'
+                        }
+                    }) }}
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.firstName) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.lastName, null, {
+                        label_attr: {class: 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(userForm.lastName, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Enter last name'
+                        }
+                    }) }}
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.lastName) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.email, null, {
+                        label_attr: {class: 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(userForm.email, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'example@brightbuy.com'
+                        }
+                    }) }}
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.email) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.phone, null, {
+                        label_attr: {class: 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(userForm.phone, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Enter phone number'
+                        }
+                    }) }}
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.phone) }}
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    {{ form_label(userForm.role, null, {
+                        label_attr: {class: 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(userForm.role, {
+                        attr: {class: 'form-select'}
+                    }) }}
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.role) }}
+                    </div>
+                    <small class="text-muted">
+                        Select whether this account will be an Administrator or Staff member.
+                    </small>
+                </div>
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.plainPassword.first, null, {
+                        label_attr: {class: 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(userForm.plainPassword.first, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Enter password'
+                        }
+                    }) }}
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.plainPassword.first) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.plainPassword.second, null, {
+                        label_attr: {class: 'form-label fw-semibold'}
+                    }) }}
+                    {{ form_widget(userForm.plainPassword.second, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Confirm password'
+                        }
+                    }) }}
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.plainPassword.second) }}
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-shield-lock-fill me-2"></i>
+                        Passwords must contain at least 8 characters and will be securely hashed before saving.
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex flex-wrap justify-content-end gap-2 pt-2">
+                    <a href="{{ path('app_user_management') }}"
+                       class="btn btn-light border px-4">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-person-plus-fill me-1"></i>
+                        Create Account
+                    </button>
+                </div>
+
+            {{ form_end(userForm) }}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

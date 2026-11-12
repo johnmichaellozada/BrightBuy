@@ -16,19 +16,37 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            user_checker: App\Security\UserChecker
 
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: /dashboard
+                success_handler: App\Security\LoginSuccessHandler
 
             logout:
                 path: app_logout
                 target: app_login
 
     access_control:
+        # STAFF DASHBOARD - STAFF ONLY
+        - { path: ^/staff/dashboard, roles: ROLE_STAFF }
+
+        # ADMIN ONLY
         - { path: ^/dashboard, roles: ROLE_ADMIN }
+        - { path: ^/admin/users, roles: ROLE_ADMIN }
+        - { path: ^/customers, roles: ROLE_ADMIN }
+        - { path: ^/payments, roles: ROLE_ADMIN }
+
+        # ADMIN AND STAFF - ORDERS VIEW ACCESS
+        - { path: ^/orders, roles: [ROLE_ADMIN, ROLE_STAFF] }
+
+        # ADMIN AND STAFF - PRODUCTS, INVENTORY, CATEGORIES
+        - { path: ^/product, roles: [ROLE_ADMIN, ROLE_STAFF] }
+        - { path: ^/category, roles: [ROLE_ADMIN, ROLE_STAFF] }
+
+        # ALL AUTHENTICATED USERS
+        - { path: ^/account, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

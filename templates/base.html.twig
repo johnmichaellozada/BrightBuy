@@ -58,9 +58,9 @@
             background:
                 linear-gradient(
                     135deg,
-                    #f4f8ff 0%,
-                    #eef4ff 50%,
-                    #f8fbff 100%
+                    #d6e5fa 0%,
+                    #c5daf4 50%,
+                    #d5e4f8 100%
                 );
 
             color: #1f2937;
@@ -1303,6 +1303,216 @@
             }
         }
 
+
+        /* =========================================================
+           BRIGHTBUY ADMIN VISUAL POLISH
+           Light blue branded background + stronger text contrast
+        ========================================================= */
+
+        :root {
+            --bb-navy: #071b5c;
+            --bb-blue: #0866df;
+            --bb-blue-light: #eaf4ff;
+            --bb-yellow: #ffc400;
+            --bb-text: #10245b;
+            --bb-muted: #536887;
+        }
+
+        body {
+            color: var(--bb-text);
+            background: #edf5ff;
+        }
+
+        .admin-page {
+            position: relative;
+            isolation: isolate;
+            background:
+                radial-gradient(ellipse at 92% 18%, rgba(45, 125, 220, 0.27) 0, rgba(45, 125, 220, 0) 34%),
+                radial-gradient(ellipse at 8% 82%, rgba(25, 95, 205, 0.20) 0, rgba(25, 95, 205, 0) 38%),
+                linear-gradient(135deg, #d6e5fa 0%, #c5daf4 48%, #d5e4f8 100%);
+        }
+
+        .admin-page::before,
+        .admin-page::after {
+            content: "";
+            position: fixed;
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+
+        .admin-page::before {
+            width: 420px;
+            height: 420px;
+            top: 115px;
+            right: -185px;
+            border: 42px solid rgba(35, 139, 239, 0.055);
+        }
+
+        .admin-page::after {
+            width: 310px;
+            height: 310px;
+            left: 210px;
+            bottom: -155px;
+            border: 34px solid rgba(255, 196, 0, 0.075);
+        }
+
+        /* Improve readability across Admin pages */
+        .admin-content {
+            color: var(--bb-text);
+            background: transparent;
+        }
+
+        .admin-content h1,
+        .admin-content h2,
+        .admin-content h3,
+        .admin-content h4,
+        .admin-content h5,
+        .admin-content h6,
+        .admin-content .card-title {
+            color: var(--bb-navy);
+        }
+
+        .admin-content p,
+        .admin-content label,
+        .admin-content .form-label,
+        .admin-content .form-text,
+        .admin-content .text-muted,
+        .admin-content small,
+        .admin-content .small {
+            color: var(--bb-muted);
+        }
+
+        .admin-content .table {
+            color: var(--bb-text);
+        }
+
+        .admin-content .table thead th {
+            color: #344b73;
+            font-weight: 700;
+        }
+
+        .admin-content .form-control,
+        .admin-content .form-select {
+            color: #172b55;
+            border-color: #d5e1f1;
+        }
+
+        .admin-content .form-control::placeholder {
+            color: #7b8ba5;
+            opacity: 1;
+        }
+
+        /* BrightBuy wordmark: highlight "Buy" in brand yellow */
+        .brand-bright {
+            color: #ffffff;
+        }
+
+        .brand-buy {
+            color: #ffc400;
+        }
+
+        .sidebar-brand h2 {
+            white-space: nowrap;
+        }
+
+        .admin-brand h1 {
+            white-space: nowrap;
+        }
+
+        /* Header controls: keep My Account and Logout clearly visible */
+        .admin-header .admin-actions,
+        .admin-header .admin-actions a,
+        .admin-header .admin-actions button,
+        .admin-header .admin-actions .dropdown-toggle,
+        .admin-header .admin-actions .btn,
+        .admin-header .admin-actions i {
+            color: #ffffff !important;
+        }
+
+        .admin-header .admin-actions .dropdown-toggle {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-weight: 600;
+        }
+
+        .admin-header .admin-actions .dropdown-toggle:hover,
+        .admin-header .admin-actions .dropdown-toggle:focus {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.20);
+        }
+
+        .admin-header .admin-actions .dropdown-menu {
+            background: #ffffff;
+            border: 1px solid #dce7f5;
+            box-shadow: 0 12px 28px rgba(7, 27, 92, 0.16);
+        }
+
+        .admin-header .admin-actions .dropdown-menu a,
+        .admin-header .admin-actions .dropdown-menu button {
+            color: #17315f !important;
+        }
+
+        .admin-header .admin-actions .dropdown-menu a:hover,
+        .admin-header .admin-actions .dropdown-menu button:hover {
+            color: #071b5c !important;
+            background: #edf5ff;
+        }
+
+        .admin-header .admin-actions .btn-logout {
+            color: #ffffff !important;
+        }
+
+        .admin-header .admin-actions .btn-logout:hover {
+            color: #0756bb !important;
+        }
+
+        /* Consistent brand colors for common links and buttons */
+        .admin-content a:not(.btn):not(.dropdown-item) {
+            color: #075dcc;
+        }
+
+        .admin-content a:not(.btn):not(.dropdown-item):hover {
+            color: var(--bb-navy);
+        }
+
+        .admin-content .btn-primary {
+            background: #0866df;
+            border-color: #0866df;
+        }
+
+        .admin-content .btn-primary:hover {
+            background: #071b5c;
+            border-color: #071b5c;
+        }
+
+        .admin-content .btn-warning {
+            color: #10245b;
+            background: var(--bb-yellow);
+            border-color: var(--bb-yellow);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .admin-page::before {
+                width: 260px;
+                height: 260px;
+                right: -150px;
+            }
+
+            .admin-page::after {
+                width: 200px;
+                height: 200px;
+                left: 70px;
+            }
+
+            .admin-header .admin-actions .dropdown-toggle {
+                padding: 7px 9px;
+            }
+        }
+
     </style>
 
 
@@ -1339,15 +1549,19 @@
 
             <main class="admin-content">
 
-                {% block body %}{% endblock %}
+            {% include 'partials/flash_messages.html.twig' %}
 
-            </main>
+            {% block body %}{% endblock %}
+
+        </main>
 
 
         </div>
 
     </div>
 
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block javascripts %}{% endblock %}
 

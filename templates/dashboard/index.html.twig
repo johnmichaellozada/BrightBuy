@@ -1,386 +1,630 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Admin Dashboard | BrightBuy{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .dashboard-container {
+            position: relative;
+            isolation: isolate;
+            max-width: 1450px;
+            padding: 38px 34px 64px;
+        }
+
+        .dashboard-container::before,
+        .dashboard-container::after {
+            content: "";
+            position: fixed;
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+
+        .dashboard-container::before {
+            width: 390px;
+            height: 390px;
+            right: -170px;
+            top: 145px;
+            border: 34px solid rgba(30, 144, 255, 0.075);
+        }
+
+        .dashboard-container::after {
+            width: 280px;
+            height: 280px;
+            left: 155px;
+            bottom: -155px;
+            border: 28px solid rgba(255, 191, 0, 0.075);
+        }
+
+        .dashboard-container .dashboard-eyebrow,
+        .dashboard-container .section-eyebrow {
+            display: block;
+            color: #173b78;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .65px;
+            line-height: 1.5;
+        }
+
+        .dashboard-container .welcome-section {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-container .welcome-section h1 {
+            color: #071b55;
+            font-size: clamp(30px, 3vw, 40px);
+            font-weight: 800;
+            letter-spacing: -.8px;
+        }
+
+        .dashboard-container .welcome-section p {
+            color: #405b86;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .dashboard-container .section-heading {
+            margin-bottom: 16px;
+        }
+
+        .dashboard-container .section-heading h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #071b55;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -.4px;
+        }
+
+        .dashboard-container .section-heading h3::before {
+            content: "";
+            width: 7px;
+            height: 30px;
+            flex: 0 0 7px;
+            border-radius: 8px;
+            background: #ffbf00;
+        }
+
+        .dashboard-container .income-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 15px;
+            border: 1px solid rgba(18, 100, 232, .10);
+            border-radius: 30px;
+            background: rgba(255,255,255,.88);
+            color: #102b63;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .dashboard-container .income-grid {
+            gap: 20px;
+        }
+
+        .dashboard-container .income-card,
+        .dashboard-container .stat-card {
+            border: 1px solid rgba(255,255,255,.9);
+            background: rgba(255,255,255,.96);
+            box-shadow: 0 10px 26px rgba(8, 44, 105, .10);
+        }
+
+        .dashboard-container .income-card {
+            min-height: 165px;
+            padding: 26px 28px;
+            border-radius: 22px;
+        }
+
+        .dashboard-container .income-card::after,
+        .dashboard-container .stat-card::after {
+            content: "";
+            position: absolute;
+            right: -1px;
+            bottom: -1px;
+            width: 76px;
+            height: 24px;
+            background: #ffbf00;
+            clip-path: polygon(100% 0, 100% 100%, 0 100%);
+            border-bottom-right-radius: 20px;
+        }
+
+        .dashboard-container .income-icon {
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            border-radius: 17px;
+            background: #e4efff;
+            color: #0865e8;
+            font-size: 27px;
+        }
+
+        .dashboard-container .income-label {
+            color: #183665;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .45px;
+        }
+
+        .dashboard-container .income-card h2 {
+            color: #071b55;
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -.7px;
+        }
+
+        .dashboard-container .income-card p {
+            color: #405b86;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .dashboard-container .income-decoration {
+            color: rgba(18, 126, 235, .22);
+            font-size: 48px;
+        }
+
+        .dashboard-container .statistics-section {
+            margin-bottom: 30px;
+        }
+
+        /* Equal dimensions for all five statistic cards */
+        .dashboard-container .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .dashboard-container .stat-card {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            min-height: 280px;
+            box-sizing: border-box;
+            padding: 25px 28px;
+            border-radius: 22px;
+            overflow: hidden;
+        }
+
+        .dashboard-container .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 17px;
+            background: #e1edff;
+            color: #0865e8;
+            font-size: 26px;
+        }
+
+        .dashboard-container .stat-card:nth-child(2) .stat-icon {
+            background: #fff2c7;
+            color: #c18a00;
+        }
+
+        .dashboard-container .stat-card:nth-child(3) .stat-icon {
+            background: #e1edff;
+            color: #0865e8;
+        }
+
+        .dashboard-container .stat-number {
+            color: #071b55;
+            font-size: 38px;
+            font-weight: 800;
+        }
+
+        .dashboard-container .stat-label {
+            color: #263f6d;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .dashboard-container .status-name {
+            color: #263f6d;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .dashboard-container .status-count {
+            color: #071b55;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .dashboard-container .order-status-card .stat-label {
+            margin-top: 7px;
+            color: #071b55;
+            font-weight: 800;
+        }
+
+        .dashboard-container .customers-card {
+            position: relative;
+            border: 1px solid rgba(255,255,255,.9);
+            border-radius: 22px;
+            background: rgba(255,255,255,.97);
+            box-shadow: 0 10px 26px rgba(8, 44, 105, .10);
+        }
+
+        .dashboard-container .customers-header {
+            padding: 25px 28px;
+            border-bottom: 1px solid #e6edf8;
+        }
+
+        .dashboard-container .customers-header h4 {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 3px;
+            color: #071b55;
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .dashboard-container .customers-header h4 i {
+            color: #ffbf00;
+        }
+
+        .dashboard-container .customers-count {
+            background: #e2edff;
+            color: #075bd2;
+            font-weight: 800;
+        }
+
+        .dashboard-container .empty-customers {
+            padding: 48px 24px;
+        }
+
+        .dashboard-container .empty-customers i {
+            color: #77b9f2;
+            font-size: 48px;
+        }
+
+        .dashboard-container .empty-customers h5 {
+            color: #071b55;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .dashboard-container .empty-customers p {
+            color: #526b91;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .dashboard-container .recent-customer-list {
+            padding: 10px 28px 24px;
+        }
+
+        .dashboard-container .recent-customer-list table {
+            margin-bottom: 0;
+        }
+
+        .dashboard-container .recent-customer-list th {
+            color: #173b78;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .dashboard-container .recent-customer-list td {
+            color: #263f6d;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .dashboard-container .customer-name {
+            color: #071b55;
+            font-weight: 700;
+        }
+
+        .dashboard-container .customer-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .dashboard-container .customer-status.active {
+            background: #e2f7eb;
+            color: #168348;
+        }
+
+        .dashboard-container .customer-status.disabled {
+            background: #ffe7e7;
+            color: #c0392b;
+        }
+
+        .dashboard-decorations {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .dashboard-decorations i {
+            position: absolute;
+            display: block;
+            color: rgba(20, 119, 224, 0.22);
+            line-height: 1;
+        }
+
+        .dashboard-cart-decoration {
+            top: 20px;
+            right: 8%;
+            font-size: clamp(90px, 12vw, 165px);
+            transform: rotate(-9deg);
+        }
+
+        .dashboard-bag-decoration {
+            top: 47%;
+            right: -8px;
+            font-size: clamp(75px, 9vw, 125px);
+            color: rgba(20, 119, 224, 0.17) !important;
+            transform: rotate(9deg);
+        }
+
+        .dashboard-small-bag-decoration {
+            bottom: 20px;
+            left: 3%;
+            font-size: clamp(65px, 8vw, 105px);
+            color: rgba(255, 191, 0, 0.18) !important;
+            transform: rotate(-8deg);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 28px 16px 42px;
+            }
+
+            .dashboard-container .section-heading h3 {
+                font-size: 22px;
+            }
+
+            .dashboard-container .income-card {
+                padding: 22px 18px;
+            }
+
+            .dashboard-container .income-card h2 {
+                font-size: 28px;
+            }
+
+            .dashboard-container .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-container .stat-card {
+                height: 280px;
+                min-height: 280px;
+            }
+
+            .dashboard-container .recent-customer-list {
+                padding: 10px 14px 20px;
+            }
+
+            .dashboard-cart-decoration {
+                top: 12px;
+                right: 2%;
+                font-size: 75px;
+            }
+
+            .dashboard-bag-decoration {
+                top: 55%;
+                right: -18px;
+                font-size: 65px;
+            }
+
+            .dashboard-small-bag-decoration {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
 
 <div class="dashboard-container">
 
-    <!-- =====================================================
-         WELCOME
-    ====================================================== -->
+    <div class="dashboard-decorations" aria-hidden="true">
+        <i class="bi bi-cart3 dashboard-cart-decoration"></i>
+        <i class="bi bi-bag dashboard-bag-decoration"></i>
+        <i class="bi bi-bag-heart dashboard-small-bag-decoration"></i>
+    </div>
 
     <section class="welcome-section">
-
-        <span class="dashboard-eyebrow">
-            ADMINISTRATION
-        </span>
-
-        <h1>
-            Welcome, Admin!
-        </h1>
-
-        <p>
-            Manage your BrightBuy customers, orders, sales, and inventory.
-        </p>
-
+        <span class="dashboard-eyebrow">ADMINISTRATION</span>
+        <h1>Welcome, Admin!</h1>
+        <p>Manage your BrightBuy customers, orders, sales, and inventory.</p>
     </section>
-
-
-    <!-- =====================================================
-         INCOME SECTION
-    ====================================================== -->
 
     <section class="income-section">
-
         <div class="section-heading">
-
             <div>
-
-                <span class="section-eyebrow">
-                    SALES OVERVIEW
-                </span>
-
-                <h3>
-                    Income
-                </h3>
-
+                <span class="section-eyebrow">SALES OVERVIEW</span>
+                <h3>Income</h3>
             </div>
-
 
             <div class="income-date">
-
                 <i class="bi bi-calendar3"></i>
-
-                October 06, 2026
-
+                {{ todayDate }}
             </div>
-
         </div>
-
 
         <div class="income-grid">
-
-
-            <!-- TODAY INCOME -->
-
             <div class="income-card today-income-card">
-
                 <div class="income-card-content">
-
                     <div class="income-icon">
-
-                        <i class="bi bi-cash-stack"></i>
-
+                        <i class="bi bi-wallet2"></i>
                     </div>
-
-
                     <div>
-
-                        <span class="income-label">
-                            TOTAL INCOME TODAY
-                        </span>
-
-                        <h2>
-                            ₱0.00
-                        </h2>
-
-                        <p>
-                            Completed orders for today
-                        </p>
-
+                        <span class="income-label">TOTAL INCOME TODAY</span>
+                        <h2>₱{{ todayIncome|default(0)|number_format(2, '.', ',') }}</h2>
+                        <p>Paid orders for today</p>
                     </div>
-
                 </div>
-
-
                 <div class="income-decoration">
-
                     <i class="bi bi-graph-up-arrow"></i>
-
                 </div>
-
             </div>
-
-
-            <!-- MONTH INCOME -->
 
             <div class="income-card month-income-card">
-
                 <div class="income-card-content">
-
                     <div class="income-icon">
-
                         <i class="bi bi-bar-chart-fill"></i>
-
                     </div>
-
-
                     <div>
-
-                        <span class="income-label">
-                            TOTAL INCOME THIS MONTH
-                        </span>
-
-                        <h2>
-                            ₱0.00
-                        </h2>
-
-                        <p>
-                            Completed orders for October 2026
-                        </p>
-
+                        <span class="income-label">TOTAL INCOME THIS MONTH</span>
+                        <h2>₱{{ monthIncome|default(0)|number_format(2, '.', ',') }}</h2>
+                        <p>Paid orders for {{ monthLabel }}</p>
                     </div>
-
                 </div>
-
-
                 <div class="income-decoration">
-
                     <i class="bi bi-calendar-check"></i>
-
                 </div>
-
             </div>
-
-
         </div>
-
     </section>
-
-
-    <!-- =====================================================
-         ORDER STATISTICS
-    ====================================================== -->
 
     <section class="statistics-section">
-
         <div class="section-heading">
-
             <div>
-
-                <span class="section-eyebrow">
-                    STORE OVERVIEW
-                </span>
-
-                <h3>
-                    Dashboard Statistics
-                </h3>
-
+                <span class="section-eyebrow">STORE OVERVIEW</span>
+                <h3>Dashboard Statistics</h3>
             </div>
-
         </div>
-
 
         <div class="stats-grid">
-
-
-            <!-- TOTAL CUSTOMERS -->
-
             <div class="stat-card">
-
                 <div class="stat-icon">
-
                     <i class="bi bi-people-fill"></i>
-
                 </div>
-
-                <p class="stat-number">
-                    0
-                </p>
-
-                <div class="stat-label">
-                    Total Customers
-                </div>
-
+                <p class="stat-number">{{ totalCustomers|default(0) }}</p>
+                <div class="stat-label">Total Customers</div>
             </div>
-
-
-            <!-- TOTAL ORDERS -->
 
             <div class="stat-card">
-
                 <div class="stat-icon">
-
                     <i class="bi bi-bag-check-fill"></i>
-
                 </div>
-
-                <p class="stat-number">
-                    0
-                </p>
-
-                <div class="stat-label">
-                    Total Orders
-                </div>
-
+                <p class="stat-number">{{ totalOrders|default(0) }}</p>
+                <div class="stat-label">Total Orders</div>
             </div>
-
-
-            <!-- ORDER STATUS -->
 
             <div class="stat-card order-status-card">
-
                 <div class="stat-icon">
-
                     <i class="bi bi-hourglass-split"></i>
-
                 </div>
-
 
                 <div class="status-breakdown">
-
-
                     <div class="status-item">
-
-                        <span class="status-name">
-
-                            <span class="status-dot pending"></span>
-
-                            Pending
-
-                        </span>
-
-                        <span class="status-count">
-                            0
-                        </span>
-
+                        <span class="status-name"><span class="status-dot pending"></span>Pending</span>
+                        <span class="status-count">{{ orderStatuses.Pending|default(0) }}</span>
                     </div>
-
-
                     <div class="status-item">
-
-                        <span class="status-name">
-
-                            <span class="status-dot processing"></span>
-
-                            Processing
-
-                        </span>
-
-                        <span class="status-count">
-                            0
-                        </span>
-
+                        <span class="status-name"><span class="status-dot processing"></span>Processing</span>
+                        <span class="status-count">{{ orderStatuses.Processing|default(0) }}</span>
                     </div>
-
-
                     <div class="status-item">
-
-                        <span class="status-name">
-
-                            <span class="status-dot shipped"></span>
-
-                            Shipped
-
-                        </span>
-
-                        <span class="status-count">
-                            0
-                        </span>
-
+                        <span class="status-name"><span class="status-dot shipped"></span>Shipped</span>
+                        <span class="status-count">{{ orderStatuses.Shipped|default(0) }}</span>
                     </div>
-
-
                     <div class="status-item">
-
-                        <span class="status-name">
-
-                            <span class="status-dot delivered"></span>
-
-                            Delivered
-
-                        </span>
-
-                        <span class="status-count">
-                            0
-                        </span>
-
+                        <span class="status-name"><span class="status-dot delivered"></span>Delivered</span>
+                        <span class="status-count">{{ orderStatuses.Delivered|default(0) }}</span>
                     </div>
-
-
                     <div class="status-item">
-
-                        <span class="status-name">
-
-                            <span class="status-dot cancelled"></span>
-
-                            Cancelled
-
-                        </span>
-
-                        <span class="status-count">
-                            0
-                        </span>
-
+                        <span class="status-name"><span class="status-dot cancelled"></span>Cancelled</span>
+                        <span class="status-count">{{ orderStatuses.Cancelled|default(0) }}</span>
                     </div>
-
-
                 </div>
 
-
-                <div class="stat-label">
-                    Order Status
-                </div>
-
+                <div class="stat-label">Order Status</div>
             </div>
-
-
         </div>
 
+        <div class="stats-grid mt-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <p class="stat-number">{{ totalStaff|default(0) }}</p>
+                <div class="stat-label">Total Staff</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+                <p class="stat-number">{{ totalProducts|default(0) }}</p>
+                <div class="stat-label">Total Products</div>
+            </div>
+        </div>
     </section>
 
-
-    <!-- =====================================================
-         CUSTOMERS
-    ====================================================== -->
-
     <section class="customers-card">
-
-
-        <div class="customers-header">
-
+        <div class="customers-header d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-
-                <span class="section-eyebrow">
-                    CUSTOMER MANAGEMENT
-                </span>
-
+                <span class="section-eyebrow">CUSTOMER MANAGEMENT</span>
                 <h4>
-
                     <i class="bi bi-people-fill"></i>
-
-                    Customers
-
+                    Recent Customers
                 </h4>
-
             </div>
 
-
-            <span class="customers-count">
-
-                0 customers
-
+            <span class="customers-count badge rounded-pill">
+                {{ totalCustomers }} customers
             </span>
-
         </div>
 
-
-        <div class="empty-customers">
-
-            <i class="bi bi-people"></i>
-
-            <h5>
-                No customers found
-            </h5>
-
-            <p>
-                Registered customers will appear here.
-            </p>
-
-        </div>
-
-
+        {% if recentCustomers is not empty %}
+            <div class="recent-customer-list table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Email Address</th>
+                            <th>Phone</th>
+                            <th>Date Registered</th>
+                            <th>Account Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in recentCustomers %}
+                            <tr>
+                                <td class="customer-name">
+                                    {{ customer.firstName }} {{ customer.lastName }}
+                                </td>
+                                <td>{{ customer.email }}</td>
+                                <td>{{ customer.phone ?: 'Not provided' }}</td>
+                                <td>
+                                    {% if customer.createdAt %}
+                                        {{ customer.createdAt|date('M d, Y') }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if customer.isActive %}
+                                        <span class="customer-status active">Active</span>
+                                    {% else %}
+                                        <span class="customer-status disabled">Disabled</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-customers text-center">
+                <i class="bi bi-bag-heart"></i>
+                <h5>No customers found</h5>
+                <p>Registered customers will appear here.</p>
+            </div>
+        {% endif %}
     </section>
 
 </div>

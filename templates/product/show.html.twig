@@ -1,39 +1,172 @@
-﻿<!DOCTYPE html>
+﻿
+{% extends 'base.html.twig' %}
 
-<title>Product</title>
+{% block title %}Product Details | BrightBuy{% endblock %}
 
 {% block body %}
-    <h1>Product</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ product.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ product.name }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ product.description }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ product.price }}</td>
-            </tr>
-            <tr>
-                <th>Stock</th>
-                <td>{{ product.stock }}</td>
-            </tr>
-        </tbody>
-    </table>
+{% set isProductOwner = product.createdBy and app.user and product.createdBy.id == app.user.id %}
+{% set canManageProduct = is_granted('ROLE_ADMIN') or (is_granted('ROLE_STAFF') and isProductOwner) %}
 
-    <a href="{{ path('app_product_index') }}">back to list</a>
+<div class="dashboard-container">
 
-    <a href="{{ path('app_product_edit', {'id': product.id}) }}">edit</a>
+    <section class="welcome-section">
+        <span class="dashboard-eyebrow">PRODUCT MANAGEMENT</span>
+        <h1>Product Details</h1>
+        <p>View the information and inventory details of this BrightBuy product.</p>
+    </section>
 
-    {{ include('product/_delete_form.html.twig') }}
+    <section class="customers-card">
+
+        <div class="customers-header">
+            <div>
+                <span class="section-eyebrow">STORE INVENTORY</span>
+                <h4>
+                    <i class="bi bi-box-seam"></i>
+                    {{ product.name }}
+                </h4>
+            </div>
+
+            <span class="badge text-bg-primary">
+                Product #{{ product.id }}
+            </span>
+        </div>
+
+        <div class="p-4">
+
+            {# Product Image #}
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted">
+                    Product Image
+                </label>
+
+                <div class="p-3 bg-light rounded border text-center">
+                    {% if product.image %}
+                        <img
+                            src="{{ asset(product.image) }}"
+                            alt="{{ product.name }}"
+                            class="img-thumbnail"
+                            style="width: 240px; height: 240px; object-fit: contain;"
+                        >
+                    {% else %}
+                        <div class="py-5 text-muted">
+                            <i class="bi bi-image fs-1"></i>
+                            <p class="mb-0 mt-2">No product image available.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Product ID #}
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted">
+                    Product ID
+                </label>
+
+                <div class="p-3 bg-light rounded border">
+                    {{ product.id }}
+                </div>
+            </div>
+
+            {# Product Name #}
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted">
+                    Product Name
+                </label>
+
+                <div class="p-3 bg-light rounded border">
+                    {{ product.name }}
+                </div>
+            </div>
+
+            {# Category #}
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted">
+                    Category
+                </label>
+
+                <div class="p-3 bg-light rounded border">
+                    {{ product.category ? product.category.name : 'No category assigned' }}
+                </div>
+            </div>
+
+            {# Description #}
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted">
+                    Description
+                </label>
+
+                <div class="p-3 bg-light rounded border"
+                     style="min-height: 100px; white-space: pre-wrap;">{{ product.description ?: 'No description provided.' }}</div>
+            </div>
+
+            {# Price #}
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted">
+                    Price
+                </label>
+
+                <div class="p-3 bg-light rounded border">
+                    ₱{{ product.price|number_format(2, '.', ',') }}
+                </div>
+            </div>
+
+            {# Stock #}
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-muted">
+                    Available Stock
+                </label>
+
+                <div class="p-3 bg-light rounded border">
+                    {{ product.stock }}
+                    {% if product.stock <= 0 %}
+                        <span class="badge text-bg-danger ms-2">Out of Stock</span>
+                    {% elseif product.stock <= 5 %}
+                        <span class="badge text-bg-warning ms-2">Low Stock</span>
+                    {% else %}
+                        <span class="badge text-bg-success ms-2">In Stock</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Action Buttons #}
+            <div class="d-flex flex-wrap gap-2 mt-4">
+
+                <a href="{{ path('app_product_index') }}"
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Back to Products
+                </a>
+
+                {# Admin can manage all products.
+                   Staff can manage only their own products. #}
+                {% if canManageProduct %}
+
+                    <a href="{{ path('app_product_edit', {'id': product.id}) }}"
+                       class="btn btn-warning fw-semibold">
+                        <i class="bi bi-pencil-square me-1"></i>
+                        Edit Product
+                    </a>
+
+                    <div>
+                        {{ include('product/_delete_form.html.twig') }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            {% if is_granted('ROLE_STAFF') and not isProductOwner %}
+                <div class="alert alert-info mt-4 mb-0">
+                    <i class="bi bi-info-circle me-1"></i>
+                    This is a shared product. You can view its details, but only its owner or an administrator can manage it.
+                </div>
+            {% endif %}
+
+        </div>
+
+    </section>
+
+</div>
+
 {% endblock %}
-

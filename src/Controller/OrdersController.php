@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
+use App\Repository\OrderItemRepository;
 use App\Repository\OrderRepository;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,16 +12,60 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class OrdersController extends AbstractController
 {
-    #[Route('/orders/{id}', name: 'app_order_show', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(int $id, OrderRepository $orderRepository, \App\Repository\OrderItemRepository $orderItemRepository): Response
+    /**
+     * Allow only Admin and Staff to view orders.
+     */
+    private function denyUnauthorizedUsers(): void
     {
+        if (
+            !$this->isGranted('ROLE_ADMIN') &&
+            !$this->isGranted('ROLE_STAFF')
+        ) {
+            throw $this->createAccessDeniedException(
+                'You are not authorized to access orders.'
+            );
+        }
+    }
+
+    /**
+     * Only Admin can modify orders.
+     */
+    private function denyNonAdminUsers(): void
+    {
+        $this->denyAccessUnlessGranted(
+            'ROLE_ADMIN',
+            null,
+            'Only administrators can modify orders.'
+        );
+    }
+
+    /**
+     * Display individual order details.
+     * Admin and Staff can view.
+     */
+    #[Route(
+        '/orders/{id}',
+        name: 'app_order_show',
+        requirements: ['id' => '\d+'],
+        methods: ['GET']
+    )]
+    public function show(
+        int $id,
+        OrderRepository $orderRepository,
+        OrderItemRepository $orderItemRepository
+    ): Response {
+        $this->denyUnauthorizedUsers();
+
         $order = $orderRepository->find($id);
 
         if (!$order) {
             throw $this->createNotFoundException('Order not found.');
         }
 
-        $orderItems = $orderItemRepository->findBy(['order' => $order], ['id' => 'ASC']);
+        $orderItems = $orderItemRepository->findBy(
+            ['order' => $order],
+            ['id' => 'ASC']
+        );
 
         return $this->render('orders/show.html.twig', [
             'order' => $order,
@@ -29,15 +73,35 @@ final class OrdersController extends AbstractController
         ]);
     }
 
+    /**
+     * Display all orders.
+     * Admin and Staff can view, search, and filter.
+     */
     #[Route('/orders', name: 'app_orders', methods: ['GET'])]
-    public function index(Request $request, OrderRepository $orderRepository): Response
-    {
+    public function index(
+        Request $request,
+        OrderRepository $orderRepository
+    ): Response {
+        $this->denyUnauthorizedUsers();
+
         $search = trim($request->query->getString('search'));
         $status = $request->query->getString('status');
         $paymentStatus = $request->query->getString('paymentStatus');
 
-        $allowedStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
-        $allowedPaymentStatuses = ['Pending', 'Paid', 'Failed', 'Refunded'];
+        $allowedStatuses = [
+            'Pending',
+            'Processing',
+            'Shipped',
+            'Delivered',
+            'Cancelled',
+        ];
+
+        $allowedPaymentStatuses = [
+            'Pending',
+            'Paid',
+            'Failed',
+            'Refunded',
+        ];
 
         if (!in_array($status, $allowedStatuses, true)) {
             $status = '';
@@ -62,13 +126,24 @@ final class OrdersController extends AbstractController
         ]);
     }
 
-    #[Route('/orders/{id}/status', name: 'app_order_update_status', requirements: ['id' => '\d+'], methods: ['POST'])]
+    /**
+     * Update order status.
+     * Admin only.
+     */
+    #[Route(
+        '/orders/{id}/status',
+        name: 'app_order_update_status',
+        requirements: ['id' => '\d+'],
+        methods: ['POST']
+    )]
     public function updateStatus(
         int $id,
         Request $request,
         OrderRepository $orderRepository,
         EntityManagerInterface $entityManager
     ): Response {
+        $this->denyNonAdminUsers();
+
         $order = $orderRepository->find($id);
 
         if (!$order) {
@@ -79,25 +154,54 @@ final class OrdersController extends AbstractController
             'update_order_status_'.$order->getId(),
             $request->getPayload()->getString('_token')
         )) {
-            $this->addFlash('danger', 'Invalid security token. Please try again.');
+            $this->addFlash(
+                'danger',
+                'Invalid security token. Please try again.'
+            );
 
-            return $this->redirectToRoute('app_orders', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(
+                'app_orders',
+                [],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         $status = $request->getPayload()->getString('status');
-        $allowedStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+
+        $allowedStatuses = [
+            'Pending',
+            'Processing',
+            'Shipped',
+            'Delivered',
+            'Cancelled',
+        ];
 
         if (!in_array($status, $allowedStatuses, true)) {
-            $this->addFlash('danger', 'Please select a valid order status.');
+            $this->addFlash(
+                'danger',
+                'Please select a valid order status.'
+            );
 
-            return $this->redirectToRoute('app_orders', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(
+                'app_orders',
+                [],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         $order->setStatus($status);
+
         $entityManager->flush();
 
-        $this->addFlash('success', 'Order status updated successfully.');
+        $this->addFlash(
+            'success',
+            'Order status updated successfully.'
+        );
 
-        return $this->redirectToRoute('app_orders', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_orders',
+            [],
+            Response::HTTP_SEE_OTHER
+        );
     }
 }

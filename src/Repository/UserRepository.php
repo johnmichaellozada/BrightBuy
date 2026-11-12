@@ -16,9 +16,6 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    /**
-     * Find a user using their email address.
-     */
     public function findOneByEmail(string $email): ?User
     {
         return $this->createQueryBuilder('u')
@@ -28,9 +25,6 @@ class UserRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    /**
-     * Check if an email address is already registered.
-     */
     public function emailExists(string $email): bool
     {
         return (int) $this->createQueryBuilder('u')
@@ -39,6 +33,46 @@ class UserRepository extends ServiceEntityRepository
             ->setParameter('email', strtolower(trim($email)))
             ->getQuery()
             ->getSingleScalarResult() > 0;
+    }
+
+    public function emailExistsForAnotherUser(
+        string $email,
+        int $userId
+    ): bool {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('LOWER(u.email) = :email')
+            ->andWhere('u.id != :userId')
+            ->setParameter('email', strtolower(trim($email)))
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
+    }
+
+    /**
+     * Count all registered users.
+     */
+    public function countAllUsers(): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Count active Administrator accounts.
+     */
+    public function countActiveAdmins(): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('LOWER(u.role) = :role')
+            ->andWhere('u.isActive = :active')
+            ->setParameter('role', 'admin')
+            ->setParameter('active', true)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**
@@ -75,26 +109,12 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Count users by role.
-     */
     public function countByRole(string $role): int
     {
         return (int) $this->createQueryBuilder('u')
             ->select('COUNT(u.id)')
             ->andWhere('LOWER(u.role) = :role')
             ->setParameter('role', strtolower(trim($role)))
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    /**
-     * Count all registered users.
-     */
-    public function countAllUsers(): int
-    {
-        return (int) $this->createQueryBuilder('u')
-            ->select('COUNT(u.id)')
             ->getQuery()
             ->getSingleScalarResult();
     }

@@ -1,0 +1,303 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Account | BrightBuy Admin{% endblock %}
+
+{% block body %}
+
+<style>
+    .edit-user-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: auto;
+        padding: 42px 30px 60px;
+    }
+
+    .edit-user-heading {
+        margin-bottom: 30px;
+    }
+
+    .edit-user-heading h1 {
+        color: #06185f;
+        font-size: 32px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .edit-user-heading p {
+        color: #71809b;
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
+    .edit-user-card {
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 8px 25px rgba(4, 24, 91, 0.08);
+        overflow: hidden;
+    }
+
+    .edit-user-card-header {
+        padding: 25px 30px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .edit-user-card-header h2 {
+        color: #06185f;
+        font-size: 21px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .edit-user-card-header p {
+        color: #71809b;
+        font-size: 13px;
+        margin: 7px 0 0;
+    }
+
+    .edit-user-card-body {
+        padding: 30px;
+    }
+
+    .edit-user-card .form-label {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .edit-user-card .form-control,
+    .edit-user-card .form-select {
+        padding: 12px 14px;
+        border: 1px solid #dce3ef;
+        border-radius: 9px;
+        font-size: 13px;
+    }
+
+    .edit-user-card .form-control:focus,
+    .edit-user-card .form-select:focus {
+        border-color: #1264e8;
+        box-shadow: 0 0 0 3px rgba(18, 100, 232, 0.10);
+    }
+
+    .edit-user-info {
+        background: #f5f8ff;
+        border: 1px solid #e3eafa;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 25px;
+    }
+
+    .edit-user-info p {
+        color: #71809b;
+        font-size: 12px;
+        margin: 5px 0 0;
+    }
+
+    .edit-user-actions {
+        border-top: 1px solid #edf0f5;
+        padding-top: 25px;
+        margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+        .edit-user-container {
+            padding: 28px 15px 40px;
+        }
+
+        .edit-user-card-body {
+            padding: 20px;
+        }
+
+        .edit-user-card-header {
+            padding: 20px;
+        }
+
+        .edit-user-heading h1 {
+            font-size: 26px;
+        }
+    }
+</style>
+
+<div class="edit-user-container">
+
+    <div class="edit-user-heading d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h1>Edit Account</h1>
+            <p>Update the information and role of this BrightBuy account.</p>
+        </div>
+
+        <a href="{{ path('app_user_management') }}"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to User Management
+        </a>
+    </div>
+
+    <div class="edit-user-card">
+
+        <div class="edit-user-card-header">
+            <h2>
+                <i class="bi bi-person-gear text-primary me-2"></i>
+                Account Information
+            </h2>
+
+            <p>
+                Update the account details below.
+            </p>
+        </div>
+
+        <div class="edit-user-card-body">
+
+            <div class="edit-user-info">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-circle text-primary fs-4"></i>
+
+                    <div>
+                        <strong class="text-dark">
+                            Editing: {{ user.firstName }} {{ user.lastName }}
+                        </strong>
+
+                        <p>
+                            Account ID: #{{ user.id }}
+                            &nbsp; | &nbsp;
+                            Current Status:
+                            {{ user.isActive ? 'Active' : 'Disabled' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_start(userForm, {
+                attr: {
+                    class: 'row g-4'
+                }
+            }) }}
+
+                {% if not userForm.vars.valid %}
+                    <div class="col-12">
+                        <div class="alert alert-danger">
+                            <strong>Please review the form.</strong>
+                            {{ form_errors(userForm) }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.firstName, null, {
+                        label_attr: {class: 'form-label'}
+                    }) }}
+
+                    {{ form_widget(userForm.firstName, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Enter first name'
+                        }
+                    }) }}
+
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.firstName) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.lastName, null, {
+                        label_attr: {class: 'form-label'}
+                    }) }}
+
+                    {{ form_widget(userForm.lastName, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Enter last name'
+                        }
+                    }) }}
+
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.lastName) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.email, null, {
+                        label_attr: {class: 'form-label'}
+                    }) }}
+
+                    {{ form_widget(userForm.email, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Enter email address'
+                        }
+                    }) }}
+
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.email) }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    {{ form_label(userForm.phone, null, {
+                        label_attr: {class: 'form-label'}
+                    }) }}
+
+                    {{ form_widget(userForm.phone, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Enter phone number'
+                        }
+                    }) }}
+
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.phone) }}
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    {{ form_label(userForm.role, null, {
+                        label_attr: {class: 'form-label'}
+                    }) }}
+
+                    {{ form_widget(userForm.role, {
+                        attr: {
+                            class: 'form-select'
+                        }
+                    }) }}
+
+                    <div class="text-danger small">
+                        {{ form_errors(userForm.role) }}
+                    </div>
+
+                    <small class="text-muted">
+                        Select Administrator or Staff.
+                        Your own Administrator role cannot be downgraded.
+                    </small>
+                </div>
+
+                <div class="col-12">
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-shield-lock-fill me-2"></i>
+                        The existing password and account status will remain unchanged.
+                    </div>
+                </div>
+
+                <div class="col-12 edit-user-actions d-flex flex-wrap justify-content-end gap-2">
+
+                    <a href="{{ path('app_user_management') }}"
+                       class="btn btn-light border px-4">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        Save Changes
+                    </button>
+
+                </div>
+
+            {{ form_end(userForm) }}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

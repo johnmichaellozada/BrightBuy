@@ -1,3 +1,4 @@
+
 services:
   app:
     build:
@@ -6,7 +7,8 @@ services:
     container_name: brightbuy-php
     restart: unless-stopped
     environment:
-      APP_ENV: dev
+      APP_ENV: "prod"
+      APP_DEBUG: "0"
       DATABASE_URL: "${DATABASE_URL}"
     ports:
       - "8080:80"
@@ -26,7 +28,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: brightbuy_symfony
     ports:
-      - "3310:3306"
+      - "127.0.0.1:3310:3306"
     volumes:
       - symfony-db-data:/var/lib/mysql
     healthcheck:
@@ -48,7 +50,7 @@ services:
       PMA_HOST: database
       PMA_PORT: 3306
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
     depends_on:
       database:
         condition: service_healthy

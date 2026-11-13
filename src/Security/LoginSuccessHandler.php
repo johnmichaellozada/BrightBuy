@@ -22,21 +22,38 @@ final class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         $user = $token->getUser();
         $roles = $user->getRoles();
 
-        // Admin → Admin Dashboard
+        // Retrieve the originally requested page.
+        $targetPath = null;
+
+        if ($request->hasSession()) {
+            $session = $request->getSession();
+
+            $targetPath = $session->get('_security.main.target_path');
+            $session->remove('_security.main.target_path');
+        }
+
+        // Admin → Homepage
         if (in_array('ROLE_ADMIN', $roles, true)) {
             return new RedirectResponse(
-                $this->urlGenerator->generate('app_dashboard')
+                $this->urlGenerator->generate('app_home')
             );
         }
 
-        // Staff → Staff Dashboard
+        // Staff → Homepage
         if (in_array('ROLE_STAFF', $roles, true)) {
             return new RedirectResponse(
-                $this->urlGenerator->generate('app_staff_dashboard')
+                $this->urlGenerator->generate('app_home')
             );
         }
 
-        // Customer → BrightBuy Homepage
-        return new RedirectResponse('/');
+        // Other users → Originally requested page.
+        if (is_string($targetPath) && str_starts_with($targetPath, '/')) {
+            return new RedirectResponse($targetPath);
+        }
+
+        // Default → Homepage.
+        return new RedirectResponse(
+            $this->urlGenerator->generate('app_home')
+        );
     }
 }

@@ -309,6 +309,7 @@
         color: #d93636;
     }
 
+    /* PRODUCT BUTTON */
     .shop-product-button {
         width: 100%;
         background: #ffc000;
@@ -321,11 +322,23 @@
         text-decoration: none;
         display: block;
         box-sizing: border-box;
+        transition: .2s ease;
     }
 
     .shop-product-button:hover {
         background: #eeb400;
         color: #10266D;
+    }
+
+    .shop-product-button.disabled {
+        background: #e9edf3;
+        color: #718096;
+        cursor: not-allowed;
+    }
+
+    .shop-product-button.disabled:hover {
+        background: #e9edf3;
+        color: #718096;
     }
 
     /* EMPTY RESULTS */
@@ -573,9 +586,34 @@
                                     </div>
                                 {% endif %}
 
-                                <span class="shop-product-button">
-                                    {{ product.stock > 0 ? 'Available Now' : 'Currently Unavailable' }}
-                                </span>
+                                {% if product.stock <= 0 %}
+
+                                    <span class="shop-product-button disabled">
+                                        Currently Unavailable
+                                    </span>
+
+                                {% elseif is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+
+                                    <span class="shop-product-button">
+                                        Available Now
+                                    </span>
+
+                                {% elseif app.user %}
+
+                                    <span class="shop-product-button disabled">
+                                        Access Restricted
+                                    </span>
+
+                                {% else %}
+
+                                    <a
+                                        href="{{ path('app_login') }}"
+                                        class="shop-product-button"
+                                    >
+                                        Available Now
+                                    </a>
+
+                                {% endif %}
 
                             </div>
                         </div>

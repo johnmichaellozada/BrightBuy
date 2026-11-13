@@ -38,7 +38,7 @@
             text-decoration: none;
         }
 
-        /* Top announcement bar */
+        /* Announcement bar */
         .store-topbar {
             background: var(--bb-navy);
             color: var(--bb-white);
@@ -51,19 +51,28 @@
             color: var(--bb-yellow);
         }
 
-        /* Main header */
+        /* Main header - Forced blue gradient */
         .store-header {
-            background: var(--bb-white);
+            background: linear-gradient(
+                110deg,
+                #071a35 0%,
+                #123d70 55%,
+                #1764b1 100%
+            ) !important;
+            background-color: #071a35 !important;
+            color: #ffffff;
             padding: 17px 5%;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 25px;
-            border-bottom: 1px solid #edf0f5;
+            border-bottom: 1px solid rgba(255, 255, 255, .12);
+            position: relative;
+            z-index: 20;
         }
 
         .store-brand {
-            color: var(--bb-navy);
+            color: #ffffff !important;
             font-size: 29px;
             font-weight: 800;
             letter-spacing: -1px;
@@ -71,9 +80,10 @@
         }
 
         .store-brand span {
-            color: var(--bb-yellow);
+            color: #ffc928 !important;
         }
 
+        /* Search bar */
         .store-search {
             flex: 1;
             max-width: 600px;
@@ -94,6 +104,11 @@
             padding: 12px 16px;
             font-size: 13px;
             font-family: inherit;
+            color: var(--bb-navy);
+        }
+
+        .store-search input::placeholder {
+            color: #718096;
         }
 
         .store-search button {
@@ -109,6 +124,7 @@
             background: #f0b900;
         }
 
+        /* Header actions */
         .store-header-actions {
             display: flex;
             align-items: center;
@@ -116,7 +132,7 @@
         }
 
         .store-action {
-            color: var(--bb-navy);
+            color: #ffffff !important;
             display: flex;
             align-items: center;
             gap: 7px;
@@ -130,22 +146,49 @@
         }
 
         .store-action:hover {
-            color: var(--bb-bright-blue);
+            color: var(--bb-yellow) !important;
         }
 
-        /* Account dropdown */
+        /* Admin and Staff dashboard buttons */
+        .store-dashboard-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 16px;
+            border-radius: 8px;
+            background: var(--bb-yellow);
+            color: var(--bb-navy);
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            transition: .2s ease;
+        }
+
+        .store-dashboard-link:hover {
+            background: #f0b900;
+            color: var(--bb-navy);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+        }
+
+        /* Profile icon and dropdown */
         .store-account-btn {
             border: none;
             background: transparent;
-            color: var(--bb-navy);
+            color: #ffffff !important;
             font-family: inherit;
             font-size: 13px;
             font-weight: 600;
             padding: 8px 0;
         }
 
+        .store-account-btn:hover {
+            color: var(--bb-yellow) !important;
+        }
+
         .store-account-btn i {
-            font-size: 21px;
+            font-size: 23px;
             vertical-align: middle;
             margin-right: 5px;
         }
@@ -155,7 +198,7 @@
             border: none;
             border-radius: 10px;
             padding: 8px;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, .13);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, .18);
         }
 
         .store-account-menu .dropdown-item {
@@ -188,7 +231,7 @@
         }
 
         .store-nav-link {
-            color: var(--bb-white);
+            color: #ffffff;
             font-size: 12px;
             font-weight: 600;
             transition: .2s;
@@ -201,7 +244,7 @@
         }
 
         .store-category-dropdown {
-            color: var(--bb-white);
+            color: #ffffff;
             font-size: 12px;
             font-weight: 600;
             border: none;
@@ -231,7 +274,7 @@
             color: var(--bb-blue);
         }
 
-        /* Main page content */
+        /* Main content */
         .store-main {
             min-height: 60vh;
         }
@@ -247,7 +290,7 @@
         .store-footer-brand {
             font-size: 27px;
             font-weight: 800;
-            color: var(--bb-white);
+            color: #ffffff;
             margin-bottom: 12px;
         }
 
@@ -262,7 +305,7 @@
         }
 
         .store-footer h5 {
-            color: var(--bb-white);
+            color: #ffffff;
             font-size: 14px;
             font-weight: 700;
             margin-bottom: 18px;
@@ -302,7 +345,7 @@
             display: none;
             border: none;
             background: transparent;
-            color: var(--bb-navy);
+            color: #ffffff;
             font-size: 25px;
         }
 
@@ -346,14 +389,19 @@
                 gap: 13px;
             }
 
-            .store-action span,
-            .store-account-label {
+            .store-action span {
                 display: none;
             }
 
             .store-action i,
             .store-account-btn i {
                 font-size: 22px;
+            }
+
+            .store-dashboard-link {
+                padding: 9px 10px;
+                font-size: 10px;
+                gap: 5px;
             }
 
             .store-mobile-toggle {
@@ -427,70 +475,39 @@
                 <span>Cart</span>
             </a>
 
-            <!-- Account dropdown -->
-            <div class="dropdown">
-                <button
-                    class="store-account-btn dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    <i class="bi bi-person-circle"></i>
-                    <span class="store-account-label">Account</span>
-                </button>
+            {% if is_granted('ROLE_ADMIN') %}
 
-                <ul class="dropdown-menu dropdown-menu-end store-account-menu">
+                <!-- Admin dashboard -->
+                <a href="{{ path('app_dashboard') }}" class="store-dashboard-link">
+                    <i class="bi bi-speedometer2"></i>
+                    Go to Admin Dashboard
+                </a>
 
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <!-- Admin profile menu -->
+                <div class="dropdown">
+                    <button
+                        class="store-account-btn dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-label="Admin profile menu"
+                    >
+                        <i class="bi bi-person-circle"></i>
+                    </button>
 
+                    <ul class="dropdown-menu dropdown-menu-end store-account-menu">
                         <li>
                             <a class="dropdown-item" href="{{ path('app_account_profile') }}">
                                 <i class="bi bi-person"></i>
                                 My Profile
                             </a>
                         </li>
-
                         <li>
                             <a class="dropdown-item" href="{{ path('app_account_change_password') }}">
                                 <i class="bi bi-shield-lock"></i>
                                 Change Password
                             </a>
                         </li>
-
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ path('app_dashboard') }}">
-                                    <i class="bi bi-speedometer2"></i>
-                                    Admin Dashboard
-                                </a>
-                            </li>
-
-                        {% elseif is_granted('ROLE_STAFF') %}
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="{{ path('app_staff_dashboard') }}">
-                                    <i class="bi bi-speedometer2"></i>
-                                    Staff Dashboard
-                                </a>
-                            </li>
-
-                        {% elseif is_granted('ROLE_CUSTOMER') %}
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="/my-orders">
-                                    <i class="bi bi-receipt"></i>
-                                    My Orders
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/wishlist">
-                                    <i class="bi bi-heart"></i>
-                                    Wishlist
-                                </a>
-                            </li>
-                        {% endif %}
-
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
@@ -498,9 +515,104 @@
                                 Logout
                             </a>
                         </li>
+                    </ul>
+                </div>
 
-                    {% else %}
+            {% elseif is_granted('ROLE_STAFF') %}
 
+                <!-- Staff dashboard -->
+                <a href="{{ path('app_staff_dashboard') }}" class="store-dashboard-link">
+                    <i class="bi bi-speedometer2"></i>
+                    Go to Staff Dashboard
+                </a>
+
+                <!-- Staff profile menu -->
+                <div class="dropdown">
+                    <button
+                        class="store-account-btn dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-label="Staff profile menu"
+                    >
+                        <i class="bi bi-person-circle"></i>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end store-account-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_account_profile') }}">
+                                <i class="bi bi-person"></i>
+                                My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_account_change_password') }}">
+                                <i class="bi bi-shield-lock"></i>
+                                Change Password
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+                                <i class="bi bi-box-arrow-right"></i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            {% elseif app.user %}
+
+                <!-- Other authenticated users -->
+                <div class="dropdown">
+                    <button
+                        class="store-account-btn dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        <i class="bi bi-person-circle"></i>
+                        Account
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end store-account-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_account_profile') }}">
+                                <i class="bi bi-person"></i>
+                                My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_account_change_password') }}">
+                                <i class="bi bi-shield-lock"></i>
+                                Change Password
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+                                <i class="bi bi-box-arrow-right"></i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            {% else %}
+
+                <!-- Guest account menu -->
+                <div class="dropdown">
+                    <button
+                        class="store-account-btn dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        <i class="bi bi-person-circle"></i>
+                        Account
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end store-account-menu">
                         <li>
                             <a class="dropdown-item" href="{{ path('app_login') }}">
                                 <i class="bi bi-box-arrow-in-right"></i>
@@ -513,11 +625,10 @@
                                 Create Account
                             </a>
                         </li>
+                    </ul>
+                </div>
 
-                    {% endif %}
-
-                </ul>
-            </div>
+            {% endif %}
 
             <button
                 class="store-mobile-toggle"

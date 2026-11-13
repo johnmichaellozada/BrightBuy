@@ -1,0 +1,386 @@
+
+{% extends 'storefront_base.html.twig' %}
+
+{% block title %}New Arrivals | BrightBuy{% endblock %}
+
+{% block body %}
+<style>
+    .arrivals-page {
+        min-height: 100vh;
+        padding: 40px 20px 65px;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.13), transparent 25%),
+            linear-gradient(135deg, #789ed2 0%, #638bc5 50%, #527bb8 100%);
+        overflow-x: clip;
+    }
+
+    .arrivals-container {
+        max-width: 1250px;
+        margin: 0 auto;
+    }
+
+    .arrivals-banner {
+        position: relative;
+        overflow: hidden;
+        padding: 55px 45px;
+        margin-bottom: 35px;
+        border-radius: 22px;
+        background: linear-gradient(120deg, #071a35, #1764b1);
+        color: #fff;
+        box-shadow: 0 12px 30px rgba(7,26,53,.18);
+    }
+
+    .arrivals-banner::after {
+        content: "NEW";
+        position: absolute;
+        top: 5px;
+        right: 35px;
+        color: rgba(255,255,255,.07);
+        font-size: clamp(90px, 15vw, 175px);
+        font-weight: 900;
+        transform: rotate(-12deg);
+        pointer-events: none;
+    }
+
+    .arrivals-banner h1 {
+        position: relative;
+        z-index: 1;
+        font-size: clamp(32px, 5vw, 48px);
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .arrivals-banner h1 span {
+        color: #ffc928;
+    }
+
+    .arrivals-banner p {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        color: rgba(255,255,255,.85);
+        font-size: 16px;
+        line-height: 1.7;
+        margin-bottom: 22px;
+    }
+
+    .arrivals-shop-btn {
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+        padding: 12px 25px;
+        border-radius: 9px;
+        background: #ffc928;
+        color: #071a35;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+    .arrivals-shop-btn:hover {
+        background: #ffda61;
+        color: #071a35;
+        transform: translateY(-2px);
+    }
+
+    .arrivals-section {
+        padding: 30px;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(7,26,53,.12);
+    }
+
+    .arrivals-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .arrivals-heading h2 {
+        color: #071a35;
+        font-size: 27px;
+        font-weight: 800;
+        margin: 0 0 5px;
+    }
+
+    .arrivals-heading p {
+        color: #718096;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .arrivals-count {
+        padding: 9px 15px;
+        border-radius: 30px;
+        background: #fff5cf;
+        color: #745500;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .arrivals-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .arrival-card {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid #e8edf4;
+        border-radius: 15px;
+        background: #fff;
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .arrival-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(7,26,53,.12);
+    }
+
+    .arrival-image {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 205px;
+        padding: 15px;
+        background: #f5f7fb;
+    }
+
+    .arrival-image img {
+        max-width: 100%;
+        max-height: 175px;
+        object-fit: contain;
+    }
+
+    .arrival-label {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 6px 11px;
+        border-radius: 20px;
+        background: #ffc928;
+        color: #071a35;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .arrival-info {
+        padding: 17px;
+    }
+
+    .arrival-category {
+        color: #1764b1;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .arrival-name {
+        min-height: 42px;
+        color: #071a35;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 8px;
+    }
+
+    .arrival-description {
+        min-height: 38px;
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
+    .arrival-price {
+        color: #1764b1;
+        font-size: 21px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .arrival-stock {
+        color: #64748b;
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+
+    .arrival-view-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        background: #071a35;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .arrival-view-btn:hover {
+        background: #1764b1;
+        color: #fff;
+    }
+
+    .arrivals-empty {
+        padding: 55px 20px;
+        text-align: center;
+        color: #718096;
+    }
+
+    .arrivals-empty i {
+        display: block;
+        margin-bottom: 15px;
+        color: #1764b1;
+        font-size: 45px;
+    }
+
+    @media (max-width: 1000px) {
+        .arrivals-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 700px) {
+        .arrivals-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .arrivals-banner {
+            padding: 38px 25px;
+        }
+
+        .arrivals-section {
+            padding: 20px 14px;
+        }
+
+        .arrival-image {
+            height: 165px;
+        }
+
+        .arrival-image img {
+            max-height: 140px;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .arrivals-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="arrivals-page">
+    <div class="arrivals-container">
+
+        <section class="arrivals-banner">
+            <h1>Discover What's <span>New!</span></h1>
+            <p>
+                Explore the latest products added to BrightBuy.
+                Find new discoveries across your favorite categories
+                and enjoy shopping with confidence.
+            </p>
+
+            <a href="{{ path('app_shop') }}" class="arrivals-shop-btn">
+                <i class="bi bi-bag-check me-2"></i>Explore All Products
+            </a>
+        </section>
+
+        <section class="arrivals-section">
+            <div class="arrivals-heading">
+                <div>
+                    <h2><i class="bi bi-stars me-2"></i>Latest Arrivals</h2>
+                    <p>Fresh additions to our BrightBuy product collection.</p>
+                </div>
+
+                <span class="arrivals-count">
+                    {{ products|length }} New Product(s)
+                </span>
+            </div>
+
+            {% if products is not empty %}
+                <div class="arrivals-grid">
+                    {% for product in products %}
+                        <article class="arrival-card">
+                            <div class="arrival-image">
+                                <span class="arrival-label">
+                                    <i class="bi bi-stars me-1"></i>NEW ARRIVAL
+                                </span>
+
+                                {% if product.image %}
+                                    {% set imagePath = product.image|trim %}
+
+                                    {% if imagePath starts with 'images/' or imagePath starts with 'uploads/' %}
+                                        {% set imageUrl = asset(imagePath) %}
+                                    {% else %}
+                                        {% set imageUrl = asset('uploads/products/' ~ imagePath) %}
+                                    {% endif %}
+
+                                    <img
+                                        src="{{ imageUrl }}"
+                                        alt="{{ product.name }}"
+                                        onerror="this.onerror=null;this.src='{{ asset('images/products/product1.png') }}';"
+                                    >
+                                {% else %}
+                                    <img
+                                        src="{{ asset('images/products/product1.png') }}"
+                                        alt="{{ product.name }}"
+                                    >
+                                {% endif %}
+                            </div>
+
+                            <div class="arrival-info">
+                                <div class="arrival-category">
+                                    {{ product.category ? product.category.name : 'General' }}
+                                </div>
+
+                                <h3 class="arrival-name">
+                                    {{ product.name }}
+                                </h3>
+
+                                <p class="arrival-description">
+                                    {{ product.description
+                                        ? product.description|slice(0, 75) ~ (product.description|length > 75 ? '...' : '')
+                                        : 'Discover this new product at BrightBuy.' }}
+                                </p>
+
+                                <div class="arrival-price">
+                                    &#8369;{{ product.price|number_format(2, '.', ',') }}
+                                </div>
+
+                                <div class="arrival-stock">
+                                    <i class="bi bi-box-seam me-1"></i>
+                                    {{ product.stock }} item(s) available
+                                </div>
+
+                                <a href="{{ path('app_shop') }}" class="arrival-view-btn">
+                                    <i class="bi bi-eye me-1"></i>Browse in Shop
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="arrivals-empty">
+                    <i class="bi bi-box-seam"></i>
+                    <h4>No New Products Yet</h4>
+                    <p>Please check back later for new arrivals.</p>
+
+                    <a href="{{ path('app_shop') }}" class="arrivals-shop-btn">
+                        Visit Shop
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+</div>
+{% endblock %}

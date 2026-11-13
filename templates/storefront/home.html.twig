@@ -1,0 +1,790 @@
+
+{% extends 'storefront_base.html.twig' %}
+
+{% block title %}BrightBuy | Smart Shopping. Brighter Living{% endblock %}
+
+{% block body %}
+
+<style>
+    .home-container {
+        max-width: 1440px;
+        margin: auto;
+        padding: 0 5% 30px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* =========================================
+       DARKER ADMIN DASHBOARD-INSPIRED BACKGROUND
+    ========================================= */
+
+    .store-main {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background:
+            radial-gradient(
+                circle at 8% 15%,
+                rgba(255,255,255,.22),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 95% 35%,
+                rgba(35,105,200,.30),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 15% 85%,
+                rgba(255,192,0,.10),
+                transparent 25%
+            ),
+            linear-gradient(
+                135deg,
+                #789ed2 0%,
+                #638bc5 48%,
+                #527bb8 100%
+            );
+    }
+
+    .store-main::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image:
+            radial-gradient(
+                circle,
+                rgba(16,38,95,.17) 1px,
+                transparent 1.5px
+            );
+        background-size: 30px 30px;
+        opacity: .30;
+        mask-image: linear-gradient(
+            to bottom,
+            black,
+            transparent 85%
+        );
+    }
+
+    .store-main::after {
+        content: "\f23a";
+        font-family: "bootstrap-icons";
+        position: absolute;
+        z-index: -1;
+        top: 100px;
+        right: -45px;
+        font-size: 330px;
+        line-height: 1;
+        color: rgba(16,38,95,.10);
+        transform: rotate(-12deg);
+        pointer-events: none;
+    }
+
+    /* =========================================
+       HERO SECTION
+    ========================================= */
+
+    .home-hero {
+        min-height: 410px;
+        margin: 30px auto;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        align-items: center;
+        background:
+            radial-gradient(circle at 85% 20%, rgba(64,148,255,.45), transparent 35%),
+            linear-gradient(115deg, #071a35 0%, #0d3970 65%, #1764b1 100%);
+        color: white;
+        padding: 55px 7%;
+        box-shadow: 0 20px 45px rgba(7,26,53,.22);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 620px;
+    }
+
+    .hero-label {
+        display: inline-block;
+        background: rgba(255,201,40,.15);
+        border: 1px solid rgba(255,201,40,.5);
+        color: #ffc928;
+        border-radius: 30px;
+        padding: 8px 16px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(34px, 5vw, 58px);
+        font-weight: 800;
+        line-height: 1.15;
+        margin-bottom: 18px;
+    }
+
+    .hero-content h1 span {
+        color: #ffc928;
+    }
+
+    .hero-content p {
+        color: #d5e4f7;
+        font-size: 14px;
+        line-height: 1.9;
+        max-width: 490px;
+        margin-bottom: 28px;
+    }
+
+    .hero-button {
+        display: inline-block;
+        padding: 13px 27px;
+        background: #ffc928;
+        color: #071a35;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .hero-button:hover {
+        background: #f0b900;
+        color: #071a35;
+        transform: translateY(-2px);
+    }
+
+    .hero-decoration {
+        position: absolute;
+        right: 8%;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,255,255,.13);
+        font-size: 150px;
+    }
+
+    .hero-decoration::before,
+    .hero-decoration::after {
+        content: "";
+        position: absolute;
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 50%;
+    }
+
+    .hero-decoration::before {
+        inset: 25px;
+    }
+
+    .hero-decoration::after {
+        inset: 50px;
+    }
+
+    /* =========================================
+       SECTION PANELS
+    ========================================= */
+
+    .home-section {
+        position: relative;
+        padding: 30px 26px;
+        margin: 25px 0;
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 17px;
+        background: rgba(255,255,255,.94);
+        box-shadow: 0 14px 35px rgba(7,26,53,.12);
+        backdrop-filter: blur(8px);
+    }
+
+    .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .section-heading h2 {
+        color: #10265f;
+        font-size: 23px;
+        font-weight: 800;
+        margin: 0;
+        position: relative;
+        padding-left: 13px;
+    }
+
+    .section-heading h2::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 2px;
+        bottom: 2px;
+        width: 5px;
+        background: #ffc000;
+        border-radius: 5px;
+    }
+
+    .section-heading p {
+        color: #61799e;
+        font-size: 12px;
+        margin: 6px 0 0;
+    }
+
+    .section-link {
+        color: #1762d2;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .section-link:hover {
+        color: #071a35;
+    }
+
+    /* =========================================
+       CATEGORY CARDS
+    ========================================= */
+
+    .category-card {
+        display: block;
+        height: 100%;
+        background: #fff;
+        border: 1px solid #e5edf8;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: .25s;
+        color: #10265f;
+        box-shadow: 0 4px 12px rgba(16,38,95,.04);
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 30px rgba(16,65,135,.15);
+        border-color: #a9c9f2;
+        color: #1762d2;
+    }
+
+    .category-image {
+        height: 145px;
+        background: linear-gradient(135deg, #edf5ff, #dceaff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .category-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: .3s;
+    }
+
+    .category-card:hover .category-image img {
+        transform: scale(1.05);
+    }
+
+    .category-placeholder {
+        font-size: 38px;
+        color: #1762d2;
+    }
+
+    .category-info {
+        padding: 15px 12px;
+        text-align: center;
+        border-top: 1px solid #edf2f9;
+    }
+
+    .category-info h3 {
+        font-size: 13px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* =========================================
+       PRODUCT CARDS
+    ========================================= */
+
+    .product-card {
+        height: 100%;
+        background: #fff;
+        border: 1px solid #e4edf9;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: .25s;
+        box-shadow: 0 4px 12px rgba(16,38,95,.04);
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 30px rgba(16,65,135,.15);
+        border-color: #b8d2f4;
+    }
+
+    .product-image {
+        height: 205px;
+        background: linear-gradient(135deg, #f5f9ff, #eaf2fc);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 15px;
+        transition: .3s;
+    }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.06);
+    }
+
+    .product-image-placeholder {
+        font-size: 55px;
+        color: #a9bfdf;
+    }
+
+    .product-stock {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 5px 9px;
+        background: #e4f7eb;
+        color: #18844b;
+        border-radius: 5px;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .product-stock.out {
+        background: #fde8e8;
+        color: #c43c3c;
+    }
+
+    .product-info {
+        padding: 16px;
+    }
+
+    .product-category {
+        color: #7e91ad;
+        font-size: 10px;
+        margin-bottom: 7px;
+    }
+
+    .product-name {
+        color: #10265f;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.5;
+        min-height: 39px;
+        margin-bottom: 9px;
+    }
+
+    .product-price {
+        color: #1762d2;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .product-action {
+        display: block;
+        text-align: center;
+        padding: 10px;
+        margin-top: 13px;
+        border: 1px solid #1762d2;
+        border-radius: 6px;
+        color: #1762d2;
+        font-size: 11px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .product-action:hover {
+        background: #1762d2;
+        color: white;
+    }
+
+    /* =========================================
+       SHOPPING BENEFITS
+    ========================================= */
+
+    .benefits-section {
+        background: rgba(255,255,255,.96);
+        border-radius: 15px;
+        padding: 30px 20px;
+        margin: 25px 0;
+        border: 1px solid rgba(255,255,255,.9);
+        box-shadow: 0 14px 35px rgba(7,26,53,.12);
+    }
+
+    .benefit-item {
+        text-align: center;
+        padding: 15px;
+    }
+
+    .benefit-item i {
+        display: inline-flex;
+        width: 48px;
+        height: 48px;
+        align-items: center;
+        justify-content: center;
+        background: #e3efff;
+        color: #1762d2;
+        border-radius: 14px;
+        font-size: 21px;
+        margin-bottom: 12px;
+    }
+
+    .benefit-item h4 {
+        color: #10265f;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .benefit-item p {
+        color: #7185a4;
+        font-size: 11px;
+        margin: 0;
+    }
+
+    /* =========================================
+       EMPTY STATE
+    ========================================= */
+
+    .empty-state {
+        background: #fff;
+        border: 1px dashed #a9bfdf;
+        border-radius: 10px;
+        padding: 40px 20px;
+        text-align: center;
+        color: #7185a4;
+        font-size: 13px;
+    }
+
+    .empty-state i {
+        font-size: 35px;
+        display: block;
+        margin-bottom: 12px;
+        color: #1762d2;
+    }
+
+    /* =========================================
+       RESPONSIVE DESIGN
+    ========================================= */
+
+    @media (max-width: 768px) {
+        .home-hero {
+            min-height: 350px;
+            padding: 40px 25px;
+        }
+
+        .hero-decoration {
+            right: -100px;
+            opacity: .45;
+        }
+
+        .category-image {
+            height: 115px;
+        }
+
+        .product-image {
+            height: 165px;
+        }
+
+        .section-heading h2 {
+            font-size: 19px;
+        }
+
+        .store-main::after {
+            font-size: 200px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .home-container {
+            padding: 0 16px 20px;
+        }
+
+        .home-hero {
+            margin: 18px auto;
+        }
+
+        .hero-content p {
+            font-size: 12px;
+        }
+
+        .product-info {
+            padding: 11px;
+        }
+
+        .product-name {
+            font-size: 11px;
+        }
+
+        .product-price {
+            font-size: 15px;
+        }
+
+        .home-section {
+            padding: 23px 14px;
+            margin: 18px 0;
+        }
+    }
+</style>
+
+<div class="home-container">
+
+    <!-- HERO -->
+    <section class="home-hero">
+        <div class="hero-content">
+            <div class="hero-label">
+                WELCOME TO BRIGHTBUY
+            </div>
+
+            <h1>
+                Smart Shopping.<br>
+                <span>Brighter Living.</span>
+            </h1>
+
+            <p>
+                Discover quality products at prices you'll love.
+                Explore our collections and enjoy a convenient
+                shopping experience with BrightBuy.
+            </p>
+
+            <a href="/shop" class="hero-button">
+                Explore Products
+                <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+
+        <div class="hero-decoration">
+            <i class="bi bi-bag-check"></i>
+        </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="home-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Shop by Category</h2>
+                <p>Explore our different product collections.</p>
+            </div>
+
+            <a href="/shop" class="section-link">
+                Explore Shop <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        {% if categories is not empty %}
+
+            <div class="row g-3">
+
+                {% for category in categories %}
+
+                    {% set categoryImage = category.image %}
+
+                    {% if not categoryImage %}
+                        {% set categoryName = category.name|lower %}
+
+                        {% if 'electronic' in categoryName %}
+                            {% set categoryImage = 'images/categories/electronics.png' %}
+                        {% elseif 'fashion' in categoryName %}
+                            {% set categoryImage = 'images/categories/fashion.png' %}
+                        {% elseif 'beauty' in categoryName or 'health' in categoryName %}
+                            {% set categoryImage = 'images/categories/beauty.png' %}
+                        {% elseif 'home' in categoryName %}
+                            {% set categoryImage = 'images/categories/home.png' %}
+                        {% elseif 'sport' in categoryName or 'outdoor' in categoryName %}
+                            {% set categoryImage = 'images/categories/sports.png' %}
+                        {% elseif 'toy' in categoryName or 'game' in categoryName %}
+                            {% set categoryImage = 'images/categories/toys.png' %}
+                        {% endif %}
+                    {% endif %}
+
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a
+                            href="/shop?category={{ category.id }}"
+                            class="category-card"
+                        >
+                            <div class="category-image">
+
+                                {% if categoryImage %}
+                                    <img
+                                        src="{{ asset(categoryImage) }}"
+                                        alt="{{ category.name }}"
+                                        loading="lazy"
+                                    >
+                                {% else %}
+                                    <i class="bi bi-grid category-placeholder"></i>
+                                {% endif %}
+
+                            </div>
+
+                            <div class="category-info">
+                                <h3>{{ category.name }}</h3>
+                            </div>
+                        </a>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                <i class="bi bi-tags"></i>
+                No categories available yet.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- LATEST PRODUCTS -->
+    <section class="home-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Latest Products</h2>
+                <p>Discover the latest products added to BrightBuy.</p>
+            </div>
+
+            <a href="/shop" class="section-link">
+                View All <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        {% if products is not empty %}
+
+            <div class="row g-3">
+
+                {% for product in products %}
+
+                    <div class="col-6 col-md-4 col-lg-3">
+
+                        <div class="product-card">
+
+                            <div class="product-image">
+
+                                {% if product.image %}
+                                    <img
+                                        src="{{ asset(product.image) }}"
+                                        alt="{{ product.name }}"
+                                        loading="lazy"
+                                    >
+                                {% else %}
+                                    <i class="bi bi-box-seam product-image-placeholder"></i>
+                                {% endif %}
+
+                                {% if product.stock > 0 %}
+                                    <span class="product-stock">
+                                        In Stock
+                                    </span>
+                                {% else %}
+                                    <span class="product-stock out">
+                                        Out of Stock
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+                            <div class="product-info">
+
+                                <div class="product-category">
+                                    {{ product.category ? product.category.name : 'General' }}
+                                </div>
+
+                                <div class="product-name">
+                                    {{ product.name }}
+                                </div>
+
+                                <div class="product-price">
+                                    ₱{{ product.price|number_format(2, '.', ',') }}
+                                </div>
+
+                                <a
+                                    href="/shop?product={{ product.id }}"
+                                    class="product-action"
+                                >
+                                    View Product
+                                    <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                <i class="bi bi-box-seam"></i>
+                No products available yet.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- SHOPPING BENEFITS -->
+    <section class="benefits-section">
+
+        <div class="row g-3">
+
+            <div class="col-6 col-lg-3">
+                <div class="benefit-item">
+                    <i class="bi bi-bag-check"></i>
+                    <h4>Easy Shopping</h4>
+                    <p>Simple and convenient browsing.</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="benefit-item">
+                    <i class="bi bi-shield-check"></i>
+                    <h4>Shop with Confidence</h4>
+                    <p>A convenient shopping experience.</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="benefit-item">
+                    <i class="bi bi-tags"></i>
+                    <h4>Great Selections</h4>
+                    <p>Explore different product categories.</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="benefit-item">
+                    <i class="bi bi-headset"></i>
+                    <h4>Customer Support</h4>
+                    <p>Help when you need assistance.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

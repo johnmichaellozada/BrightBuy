@@ -24,13 +24,16 @@ WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
 
-RUN composer install --no-interaction --prefer-dist --no-scripts
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
 
 COPY . .
 
-RUN composer dump-autoload --optimize \
-    && mkdir -p var/cache var/log \
+RUN mkdir -p var/cache var/log \
     && chown -R www-data:www-data var
 
 EXPOSE 80
-

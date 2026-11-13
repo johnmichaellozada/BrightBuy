@@ -1,0 +1,336 @@
+
+{% extends 'storefront_base.html.twig' %}
+
+{% block title %}Categories - BrightBuy{% endblock %}
+
+{% block body %}
+<style>
+    .categories-main {
+        width: 100%;
+        min-height: 75vh;
+        padding: 45px 0 70px;
+        overflow-x: clip;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.13), transparent 28%),
+            radial-gradient(circle at 90% 80%, rgba(255,255,255,.10), transparent 30%),
+            linear-gradient(135deg, #789ed2 0%, #638bc5 48%, #527bb8 100%);
+    }
+
+    .categories-container {
+        width: 100%;
+        max-width: 1250px;
+        padding: 0 20px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    /* PAGE HEADING */
+    .categories-heading {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .categories-heading h1 {
+        color: #10266D;
+        font-size: clamp(30px, 4vw, 43px);
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+
+    .categories-heading h1 span {
+        color: #ffc000;
+    }
+
+    .categories-heading p {
+        color: #ffffff;
+        font-size: 16px;
+        margin: 0;
+    }
+
+    /* CATEGORY INTRODUCTION */
+    .categories-intro {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 22px 25px;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 25px rgba(16, 38, 109, .13);
+        text-align: center;
+    }
+
+    .categories-intro h2 {
+        color: #10266D;
+        font-size: 21px;
+        font-weight: 900;
+        margin-bottom: 7px;
+    }
+
+    .categories-intro p {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    /* CATEGORY GRID */
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+        width: 100%;
+    }
+
+    .category-card {
+        min-width: 0;
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 22px rgba(16, 38, 109, .13);
+        transition: transform .25s ease, box-shadow .25s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .category-card:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 15px 30px rgba(16, 38, 109, .22);
+    }
+
+    .category-image {
+        height: 225px;
+        background: #f5f7fb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow: hidden;
+    }
+
+    .category-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform .3s ease;
+    }
+
+    .category-card:hover .category-image img {
+        transform: scale(1.07);
+    }
+
+    .category-content {
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .category-content h3 {
+        color: #10266D;
+        font-size: 20px;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .category-content p {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.7;
+        margin-bottom: 20px;
+        flex: 1;
+    }
+
+    .category-shop-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 9px;
+        background: #ffc000;
+        color: #10266D;
+        font-size: 13px;
+        font-weight: 900;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+    .category-shop-btn:hover {
+        background: #eeb400;
+        color: #10266D;
+        transform: translateY(-2px);
+    }
+
+    .category-shop-btn i {
+        margin-left: 8px;
+    }
+
+    /* EMPTY STATE */
+    .categories-empty {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 55px 20px;
+        text-align: center;
+        box-shadow: 0 8px 22px rgba(16, 38, 109, .13);
+    }
+
+    .categories-empty h3 {
+        color: #10266D;
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .categories-empty p {
+        color: #718096;
+        margin-bottom: 20px;
+    }
+
+    .categories-empty a {
+        display: inline-block;
+        background: #ffc000;
+        color: #10266D;
+        padding: 11px 22px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 900;
+        text-decoration: none;
+    }
+
+    /* TABLET */
+    @media (max-width: 950px) {
+        .categories-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+    }
+
+    /* MOBILE */
+    @media (max-width: 576px) {
+        .categories-main {
+            padding-top: 35px;
+        }
+
+        .categories-container {
+            padding: 0 12px;
+        }
+
+        .categories-intro {
+            padding: 18px;
+        }
+
+        .categories-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .category-image {
+            height: 200px;
+        }
+
+        .category-content {
+            padding: 18px;
+        }
+    }
+</style>
+
+<main class="categories-main">
+    <div class="categories-container">
+
+        <div class="categories-heading">
+            <h1>Explore <span>Categories</span></h1>
+            <p>Find the products you love, all in one place.</p>
+        </div>
+
+        <section class="categories-intro">
+            <h2>Shop by Category</h2>
+            <p>
+                Explore our wide selection of products across different categories.
+                Discover quality products at prices you'll love.
+            </p>
+        </section>
+
+        {% if categories is not empty %}
+
+            <div class="categories-grid">
+
+                {% for category in categories %}
+
+                    {% set categoryImage = category.image %}
+
+                    {% if not categoryImage %}
+                        {% set categoryName = category.name|lower %}
+
+                        {% if 'beauty' in categoryName %}
+                            {% set categoryImage = 'images/categories/beauty.png' %}
+                        {% elseif 'electronic' in categoryName %}
+                            {% set categoryImage = 'images/categories/electronics.png' %}
+                        {% elseif 'fashion' in categoryName %}
+                            {% set categoryImage = 'images/categories/fashion.png' %}
+                        {% elseif 'home' in categoryName %}
+                            {% set categoryImage = 'images/categories/home.png' %}
+                        {% elseif 'sport' in categoryName or 'outdoor' in categoryName %}
+                            {% set categoryImage = 'images/categories/sports.png' %}
+                        {% elseif 'toy' in categoryName or 'game' in categoryName %}
+                            {% set categoryImage = 'images/categories/toys.png' %}
+                        {% endif %}
+                    {% endif %}
+
+                    <article class="category-card">
+
+                        <div class="category-image">
+
+                            {% if categoryImage %}
+                                <img
+                                    src="{{ asset(categoryImage) }}"
+                                    alt="{{ category.name }}"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <i class="bi bi-grid" style="font-size: 65px; color: #1762d2;"></i>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="category-content">
+
+                            <h3>{{ category.name }}</h3>
+
+                            <p>
+                                {% if category.description %}
+                                    {{ category.description }}
+                                {% else %}
+                                    Explore our {{ category.name|lower }} collection
+                                    and discover quality products at BrightBuy.
+                                {% endif %}
+                            </p>
+
+                            <a
+                                href="{{ path('app_shop', {category: category.id}) }}"
+                                class="category-shop-btn"
+                            >
+                                Shop Now
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="categories-empty">
+                <h3>No Categories Available</h3>
+                <p>Our product categories will appear here once they are added.</p>
+
+                <a href="{{ path('app_shop') }}">
+                    Browse Shop
+                </a>
+            </div>
+
+        {% endif %}
+
+    </div>
+</main>
+{% endblock %}

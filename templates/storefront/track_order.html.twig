@@ -1,0 +1,378 @@
+
+{% extends 'storefront_base.html.twig' %}
+
+{% block title %}Track Your Order | BrightBuy{% endblock %}
+
+{% block body %}
+<style>
+    .track-page {
+        min-height: 100vh;
+        padding: 45px 20px 70px;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.13), transparent 25%),
+            linear-gradient(135deg, #789ed2 0%, #638bc5 50%, #527bb8 100%);
+    }
+
+    .track-container {
+        max-width: 1050px;
+        margin: 0 auto;
+    }
+
+    .track-banner {
+        padding: 45px 35px;
+        margin-bottom: 30px;
+        border-radius: 22px;
+        background: linear-gradient(120deg, #071a35, #1764b1);
+        color: white;
+        text-align: center;
+        box-shadow: 0 12px 30px rgba(7,26,53,.18);
+    }
+
+    .track-banner .track-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 75px;
+        height: 75px;
+        margin-bottom: 18px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.13);
+        color: #ffc928;
+        font-size: 34px;
+    }
+
+    .track-banner h1 {
+        font-size: clamp(30px, 5vw, 43px);
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .track-banner h1 span {
+        color: #ffc928;
+    }
+
+    .track-banner p {
+        max-width: 600px;
+        margin: 0 auto;
+        color: rgba(255,255,255,.85);
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .track-form-card,
+    .track-result-card {
+        padding: 32px;
+        margin-bottom: 25px;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(7,26,53,.12);
+    }
+
+    .track-form-card h2,
+    .track-result-card h2 {
+        color: #071a35;
+        font-size: 23px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .track-subtitle {
+        margin-bottom: 25px;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .track-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #26354b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .track-input {
+        width: 100%;
+        height: 49px;
+        padding: 0 15px;
+        margin-bottom: 20px;
+        border: 1px solid #dce3ed;
+        border-radius: 9px;
+        background: #f9fbfe;
+        color: #071a35;
+        font-size: 14px;
+        outline: none;
+        transition: .2s;
+    }
+
+    .track-input:focus {
+        border-color: #1764b1;
+        box-shadow: 0 0 0 3px rgba(23,100,177,.1);
+    }
+
+    .track-submit {
+        width: 100%;
+        padding: 13px;
+        border: none;
+        border-radius: 9px;
+        background: #ffc928;
+        color: #071a35;
+        font-size: 14px;
+        font-weight: 800;
+        transition: .2s;
+    }
+
+    .track-submit:hover {
+        background: #ffda61;
+        transform: translateY(-2px);
+    }
+
+    .track-error {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px;
+        margin-bottom: 22px;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        background: #fff1f2;
+        color: #b42318;
+        font-size: 13px;
+    }
+
+    .track-order-summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+        margin: 25px 0;
+    }
+
+    .track-summary-item {
+        padding: 16px;
+        border: 1px solid #e8edf4;
+        border-radius: 12px;
+        background: #f8faff;
+    }
+
+    .track-summary-item small {
+        display: block;
+        margin-bottom: 7px;
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .track-summary-item strong {
+        color: #071a35;
+        font-size: 15px;
+        overflow-wrap: anywhere;
+    }
+
+    .track-status {
+        display: inline-block;
+        padding: 7px 13px;
+        border-radius: 20px;
+        background: #fff5cf;
+        color: #745500;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .track-status.status-delivered {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .track-status.status-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .track-status.status-shipped {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .track-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 20px 0 0;
+        margin-top: 15px;
+        border-top: 1px solid #e8edf4;
+        color: #071a35;
+        font-weight: 700;
+    }
+
+    .track-total strong {
+        color: #1764b1;
+        font-size: 24px;
+    }
+
+    .track-help {
+        padding: 22px;
+        border-radius: 15px;
+        background: rgba(255,255,255,.92);
+        text-align: center;
+        color: #52647b;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .track-help i {
+        color: #1764b1;
+        font-size: 24px;
+    }
+
+    @media (max-width: 600px) {
+        .track-page {
+            padding: 25px 13px 45px;
+        }
+
+        .track-banner {
+            padding: 35px 20px;
+        }
+
+        .track-form-card,
+        .track-result-card {
+            padding: 23px 18px;
+        }
+
+        .track-order-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="track-page">
+    <div class="track-container">
+
+        <section class="track-banner">
+            <div class="track-icon">
+                <i class="bi bi-box-seam"></i>
+            </div>
+
+            <h1>Track Your <span>Order</span></h1>
+
+            <p>
+                Want to know where your order is?
+                Enter your order number and email address
+                to check your latest order status.
+            </p>
+        </section>
+
+        <section class="track-form-card">
+            <h2><i class="bi bi-search me-2"></i>Find Your Order</h2>
+
+            <p class="track-subtitle">
+                Enter the details associated with your BrightBuy purchase.
+            </p>
+
+            {% if notFound %}
+                <div class="track-error">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <span>
+                        We couldn't find an order matching those details.
+                        Please check your order number and email address.
+                    </span>
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{{ path('app_track_order') }}">
+                <div>
+                    <label for="orderNumber" class="track-label">
+                        Order Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="orderNumber"
+                        name="orderNumber"
+                        class="track-input"
+                        placeholder="Enter your order number"
+                        value="{{ app.request.request.get('orderNumber', '') }}"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="customerEmail" class="track-label">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="customerEmail"
+                        name="customerEmail"
+                        class="track-input"
+                        placeholder="Enter your email address"
+                        value="{{ app.request.request.get('customerEmail', '') }}"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="track-submit">
+                    <i class="bi bi-truck me-2"></i>Track My Order
+                </button>
+            </form>
+        </section>
+
+        {% if order %}
+            {% set orderStatus = order.status|lower %}
+
+            <section class="track-result-card">
+                <h2><i class="bi bi-receipt me-2"></i>Order Details</h2>
+
+                <p class="track-subtitle">
+                    Here is the latest information available for your order.
+                </p>
+
+                <div class="track-order-summary">
+                    <div class="track-summary-item">
+                        <small>Order Number</small>
+                        <strong>{{ order.orderNumber }}</strong>
+                    </div>
+
+                    <div class="track-summary-item">
+                        <small>Order Date</small>
+                        <strong>{{ order.createdAt|date('M d, Y') }}</strong>
+                    </div>
+
+                    <div class="track-summary-item">
+                        <small>Order Status</small>
+                        <strong>
+                            <span class="track-status
+                                {% if orderStatus == 'delivered' %}status-delivered
+                                {% elseif orderStatus == 'cancelled' %}status-cancelled
+                                {% elseif orderStatus == 'shipped' %}status-shipped
+                                {% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </strong>
+                    </div>
+
+                    <div class="track-summary-item">
+                        <small>Payment Status</small>
+                        <strong>{{ order.paymentStatus }}</strong>
+                    </div>
+                </div>
+
+                <div class="track-total">
+                    <span>Total Amount</span>
+                    <strong>
+                        &#8369;{{ order.totalAmount|number_format(2, '.', ',') }}
+                    </strong>
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="track-help">
+            <i class="bi bi-info-circle d-block mb-2"></i>
+            <strong>Need help with your order?</strong><br>
+            Make sure you enter the same order number and email address
+            used when placing your purchase. You can also visit our
+            Help Center for more information.
+        </section>
+
+    </div>
+</div>
+{% endblock %}

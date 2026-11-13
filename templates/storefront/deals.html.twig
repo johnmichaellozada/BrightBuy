@@ -1,0 +1,385 @@
+
+{% extends 'storefront_base.html.twig' %}
+
+{% block title %}Deals | BrightBuy{% endblock %}
+
+{% block body %}
+<style>
+    .deals-page {
+        min-height: 100vh;
+        padding: 40px 20px 65px;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.13), transparent 25%),
+            linear-gradient(135deg, #789ed2 0%, #638bc5 50%, #527bb8 100%);
+        overflow-x: clip;
+    }
+
+    .deals-container {
+        max-width: 1250px;
+        margin: 0 auto;
+    }
+
+    .deals-banner {
+        position: relative;
+        overflow: hidden;
+        padding: 55px 45px;
+        margin-bottom: 35px;
+        border-radius: 22px;
+        background: linear-gradient(120deg, #071a35, #1764b1);
+        color: white;
+        box-shadow: 0 12px 30px rgba(7, 26, 53, .18);
+    }
+
+    .deals-banner::after {
+        content: "SALE";
+        position: absolute;
+        right: 35px;
+        top: 5px;
+        font-size: clamp(75px, 13vw, 155px);
+        font-weight: 900;
+        color: rgba(255,255,255,.07);
+        transform: rotate(-12deg);
+        pointer-events: none;
+    }
+
+    .deals-banner h1 {
+        position: relative;
+        z-index: 1;
+        font-size: clamp(32px, 5vw, 48px);
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .deals-banner h1 span {
+        color: #ffc928;
+    }
+
+    .deals-banner p {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        color: rgba(255,255,255,.85);
+        font-size: 16px;
+        line-height: 1.7;
+        margin-bottom: 22px;
+    }
+
+    .deals-shop-btn {
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+        padding: 12px 25px;
+        border-radius: 9px;
+        background: #ffc928;
+        color: #071a35;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+    .deals-shop-btn:hover {
+        background: #ffda61;
+        color: #071a35;
+        transform: translateY(-2px);
+    }
+
+    .deals-section {
+        padding: 30px;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(7,26,53,.12);
+    }
+
+    .deals-section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+    .deals-section-heading h2 {
+        color: #071a35;
+        font-size: 27px;
+        font-weight: 800;
+        margin: 0 0 5px;
+    }
+
+    .deals-section-heading p {
+        color: #718096;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .deals-count {
+        padding: 9px 15px;
+        border-radius: 30px;
+        background: #fff5cf;
+        color: #745500;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .deals-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .deal-card {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid #e8edf4;
+        border-radius: 15px;
+        background: #fff;
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .deal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(7,26,53,.12);
+    }
+
+    .deal-image-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 205px;
+        padding: 15px;
+        background: #f5f7fb;
+    }
+
+    .deal-image-wrap img {
+        max-width: 100%;
+        max-height: 175px;
+        object-fit: contain;
+    }
+
+    .deal-label {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 6px 11px;
+        border-radius: 20px;
+        background: #ffc928;
+        color: #071a35;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .deal-info {
+        padding: 17px;
+    }
+
+    .deal-category {
+        color: #1764b1;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .deal-name {
+        min-height: 42px;
+        color: #071a35;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 8px;
+    }
+
+    .deal-description {
+        min-height: 38px;
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
+    .deal-price {
+        color: #1764b1;
+        font-size: 21px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .deal-stock {
+        color: #64748b;
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+
+    .deal-view-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        background: #071a35;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .deal-view-btn:hover {
+        background: #1764b1;
+        color: #fff;
+    }
+
+    .deals-empty {
+        padding: 55px 20px;
+        text-align: center;
+        color: #718096;
+    }
+
+    .deals-empty i {
+        display: block;
+        margin-bottom: 15px;
+        color: #1764b1;
+        font-size: 45px;
+    }
+
+    @media (max-width: 1000px) {
+        .deals-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 700px) {
+        .deals-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .deals-banner {
+            padding: 38px 25px;
+        }
+
+        .deals-section {
+            padding: 20px 14px;
+        }
+
+        .deal-image-wrap {
+            height: 165px;
+        }
+
+        .deal-image-wrap img {
+            max-height: 140px;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .deals-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="deals-page">
+    <div class="deals-container">
+
+        <section class="deals-banner">
+            <h1>BrightBuy <span>Deals</span></h1>
+            <p>
+                Discover handpicked products and great finds.
+                Explore our featured selections and find something
+                you'll love at BrightBuy!
+            </p>
+
+            <a href="{{ path('app_shop') }}" class="deals-shop-btn">
+                <i class="bi bi-bag-check me-2"></i>Explore All Products
+            </a>
+        </section>
+
+        <section class="deals-section">
+            <div class="deals-section-heading">
+                <div>
+                    <h2><i class="bi bi-stars me-2"></i>Featured Deals</h2>
+                    <p>Check out our selected products available in BrightBuy.</p>
+                </div>
+
+                <span class="deals-count">
+                    {{ products|length }} Featured Product(s)
+                </span>
+            </div>
+
+            {% if products is not empty %}
+                <div class="deals-grid">
+                    {% for product in products %}
+                        <article class="deal-card">
+                            <div class="deal-image-wrap">
+                                <span class="deal-label">
+                                    <i class="bi bi-star-fill me-1"></i>FEATURED PICK
+                                </span>
+
+                                {% if product.image %}
+                                    {% set imagePath = product.image|trim %}
+
+                                    {% if imagePath starts with 'images/' or imagePath starts with 'uploads/' %}
+                                        {% set imageUrl = asset(imagePath) %}
+                                    {% else %}
+                                        {% set imageUrl = asset('uploads/products/' ~ imagePath) %}
+                                    {% endif %}
+
+                                    <img
+                                        src="{{ imageUrl }}"
+                                        alt="{{ product.name }}"
+                                        onerror="this.onerror=null;this.src='{{ asset('images/products/product1.png') }}';"
+                                    >
+                                {% else %}
+                                    <img
+                                        src="{{ asset('images/products/product1.png') }}"
+                                        alt="{{ product.name }}"
+                                    >
+                                {% endif %}
+                            </div>
+
+                            <div class="deal-info">
+                                <div class="deal-category">
+                                    {{ product.category ? product.category.name : 'General' }}
+                                </div>
+
+                                <h3 class="deal-name">
+                                    {{ product.name }}
+                                </h3>
+
+                                <p class="deal-description">
+                                    {{ product.description
+                                        ? product.description|slice(0, 75) ~ (product.description|length > 75 ? '...' : '')
+                                        : 'Discover this product at BrightBuy.' }}
+                                </p>
+
+                                <div class="deal-price">
+                                    &#8369;{{ product.price|number_format(2, '.', ',') }}
+                                </div>
+
+                                <div class="deal-stock">
+                                    <i class="bi bi-box-seam me-1"></i>
+                                    {{ product.stock }} item(s) available
+                                </div>
+
+                                <a href="{{ path('app_shop') }}" class="deal-view-btn">
+                                    <i class="bi bi-eye me-1"></i>Browse in Shop
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="deals-empty">
+                    <i class="bi bi-bag-x"></i>
+                    <h4>No Featured Products Yet</h4>
+                    <p>Please check back later for products in our Deals section.</p>
+                    <a href="{{ path('app_shop') }}" class="deals-shop-btn">
+                        Visit Shop
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+</div>
+{% endblock %}

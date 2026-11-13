@@ -1,0 +1,602 @@
+
+{% extends 'storefront_base.html.twig' %}
+
+{% block title %}Help Center | BrightBuy{% endblock %}
+
+{% block body %}
+<style>
+    .help-page {
+        min-height: 100vh;
+        padding: 40px 20px 65px;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.13), transparent 25%),
+            linear-gradient(135deg, #789ed2 0%, #638bc5 50%, #527bb8 100%);
+    }
+
+    .help-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .help-banner {
+        position: relative;
+        overflow: hidden;
+        padding: 50px 35px;
+        margin-bottom: 30px;
+        border-radius: 22px;
+        background: linear-gradient(120deg, #071a35, #1764b1);
+        color: white;
+        text-align: center;
+        box-shadow: 0 12px 30px rgba(7,26,53,.18);
+    }
+
+    .help-banner::after {
+        content: "?";
+        position: absolute;
+        top: -55px;
+        right: 50px;
+        color: rgba(255,255,255,.06);
+        font-size: 270px;
+        font-weight: 900;
+        pointer-events: none;
+    }
+
+    .help-banner-icon {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 75px;
+        height: 75px;
+        margin-bottom: 18px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.13);
+        color: #ffc928;
+        font-size: 34px;
+    }
+
+    .help-banner h1 {
+        position: relative;
+        z-index: 1;
+        font-size: clamp(32px, 5vw, 45px);
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .help-banner h1 span {
+        color: #ffc928;
+    }
+
+    .help-banner p {
+        position: relative;
+        z-index: 1;
+        max-width: 650px;
+        margin: 0 auto;
+        color: rgba(255,255,255,.85);
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .help-quick-links {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 30px;
+    }
+
+    .help-quick-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 22px;
+        border-radius: 15px;
+        background: white;
+        color: #071a35;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(7,26,53,.10);
+        transition: .2s;
+    }
+
+    .help-quick-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 25px rgba(7,26,53,.16);
+        color: #1764b1;
+    }
+
+    .help-quick-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: #fff5cf;
+        color: #1764b1;
+        font-size: 24px;
+    }
+
+    .help-quick-card h3 {
+        margin: 0 0 5px;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .help-quick-card p {
+        margin: 0;
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .help-faq-section {
+        padding: 32px;
+        margin-bottom: 30px;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(7,26,53,.12);
+    }
+
+    .help-section-heading {
+        margin-bottom: 25px;
+    }
+
+    .help-section-heading h2 {
+        color: #071a35;
+        font-size: 26px;
+        font-weight: 800;
+        margin-bottom: 7px;
+    }
+
+    .help-section-heading p {
+        color: #718096;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .help-category-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 28px 0 15px;
+        color: #1764b1;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .help-category-title i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        border-radius: 9px;
+        background: #eaf2ff;
+        font-size: 17px;
+    }
+
+    .help-accordion .accordion-item {
+        margin-bottom: 10px;
+        overflow: hidden;
+        border: 1px solid #e8edf4;
+        border-radius: 10px;
+    }
+
+    .help-accordion .accordion-button {
+        padding: 17px 18px;
+        color: #071a35;
+        background: #f8faff;
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: none;
+    }
+
+    .help-accordion .accordion-button:not(.collapsed) {
+        color: #1764b1;
+        background: #eef5ff;
+    }
+
+    .help-accordion .accordion-button:focus {
+        box-shadow: none;
+        border-color: #1764b1;
+    }
+
+    .help-accordion .accordion-body {
+        padding: 17px 18px;
+        color: #64748b;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .help-contact-card {
+        padding: 35px 25px;
+        border-radius: 20px;
+        background: linear-gradient(120deg, #071a35, #1764b1);
+        color: white;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(7,26,53,.15);
+    }
+
+    .help-contact-card i {
+        color: #ffc928;
+        font-size: 36px;
+        margin-bottom: 12px;
+    }
+
+    .help-contact-card h2 {
+        font-size: 25px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .help-contact-card p {
+        max-width: 600px;
+        margin: 0 auto 20px;
+        color: rgba(255,255,255,.85);
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .help-action-btn {
+        display: inline-block;
+        padding: 11px 23px;
+        margin: 5px;
+        border-radius: 9px;
+        background: #ffc928;
+        color: #071a35;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 800;
+        transition: .2s;
+    }
+
+    .help-action-btn:hover {
+        background: #ffda61;
+        color: #071a35;
+        transform: translateY(-2px);
+    }
+
+    .help-action-btn.secondary {
+        border: 1px solid rgba(255,255,255,.5);
+        background: transparent;
+        color: white;
+    }
+
+    .help-action-btn.secondary:hover {
+        background: rgba(255,255,255,.12);
+    }
+
+    @media (max-width: 800px) {
+        .help-quick-links {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .help-page {
+            padding: 25px 13px 45px;
+        }
+
+        .help-banner {
+            padding: 35px 20px;
+        }
+
+        .help-faq-section {
+            padding: 22px 15px;
+        }
+
+        .help-section-heading h2 {
+            font-size: 22px;
+        }
+
+        .help-accordion .accordion-button {
+            padding: 15px 12px;
+            font-size: 13px;
+        }
+    }
+</style>
+
+<div class="help-page">
+    <div class="help-container">
+
+        <!-- Help Center Banner -->
+        <section class="help-banner">
+            <div class="help-banner-icon">
+                <i class="bi bi-headset"></i>
+            </div>
+
+            <h1>How Can We <span>Help You?</span></h1>
+
+            <p>
+                Welcome to the BrightBuy Help Center!
+                Find answers to common questions about orders,
+                payments, products, and your account.
+            </p>
+        </section>
+
+        <!-- Quick Links -->
+        <section class="help-quick-links">
+
+            <a href="{{ path('app_shop') }}" class="help-quick-card">
+                <div class="help-quick-icon">
+                    <i class="bi bi-bag"></i>
+                </div>
+                <div>
+                    <h3>Browse Products</h3>
+                    <p>Explore our product collection.</p>
+                </div>
+            </a>
+
+            <a href="{{ path('app_track_order') }}" class="help-quick-card">
+                <div class="help-quick-icon">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div>
+                    <h3>Track Your Order</h3>
+                    <p>Check your order status.</p>
+                </div>
+            </a>
+
+            <a href="{{ path('app_storefront_categories') }}" class="help-quick-card">
+                <div class="help-quick-icon">
+                    <i class="bi bi-grid"></i>
+                </div>
+                <div>
+                    <h3>Categories</h3>
+                    <p>Find products by category.</p>
+                </div>
+            </a>
+
+        </section>
+
+        <!-- Frequently Asked Questions -->
+        <section class="help-faq-section">
+
+            <div class="help-section-heading">
+                <h2>
+                    <i class="bi bi-question-circle me-2"></i>
+                    Frequently Asked Questions
+                </h2>
+                <p>Find quick answers to common BrightBuy questions.</p>
+            </div>
+
+            <!-- Orders and Delivery -->
+            <h3 class="help-category-title">
+                <i class="bi bi-box-seam"></i>
+                Orders and Delivery
+            </h3>
+
+            <div class="accordion help-accordion" id="ordersFAQ">
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#orderOne">
+                            How can I track my order?
+                        </button>
+                    </h4>
+                    <div id="orderOne" class="accordion-collapse collapse"
+                         data-bs-parent="#ordersFAQ">
+                        <div class="accordion-body">
+                            Visit the Track Order page from the navigation menu.
+                            Enter your order number and the email address used
+                            when placing your order to view its current status.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#orderTwo">
+                            Where can I find my order number?
+                        </button>
+                    </h4>
+                    <div id="orderTwo" class="accordion-collapse collapse"
+                         data-bs-parent="#ordersFAQ">
+                        <div class="accordion-body">
+                            Your order number is the unique reference assigned
+                            to your purchase. Check your order information or
+                            My Orders section if available in your account.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#orderThree">
+                            What do the different order statuses mean?
+                        </button>
+                    </h4>
+                    <div id="orderThree" class="accordion-collapse collapse"
+                         data-bs-parent="#ordersFAQ">
+                        <div class="accordion-body">
+                            <strong>Pending:</strong> Your order is awaiting processing.<br>
+                            <strong>Processing:</strong> Your order is being prepared.<br>
+                            <strong>Shipped:</strong> Your order has been dispatched.<br>
+                            <strong>Delivered:</strong> Your order has been marked as delivered.<br>
+                            <strong>Cancelled:</strong> Your order has been cancelled.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Payments -->
+            <h3 class="help-category-title">
+                <i class="bi bi-credit-card"></i>
+                Payments
+            </h3>
+
+            <div class="accordion help-accordion" id="paymentsFAQ">
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#paymentOne">
+                            How can I check my payment status?
+                        </button>
+                    </h4>
+                    <div id="paymentOne" class="accordion-collapse collapse"
+                         data-bs-parent="#paymentsFAQ">
+                        <div class="accordion-body">
+                            You can check your payment status using the Track
+                            Order page. Enter your order number and matching
+                            email address to view the available payment information.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#paymentTwo">
+                            What does Pending payment mean?
+                        </button>
+                    </h4>
+                    <div id="paymentTwo" class="accordion-collapse collapse"
+                         data-bs-parent="#paymentsFAQ">
+                        <div class="accordion-body">
+                            Pending means the payment status has not yet been
+                            marked as completed in the order record.
+                            Check your order details for the latest information.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Products -->
+            <h3 class="help-category-title">
+                <i class="bi bi-tags"></i>
+                Products and Availability
+            </h3>
+
+            <div class="accordion help-accordion" id="productsFAQ">
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#productOne">
+                            How can I find a specific product?
+                        </button>
+                    </h4>
+                    <div id="productOne" class="accordion-collapse collapse"
+                         data-bs-parent="#productsFAQ">
+                        <div class="accordion-body">
+                            Visit the Shop page and use the search bar or
+                            category filter to find products you're interested in.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#productTwo">
+                            How can I check product availability?
+                        </button>
+                    </h4>
+                    <div id="productTwo" class="accordion-collapse collapse"
+                         data-bs-parent="#productsFAQ">
+                        <div class="accordion-body">
+                            Available stock is displayed on product cards
+                            where stock information is provided. Products
+                            with zero stock are not displayed in the featured
+                            product sections.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Account -->
+            <h3 class="help-category-title">
+                <i class="bi bi-person-circle"></i>
+                Account and Security
+            </h3>
+
+            <div class="accordion help-accordion" id="accountFAQ">
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#accountOne">
+                            How can I access my account?
+                        </button>
+                    </h4>
+                    <div id="accountOne" class="accordion-collapse collapse"
+                         data-bs-parent="#accountFAQ">
+                        <div class="accordion-body">
+                            Use the Login option in the account menu.
+                            If you do not have an account yet, select Register
+                            to create one.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#accountTwo">
+                            How can I update my account information?
+                        </button>
+                    </h4>
+                    <div id="accountTwo" class="accordion-collapse collapse"
+                         data-bs-parent="#accountFAQ">
+                        <div class="accordion-body">
+                            Log in to your BrightBuy account and open the
+                            My Profile section to view the profile options
+                            available to your account.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Customer Support -->
+        <section class="help-contact-card">
+            <i class="bi bi-chat-dots"></i>
+
+            <h2>Still Need Help?</h2>
+
+            <p>
+                We want your BrightBuy shopping experience to be smooth
+                and convenient. Visit our Shop or Track Order pages
+                for more assistance with your shopping activity.
+            </p>
+
+            <a href="{{ path('app_shop') }}" class="help-action-btn">
+                <i class="bi bi-bag me-1"></i>Visit Shop
+            </a>
+
+            <a href="{{ path('app_track_order') }}"
+               class="help-action-btn secondary">
+                <i class="bi bi-truck me-1"></i>Track Order
+            </a>
+        </section>
+
+    </div>
+</div>
+{% endblock %}

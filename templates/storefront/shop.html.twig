@@ -1,0 +1,609 @@
+
+{% extends 'storefront_base.html.twig' %}
+
+{% block title %}Shop - BrightBuy{% endblock %}
+
+{% block body %}
+<style>
+    /* SHOP PAGE LAYOUT */
+    .shop-main {
+        display: block;
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        min-height: 75vh;
+        padding: 45px 0 70px;
+        overflow-x: clip;
+        box-sizing: border-box;
+        background:
+            radial-gradient(circle at 10% 10%, rgba(255,255,255,.13), transparent 28%),
+            radial-gradient(circle at 90% 80%, rgba(255,255,255,.10), transparent 30%),
+            linear-gradient(135deg, #789ed2 0%, #638bc5 48%, #527bb8 100%);
+    }
+
+    .shop-container {
+        display: block;
+        position: relative;
+        width: 100%;
+        max-width: 1250px;
+        min-width: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box;
+        left: auto;
+        right: auto;
+        transform: none;
+    }
+
+    /* PAGE HEADING */
+    .shop-heading {
+        width: 100%;
+        text-align: center;
+        margin: 0 auto 30px;
+        color: #10266D;
+    }
+
+    .shop-heading h1 {
+        font-size: clamp(30px, 4vw, 43px);
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+
+    .shop-heading h1 span {
+        color: #ffc000;
+    }
+
+    .shop-heading p {
+        color: #ffffff;
+        font-size: 16px;
+        margin: 0;
+    }
+
+    /* SEARCH AND CATEGORY PANEL */
+    .shop-toolbar {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 22px;
+        margin: 0 auto 28px;
+        box-shadow: 0 8px 25px rgba(16, 38, 109, .13);
+        box-sizing: border-box;
+    }
+
+    .shop-search-form {
+        display: grid;
+        width: 100%;
+        min-width: 0;
+        grid-template-columns: minmax(0, 1fr) minmax(160px, 220px) auto auto;
+        gap: 12px;
+    }
+
+    .shop-search-form input,
+    .shop-search-form select {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #d7e0ed;
+        border-radius: 9px;
+        outline: none;
+        background: #f8faff;
+        color: #26354b;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .shop-search-form input:focus,
+    .shop-search-form select:focus {
+        border-color: #1762d2;
+        box-shadow: 0 0 0 3px rgba(23, 98, 210, .12);
+    }
+
+    .shop-btn {
+        border: 0;
+        border-radius: 9px;
+        padding: 12px 20px;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        white-space: nowrap;
+        transition: .2s ease;
+    }
+
+    .shop-btn-primary {
+        background: #1762d2;
+        color: #ffffff;
+    }
+
+    .shop-btn-primary:hover {
+        background: #10266D;
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    .shop-btn-reset {
+        background: #edf2fa;
+        color: #10266D;
+    }
+
+    .shop-btn-reset:hover {
+        background: #dce7f7;
+        color: #10266D;
+    }
+
+    /* CATEGORY FILTERS */
+    .shop-category-heading {
+        color: #10266D;
+        font-size: 17px;
+        font-weight: 900;
+        margin: 22px 0 12px;
+    }
+
+    .shop-category-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .shop-category-item {
+        display: inline-block;
+        padding: 8px 15px;
+        border-radius: 30px;
+        background: #edf2fa;
+        color: #10266D;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        transition: .2s ease;
+    }
+
+    .shop-category-item:hover,
+    .shop-category-item.active {
+        background: #ffc000;
+        color: #10266D;
+    }
+
+    /* PRODUCT RESULTS */
+    .shop-results {
+        display: flex;
+        width: 100%;
+        min-width: 0;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+
+    .shop-results h2 {
+        font-size: 22px;
+        font-weight: 900;
+        margin: 0;
+        color: #10266D;
+    }
+
+    .shop-results span {
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    /* PRODUCT GRID */
+    .shop-product-grid {
+        display: grid;
+        width: 100%;
+        min-width: 0;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .shop-product-card {
+        min-width: 0;
+        background: #ffffff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 22px rgba(16, 38, 109, .13);
+        transition: transform .25s ease, box-shadow .25s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .shop-product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 30px rgba(16, 38, 109, .22);
+    }
+
+    .shop-product-image {
+        height: 210px;
+        background: #f5f7fb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+    }
+
+    .shop-product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform .25s ease;
+    }
+
+    .shop-product-card:hover .shop-product-image img {
+        transform: scale(1.05);
+    }
+
+    .shop-product-info {
+        padding: 17px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .shop-product-category {
+        color: #1762d2;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        margin-bottom: 7px;
+    }
+
+    .shop-product-name {
+        color: #10266D;
+        font-size: 16px;
+        font-weight: 900;
+        margin: 0 0 8px;
+        line-height: 1.4;
+        min-height: 44px;
+        overflow-wrap: anywhere;
+    }
+
+    .shop-product-description {
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.5;
+        margin-bottom: 13px;
+        flex: 1;
+    }
+
+    .shop-product-bottom {
+        border-top: 1px solid #edf0f5;
+        padding-top: 12px;
+        margin-top: auto;
+    }
+
+    .shop-product-price {
+        color: #1762d2;
+        font-size: 20px;
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+
+    .shop-stock {
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .shop-stock.available {
+        color: #16834a;
+    }
+
+    .shop-stock.low {
+        color: #d18a00;
+    }
+
+    .shop-stock.unavailable {
+        color: #d93636;
+    }
+
+    .shop-product-button {
+        width: 100%;
+        background: #ffc000;
+        color: #10266D;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 900;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+        box-sizing: border-box;
+    }
+
+    .shop-product-button:hover {
+        background: #eeb400;
+        color: #10266D;
+    }
+
+    /* EMPTY RESULTS */
+    .shop-empty {
+        width: 100%;
+        max-width: 100%;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 55px 20px;
+        text-align: center;
+        box-shadow: 0 8px 22px rgba(16, 38, 109, .13);
+        box-sizing: border-box;
+    }
+
+    .shop-empty h3 {
+        color: #10266D;
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .shop-empty p {
+        color: #718096;
+        margin-bottom: 20px;
+    }
+
+    /* TABLET */
+    @media (max-width: 1000px) {
+        .shop-product-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    /* MOBILE */
+    @media (max-width: 750px) {
+        .shop-main {
+            padding-top: 35px;
+        }
+
+        .shop-search-form {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+
+        .shop-search-form input {
+            grid-column: 1 / -1;
+        }
+
+        .shop-product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .shop-product-image {
+            height: 175px;
+        }
+    }
+
+    @media (max-width: 430px) {
+        .shop-container {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .shop-toolbar {
+            padding: 15px;
+        }
+
+        .shop-search-form {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .shop-search-form input {
+            grid-column: auto;
+        }
+
+        .shop-results h2 {
+            font-size: 18px;
+        }
+
+        .shop-results span {
+            font-size: 11px;
+        }
+
+        .shop-product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .shop-product-image {
+            height: 135px;
+        }
+
+        .shop-product-info {
+            padding: 12px;
+        }
+
+        .shop-product-name {
+            font-size: 13px;
+        }
+
+        .shop-product-price {
+            font-size: 17px;
+        }
+    }
+</style>
+
+<main class="shop-main">
+    <div class="shop-container">
+
+        <div class="shop-heading">
+            <h1>Shop <span>BrightBuy</span></h1>
+            <p>Discover quality products at prices you'll love.</p>
+        </div>
+
+        <section class="shop-toolbar">
+
+            <form action="{{ path('app_shop') }}" method="GET" class="shop-search-form">
+
+                <input
+                    type="search"
+                    name="search"
+                    placeholder="Search for products..."
+                    value="{{ search }}"
+                    aria-label="Search products"
+                >
+
+                <select name="category" aria-label="Filter by category">
+                    <option value="">All Categories</option>
+
+                    {% for category in categories %}
+                        <option
+                            value="{{ category.id }}"
+                            {% if selectedCategory == category.id %}selected{% endif %}
+                        >
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="shop-btn shop-btn-primary">
+                    Search
+                </button>
+
+                <a href="{{ path('app_shop') }}" class="shop-btn shop-btn-reset">
+                    Reset
+                </a>
+
+            </form>
+
+            <h3 class="shop-category-heading">Browse Categories</h3>
+
+            <div class="shop-category-list">
+
+                <a
+                    href="{{ path('app_shop', {search: search}) }}"
+                    class="shop-category-item {% if selectedCategory is null %}active{% endif %}"
+                >
+                    All Products
+                </a>
+
+                {% for category in categories %}
+                    <a
+                        href="{{ path('app_shop', {
+                            category: category.id,
+                            search: search
+                        }) }}"
+                        class="shop-category-item {% if selectedCategory == category.id %}active{% endif %}"
+                    >
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+
+            </div>
+        </section>
+
+        <div class="shop-results">
+            <h2>Our Products</h2>
+            <span>{{ totalProducts }} product(s) found</span>
+        </div>
+
+        {% if products is not empty %}
+
+            <div class="shop-product-grid">
+
+                {% for product in products %}
+                    <article class="shop-product-card">
+
+                        <div class="shop-product-image">
+
+                            {% if product.image %}
+                                <img
+                                    src="{{ asset(product.image) }}"
+                                    alt="{{ product.name }}"
+                                    loading="lazy"
+                                    onerror="this.onerror=null;this.src='{{ asset('images/products/product1.png') }}';"
+                                >
+                            {% else %}
+                                <img
+                                    src="{{ asset('images/products/product1.png') }}"
+                                    alt="{{ product.name }}"
+                                    loading="lazy"
+                                >
+                            {% endif %}
+
+                        </div>
+
+                        <div class="shop-product-info">
+
+                            <div class="shop-product-category">
+                                {{ product.category ? product.category.name : 'Uncategorized' }}
+                            </div>
+
+                            <h3 class="shop-product-name">
+                                {{ product.name }}
+                            </h3>
+
+                            <p class="shop-product-description">
+                                {% if product.description %}
+                                    {{ product.description|length > 85
+                                        ? product.description|slice(0, 85) ~ '...'
+                                        : product.description
+                                    }}
+                                {% else %}
+                                    Discover this quality product from BrightBuy.
+                                {% endif %}
+                            </p>
+
+                            <div class="shop-product-bottom">
+
+                                <div class="shop-product-price">
+                                    &#8369;{{ product.price|number_format(2, '.', ',') }}
+                                </div>
+
+                                {% if product.stock <= 0 %}
+                                    <div class="shop-stock unavailable">
+                                        Out of Stock
+                                    </div>
+                                {% elseif product.stock <= 5 %}
+                                    <div class="shop-stock low">
+                                        Only {{ product.stock }} left in stock
+                                    </div>
+                                {% else %}
+                                    <div class="shop-stock available">
+                                        In Stock
+                                    </div>
+                                {% endif %}
+
+                                <span class="shop-product-button">
+                                    {{ product.stock > 0 ? 'Available Now' : 'Currently Unavailable' }}
+                                </span>
+
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="shop-empty">
+                <h3>No Products Found</h3>
+
+                <p>
+                    {% if search %}
+                        We couldn't find any products matching "{{ search }}".
+                    {% else %}
+                        There are currently no products available in this category.
+                    {% endif %}
+                </p>
+
+                <a href="{{ path('app_shop') }}" class="shop-btn shop-btn-primary">
+                    View All Products
+                </a>
+            </div>
+
+        {% endif %}
+
+    </div>
+</main>
+{% endblock %}
